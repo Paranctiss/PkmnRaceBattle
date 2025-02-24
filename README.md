@@ -1,3 +1,6 @@
+Client d'un jeu utilisant principalement des websockets pour communiquer avec le serveur. Le jeu reprend les mécaniques principales des combats de la license Pokémon. Le client récupère utilise les données renvoyés par le serveur PkmnRaceBattle.API. Le projet n'a aucun but lucratif, tous les droits sont réservés aux déteneurs de la license Pokémon.
+
+
 # PkmnRaceBattle
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.6.
