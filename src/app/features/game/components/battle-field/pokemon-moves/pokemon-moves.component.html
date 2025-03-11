@@ -1,0 +1,35 @@
+<div class="pokemonMoves">
+  <div
+    *ngFor="let PokemonMove of PokemonMoves.reverse()"
+    class="move-container"
+    (mouseenter)="onMouseEnter(PokemonMove)"
+    (mouseleave)="onMouseLeave(PokemonMove)"
+  >
+    <div
+      class="pokemonMove"
+      (click)="useMove(PokemonMove)"
+      *ngIf="!this.DisabledMoves.includes(PokemonMove.nameFr)"
+    >
+      <p>{{ PokemonMove.nameFr }}</p>
+      <p>{{ PokemonMove.pp }}</p>
+    </div>
+
+    <div
+      class="pokemonMoveDisabled"
+      *ngIf="this.DisabledMoves.includes(PokemonMove.nameFr)"
+    >
+      <p>{{ PokemonMove.nameFr }}</p>
+      <p>{{ PokemonMove.pp }}</p>
+    </div>
+    <!-- Bulle de texte intégrée -->
+    <div
+      *ngIf="PokemonMove.isHovered"
+      class="info-box"
+    >
+      <p>{{ PokemonMove.nameFr }}</p>
+      <p>{{ PokemonMove.flavorText }}</p>
+      <p>{{ PokemonMove.damageType }}</p>
+      <p><strong>Puissance :</strong> {{ PokemonMove.power }}</p>
+    </div>
+  </div>
+</div>

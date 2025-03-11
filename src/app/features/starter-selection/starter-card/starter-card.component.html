@@ -1,0 +1,18 @@
+<div class="pokemon"
+     (mouseover)="hovered = true"
+     (mouseout)="hovered = false"
+     [ngStyle]="hovered || selectedPokemonId == Pokemon.id ? {'background-color': this.cardColor}:null">
+  <div class="pokemonSprite">
+    <img src="{{Pokemon.sprites.frontDefault}}">
+  </div>
+  <div class="pokemonInformations" style="text-align: center">
+    <p>N°{{Pokemon.id}} {{Pokemon.nameFr}}</p>
+    <div class="pokemonTypes" style="display: flex; flex-direction: row; justify-content: center">
+      <app-type-card
+        *ngFor="let type of Pokemon.types"
+        [Type]="type"
+      >
+      </app-type-card>
+    </div>
+  </div>
+</div>

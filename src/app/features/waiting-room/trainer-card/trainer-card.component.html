@@ -1,0 +1,12 @@
+<div class="trainerCard"
+     (mouseover)="hovered = true"
+     (mouseout)="hovered = false"
+     [ngStyle]="hovered ? {'background-color': this.cardColor}:null">
+  <div class="trainer">
+    <img src="/assets/trainers-sprites/{{Player.sprite}}.png">
+  </div>
+  <div class="pokemon" style="text-align: center">
+    <h1>{{Player.name}}</h1>
+    <img [src]="Player.team[0].frontSprite">
+  </div>
+</div>

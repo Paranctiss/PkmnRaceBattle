@@ -1,0 +1,19 @@
+.gameField{
+  display: flex;
+  flex: 3 1 auto;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.turnField{
+  width: 80%;
+  padding-top: 10%;
+  margin-left: 15%;
+}
+
+.myTeam{
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}

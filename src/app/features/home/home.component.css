@@ -1,0 +1,37 @@
+:host{
+  display: inherit;
+  height: 100vh;
+}
+
+.ModeSelection{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.btnSelection{
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.btnSelection button{
+  font-size: xxx-large;
+  border: #06549d 2px solid;
+  color: #06549d;
+  margin: 10px;
+  padding: 10px;
+  width: 500px;
+  cursor: pointer;
+}
+
+button:hover{
+  color: white !important;
+  background-color: #06549d !important;
+}
+
+.btnSelection{
+
+}

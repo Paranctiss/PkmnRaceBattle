@@ -1,0 +1,26 @@
+<div class="myTeam">
+  <h1>Équipe :</h1>
+  <div *ngFor="let myPokemon of Team">
+    <div class="pokemon"
+         (mouseover)="hovered = true"
+         (mouseout)="hovered = false"
+         [ngStyle]="hovered ? {'background-color': this.getColor(myPokemon.types[0].name)}:null">
+      <div class="pokemonSprite">
+        <img src="{{myPokemon.frontSprite}}">
+        <app-hp-bar [BaseHP]="myPokemon.baseHp" [CurrHP]="myPokemon.currHp" ></app-hp-bar>
+
+      </div>
+      <div class="pokemonInformations" style="text-align: center">
+        <p>lvl.{{myPokemon.level}} {{myPokemon.nameFr}}</p>
+        <div class="pokemonTypes">
+          <app-type-card
+            *ngFor="let type of myPokemon.types"
+            [Type]="type"
+            [Size]="'50px'"
+          >
+          </app-type-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

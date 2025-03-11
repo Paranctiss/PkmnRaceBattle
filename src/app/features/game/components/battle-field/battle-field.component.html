@@ -1,0 +1,78 @@
+<div class="pageContent">
+
+  <div class="message-container" *ngIf="currentMessage">
+    {{ currentMessage }}
+  </div>
+  <div class="replace-pokemon" *ngIf="openReplacePokemon">
+    <h1 class="close-replace-pokemon" (click)="openReplacePokemon=false">X</h1>
+    <div class="replace-pokemon-card-container">
+      <div *ngFor="let pokemon of this.hubService.Player.team" class="replacePokemonCard" (click)="replacePokemon(pokemon)">
+        <p>Lvl.{{pokemon.level}} {{pokemon.nameFr}}</p>
+        <img src="{{pokemon.frontSprite}}" [ngStyle]="{'filter': pokemon.currHp <= 0 ? 'grayscale(1)' : 'none'}" />
+      </div>
+    </div>
+  </div>
+
+  <div class="learn-move" *ngIf="openLearnMove">
+    <h4>{{pokemonWantToLearn[0].nameFr}} veut apprendre {{movesToLearn[0][0].nameFr}}</h4>
+    <p>Par quelle capacité voulez vous le remplacer ?</p>
+    <div *ngFor="let move of pokemonWantToLearn[0].moves" class="moveToLearn" (click)="ReplaceMoveBy(move.id, movesToLearn[0][0].id, pokemonWantToLearn[0].id)"> {{move.nameFr}} </div>
+    <div (click)="DismissLearn()">{{movesToLearn[0][0].nameFr}}</div>
+  </div>
+
+  <div class="scrollable-box">
+    <div class="content">
+      <div *ngFor="let item of logs" class="item">{{ item }}</div>
+    </div>
+  </div>
+
+  <div class="flexRight">
+    <div class="oppositeSide">
+      <h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>
+      <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
+      <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{catchingBall}}.webp" alt="oppositePokemon">
+      <app-stats-changes [Pokemon]="OppositePokemon" />
+      <p *ngIf="OppositePokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
+      <p *ngIf="OppositePokemon.isBurning" class="ailmentCard brulure">BRU</p>
+      <p *ngIf="OppositePokemon.isPoisoned" class="ailmentCard poison">PSN</p>
+      <p *ngIf="OppositePokemon.isFrozen" class="ailmentCard gel">GEL</p>
+      <p *ngIf="OppositePokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
+      <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
+    </div>
+  </div>
+
+
+  <div class="playerSide">
+    <div *ngIf="PlayerPokemon.substitute !== null">
+      <img class="pokemonImg" src="{{PlayerPokemon.substitute.backSprite}}" alt="playerPokemon">
+      <app-stats-changes [Pokemon]="PlayerPokemon.substitute" />
+      <app-hp-bar [CurrHP]="PlayerPokemon.substitute.currHp" [BaseHP]="PlayerPokemon.substitute.baseHp" ></app-hp-bar>
+      <p *ngIf="PlayerPokemon.substitute.isParalyzed" class="ailmentCard paralysie">PAR</p>
+      <p *ngIf="PlayerPokemon.substitute.isBurning" class="ailmentCard brulure">BRU</p>
+      <p *ngIf="PlayerPokemon.substitute.isPoisoned" class="ailmentCard poison">PSN</p>
+      <p *ngIf="PlayerPokemon.substitute.isFrozen" class="ailmentCard gel">GEL</p>
+      <p *ngIf="PlayerPokemon.substitute.isSleeping > 0" class="ailmentCard sleep">DOR</p>
+    </div>
+    <div *ngIf="PlayerPokemon.substitute === null">
+      <img *ngIf="PlayerPokemon.untargetable === null" class="pokemonImg" src="{{PlayerPokemon.backSprite}}" alt="playerPokemon">
+      <app-stats-changes [Pokemon]="PlayerPokemon" />
+      <app-hp-bar [CurrHP]="PlayerPokemon.currHp" [BaseHP]="PlayerPokemon.baseHp" ></app-hp-bar>
+      <p *ngIf="PlayerPokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
+      <p *ngIf="PlayerPokemon.isBurning" class="ailmentCard brulure">BRU</p>
+      <p *ngIf="PlayerPokemon.isPoisoned" class="ailmentCard poison">PSN</p>
+      <p *ngIf="PlayerPokemon.isFrozen" class="ailmentCard gel">GEL</p>
+      <p *ngIf="PlayerPokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
+    </div>
+    <p>{{PlayerPokemon.xpFromLastLvl}} / {{PlayerPokemon.currXP}} / {{PlayerPokemon.xpForNextLvl}}</p>
+  </div>
+  <div *ngIf="!this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && PlayerPokemon.waitingMove === null">
+    <app-pokemon-moves [PokemonMoves]="PlayerPokemon.moves" [DisabledMoves]="PlayerPokemon.cantUseMoves" (PokemonMovesChange)="useMove($event)"></app-pokemon-moves>
+    <app-bag-item *ngFor="let item of hubService.Player.items" (click)="itemClicked(item)"  [item]="item" />
+    <p>{{this.hubService.Player.credits}} PokéDollz</p>
+    <button (click)="openReplacePokemon=true">Changer Pokémon</button>
+  </div>
+  <div *ngIf="PlayerPokemon.waitingMove !== null">
+    <button (click)="useMove(PlayerPokemon.waitingMove!)">Continuer</button>
+  </div>
+
+</div>

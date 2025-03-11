@@ -1,0 +1,56 @@
+.pokemonMoves {
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  border: 1px solid black;
+  position: relative;
+  margin-left: 10px;
+  overflow: visible; /* Permet à la info-box de déborder */
+}
+
+.move-container {
+  position: relative;
+  margin-left: 10px;
+  overflow: visible; /* Permet à la info-box de déborder */
+}
+
+.pokemonMove {
+  background-color: green;
+  padding: 10px 20px;
+  border: 2px solid green;
+  color: white;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.pokemonMove:hover {
+  background-color: lawngreen;
+}
+
+.pokemonMoveDisabled {
+  background-color: darkslategray;
+  padding: 10px 20px;
+  border: 2px solid gray;
+  color: white;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.pokemonMove:hover {
+  background-color: cadetblue;
+}
+
+.info-box {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: 1px solid green;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 200px;
+  top: -120px; /* Position au-dessus de l'élément */
+  left: 0;
+  pointer-events: none; /* Empêche la info-box de capturer les événements de souris */
+}

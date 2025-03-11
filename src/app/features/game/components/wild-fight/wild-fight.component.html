@@ -1,0 +1,6 @@
+<app-battle-field [OppositePokemon]="PokemonFoe"
+                  [PlayerPokemon]="OnBoardPokemon"
+                  [TurnContext]="TurnConext"
+                  (UsingMove)="useMove($event)"
+                  (PkmnPlayerChanged)="onPkmnChanged($event)"
+/>

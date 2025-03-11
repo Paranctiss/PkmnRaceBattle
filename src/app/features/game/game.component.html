@@ -1,0 +1,12 @@
+<div class="gameField">
+  <div class="turnField">
+    <div *ngIf="this.turnType === 'WildFight' && this.wildPokemon !== undefined && this.hubService.Player.team.length > 0">
+      <app-wild-fight [PokemonFoe]="wildPokemon" (FoeIsDead)="newTurn()" />
+    </div>
+  </div>
+
+  <div class="myTeam" *ngIf="this.hubService.Player?.team">
+    <app-my-team [Team]="this.hubService.Player.team" />
+  </div>
+</div>
+

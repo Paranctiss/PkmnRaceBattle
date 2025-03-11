@@ -1,0 +1,16 @@
+<ng-container *ngIf="players.length > 0; else loading">
+  <div class="title">
+    <h2>Waiting room | Code : {{this.myPlayer?.roomId}}</h2>
+    <button (click)="StartGame()" *ngIf="myPlayer?.isHost">Commencer</button>
+  </div>
+
+  <div *ngFor="let player of players">
+    <div class="trainerCards">
+      <app-trainer-card [Player]="player"/>
+    </div>
+  </div>
+</ng-container>
+<ng-template #loading>
+  ça charge zebi
+</ng-template>
+

@@ -1,0 +1,42 @@
+<div>
+  <button routerLink="/">Retour à l'accueil</button>
+  <!-- <h2>Choisis ton Pokémon</h2>
+  <div *ngIf="Starters && Starters.length > 0">
+    <div *ngFor="let pokemon of Starters">
+      <img [src]="pokemon.sprites.frontShiny" alt="{{pokemon.name}}">
+      <button (click)="selectPokemon(pokemon)">{{ pokemon.nameFr }}</button>
+    </div>
+  </div> -->
+  <h1 class="title" *ngIf="Host">Créer une partie</h1>
+  <div *ngIf="!Host" class="title">
+    <h1 class="title">Rejoindre une partie</h1>
+    <input [(ngModel)]="roomCode" type="text" placeholder="Code de la room"/>
+  </div>
+
+  <h2 class="title">Choose a starter !</h2>
+  <div class="pokemonList">
+    <div *ngFor="let pokemon of Starters">
+      <app-starter-card
+        *ngIf="pokemon.types !== undefined"
+        (click)="selectPokemonId(pokemon.id)"
+        [Pokemon]="pokemon"
+        [selectedPokemonId]="selectedPokemonId"
+      >
+      </app-starter-card>
+    </div>
+
+  </div>
+  <div class="trainerSprite">
+    <input [(ngModel)]="username" type="text" placeholder="Pseudo"/>
+    <img src="/assets/trainers-sprites/{{this.trainerSprite}}.png">
+    <button (click)="changeTrainerSprite()">Changer</button>
+  </div>
+  <div class="chooseStarterBtn" *ngIf="this.Host">
+    <button (click)="createGame()" *ngIf="selectedPokemonId && username.length > 0">Créer</button>
+    <button disabled *ngIf="!selectedPokemonId || username.length == 0">Créer</button>
+  </div>
+    <div class="chooseStarterBtn" *ngIf="!Host">
+      <button (click)="joinGame()" *ngIf="selectedPokemonId && username.length > 0 && roomCode.length > 0">Rejoindre</button>
+      <button disabled *ngIf="!selectedPokemonId || username.length == 0 || roomCode.length == 0">Rejoindre</button>
+    </div>
+  </div>

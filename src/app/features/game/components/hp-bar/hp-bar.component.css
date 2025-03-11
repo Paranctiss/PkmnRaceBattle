@@ -1,0 +1,19 @@
+.hpBar{
+  margin-top: 0;
+  background-color: whitesmoke;
+  position: relative;
+
+}
+
+.bar{
+  width: 10%;
+  transition: width 0.5s ease-in-out;
+  background-color: green;
+  position: relative;
+  & p{
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 100px;
+  }
+}
