@@ -120,6 +120,8 @@ export class BattleFieldComponent {
       this.TurnContext = changes['TurnContext'].currentValue;
       this.startDisplayingPrioMessages()
         .then(() => this.ChangesBoard())
+        .then(() => this.startDisplayingPvChanges(this.TurnContext.player.hp, true))
+        .then(() => this.startDisplayingPvChanges(this.TurnContext.opponent.hp, false))
         .then(() => this.startDisplayingMessages())
         .catch(error => console.error('Une erreur est survenue:', error));
     }
@@ -164,6 +166,34 @@ export class BattleFieldComponent {
     });
   }
 
+  startDisplayingPvChanges(hpChanges:number[], player:boolean): Promise<void> {
+    return new Promise((resolve) => {
+      const displayNextPvChanges = () => {
+        if (hpChanges.length > 0) {
+          if(player) {
+            if(this.PlayerPokemon.substitute !== null){
+              this.PlayerPokemon.substitute.currHp -= hpChanges.shift()!;
+            }else{
+              this.PlayerPokemon.currHp -= hpChanges.shift()!;
+            }
+          }else{
+            if(this.OppositePokemon.substitute !== null){
+              this.OppositePokemon.substitute.currHp -= hpChanges.shift()!;
+            }else{
+              this.OppositePokemon.currHp -= hpChanges.shift()!;
+            }
+          }
+          timer(500).pipe(take(1)).subscribe(() => {
+            displayNextPvChanges();
+          });
+        } else {
+          resolve();
+        }
+      };
+      displayNextPvChanges();
+    });
+  }
+
   private ChangesBoard(): Promise<void> {
     return new Promise((resolve) => {
       if(this.PlayerPokemon.substitute !== null){
@@ -186,21 +216,6 @@ export class BattleFieldComponent {
       this.OppositePokemon.defChanges += this.TurnContext.opponent.def;
       this.OppositePokemon.defSpeChanges += this.TurnContext.opponent.defSpe;
       this.OppositePokemon.speedChanges += this.TurnContext.opponent.speed;
-
-
-      console.log(this.TurnContext.opponent.hp)
-      for(let i=0; i<this.TurnContext.player.hp.length; i++) {
-        if(this.PlayerPokemon.substitute !== null){
-          this.PlayerPokemon.substitute.currHp -= this.TurnContext.player.hp[i];
-        }else{
-          this.PlayerPokemon.currHp -= this.TurnContext.player.hp[i];
-        }
-
-      }
-
-      for(let i=0; i<this.TurnContext.opponent.hp.length; i++) {
-        this.OppositePokemon.currHp -= this.TurnContext.opponent.hp[i];
-      }
 
       resolve();
     });

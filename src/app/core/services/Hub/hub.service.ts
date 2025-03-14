@@ -11,7 +11,6 @@ import {PokemonMoveBaseModel} from '../../../shared/models/pokemon-base.model';
 })
 export class HubService {
 
-  private apiUrl = "https://localhost:7165/gameHub";
   public gameCode: string = "";
   public userId: string = "";
   public pending:boolean = false;
