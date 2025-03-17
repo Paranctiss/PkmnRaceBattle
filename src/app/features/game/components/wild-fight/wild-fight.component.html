@@ -1,4 +1,5 @@
-<app-battle-field [OppositePokemon]="PokemonFoe"
+<app-battle-field [OppositePokemon]="Foe.team[0]"
+                  [Opponent]="Foe"
                   [PlayerPokemon]="OnBoardPokemon"
                   [TurnContext]="TurnConext"
                   (UsingMove)="useMove($event)"

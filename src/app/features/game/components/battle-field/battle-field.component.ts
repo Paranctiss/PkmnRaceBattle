@@ -9,7 +9,7 @@ import {PokemonMovesComponent} from './pokemon-moves/pokemon-moves.component';
 import {HpBarComponent} from '../hp-bar/hp-bar.component';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {StatsChangesComponent} from './stats-changes/stats-changes.component';
-import {interval, take, timer} from 'rxjs';
+import {interval, Subscription, take, timer} from 'rxjs';
 import {TurnContextModel} from '../../../../shared/models/turn-context.model';
 import {resolve} from '@angular/compiler-cli';
 import {BagItemComponent} from './bag-item/bag-item.component';
@@ -32,6 +32,7 @@ import {PokemonMoveBaseModel} from '../../../../shared/models/pokemon-base.model
 })
 export class BattleFieldComponent {
   @Input() OppositePokemon!: PokemonTeamModel;
+  @Input() Opponent!:PlayerModel;
   @Input() PlayerPokemon!: PokemonTeamModel;
   @Input() TurnContext!: TurnContextModel;
   @Output() UsingMove: EventEmitter<PokemonTeamMoveModel> = new EventEmitter();
@@ -69,8 +70,6 @@ export class BattleFieldComponent {
       }else{
         this.displayMessage(message);
       }
-      console.log(movesToLearn)
-      console.log(movesToLearn.length)
       if(movesToLearn.length > 0){
         this.pokemonWantToLearn.push(pokemon);
         this.movesToLearn.push(movesToLearn);
@@ -85,8 +84,9 @@ export class BattleFieldComponent {
       this.DismissLearn();
     })
 
-    this.hubService.onCaughtPokemon(caughtPokemon => {
+     this.hubService.onCaughtPokemon(caughtPokemon => {
         if(this.hubService.Player.team.length <= 6){
+          console.log('call addToTeam')
           this.addPokemonToTeam(caughtPokemon);
         }else{
           this.openReplacePokemon = true;
@@ -230,7 +230,6 @@ export class BattleFieldComponent {
     }else{
       nbTilt = 3;
     }
-    console.log("Trying to catch with value : " + this.catchValue);
     this.isAnimating = true;
     const delayBetweenShakes = 1000;
     for (let i = 0; i < nbTilt; i++) {
@@ -270,9 +269,9 @@ export class BattleFieldComponent {
     }
   }
 
-  addPokemonToTeam(pokemon:PokemonTeamModel, index:number = 0){
-      this.hubService.addPokemonToTeam(pokemon.id, index)
-      this.displayMessage(pokemon.nameFr + " a été ajouté à l'équipe !")
+  addPokemonToTeam(opponent:PlayerModel, index:number = 0){
+      this.hubService.addPokemonToTeam(opponent._id, index)
+      this.displayMessage(opponent.team[0].nameFr + " a été ajouté à l'équipe !")
       this.catchValue = 0;
       this.catchingBall = "";
   }
@@ -285,7 +284,7 @@ export class BattleFieldComponent {
     if(item.number > 0){
       this.hubService.pending = true;
       item.number--;
-      this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name, this.OppositePokemon.id, true)
+      this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name, this.Opponent._id, this.OppositePokemon.id, true)
     }else{
       this.displayMessage("T'as plus de " + item.name + " t'es con ou quoi" )
     }
@@ -296,7 +295,7 @@ export class BattleFieldComponent {
       if(this.hubService.Player.team[0].id !== pokemon.id && pokemon.currHp > 0){
         this.openReplacePokemon = false;
         this.hubService.pending = true;
-        this.hubService.replacePokemon(pokemon.id, this.OppositePokemon.id)
+        this.hubService.replacePokemon(pokemon.id, this.Opponent._id)
       }
   }
 

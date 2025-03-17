@@ -27,7 +27,6 @@ export class WaitingRoomComponent {
       this.hubService.onResponsePlayersInRoom((players) => {
         this.players = players;
         this.myPlayer = players.find(x => x._id === this.hubService.userId)
-        console.log(players);
       })
       this.hubService.onUserJoined((username: string) => {
         this.hubService.getAllUsersByRoomID(this.hubService.gameCode)

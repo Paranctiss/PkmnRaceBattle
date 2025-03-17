@@ -1,0 +1,13 @@
+<div class="trainerPresentation" *ngIf="!continuer">
+
+  <img src="assets/trainers-sprites/{{Foe.sprite}}.png" style="width: 200px"/>
+
+  <div>
+    <h1>{{Foe.name}} veut se battre !</h1>
+    <button (click)="continuer=true">Continuer</button>
+  </div>
+
+
+</div>
+
+    <app-wild-fight *ngIf="continuer" [Foe]="Foe" (FoeIsDead)="nextPkmn()" />

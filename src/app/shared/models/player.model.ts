@@ -4,6 +4,8 @@ export interface PlayerModel {
   sprite:string;
   roomId:string;
   isHost:boolean;
+  isPlayer:boolean;
+  isTrainer:boolean;
   credits:number;
   team:PokemonTeamModel[];
   items:BagItemModel[];
