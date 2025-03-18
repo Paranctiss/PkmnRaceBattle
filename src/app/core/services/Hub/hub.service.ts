@@ -27,7 +27,7 @@ export class HubService {
     items: []
   }
 
-  constructor(private signalRService: SignalRService, private http: HttpClient) {}
+  constructor(public signalRService: SignalRService, private http: HttpClient) {}
 
   joinGame(userName: string, starterId:number, trainerSprite:string, roomCode: string) {
     this.signalRService.connection.invoke('JoinGame', userName, starterId, trainerSprite, roomCode).catch(err => console.error(err));

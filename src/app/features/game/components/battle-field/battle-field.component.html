@@ -6,7 +6,7 @@
   <div class="replace-pokemon" *ngIf="openReplacePokemon">
     <h1 class="close-replace-pokemon" (click)="openReplacePokemon=false">X</h1>
     <div class="replace-pokemon-card-container">
-      <div *ngFor="let pokemon of this.hubService.Player.team" class="replacePokemonCard" (click)="replacePokemon(pokemon)">
+      <div *ngFor="let pokemon of this.hubService.Player.team; let i = index" class="replacePokemonCard" (click)="replacePokemon(pokemon, i)">
         <p>Lvl.{{pokemon.level}} {{pokemon.nameFr}}</p>
         <img src="{{pokemon.frontSprite}}" [ngStyle]="{'filter': pokemon.currHp <= 0 ? 'grayscale(1)' : 'none'}" />
       </div>
@@ -72,9 +72,9 @@
     <p>{{PlayerPokemon.xpFromLastLvl}} / {{PlayerPokemon.currXP}} / {{PlayerPokemon.xpForNextLvl}}</p>
   </div>
   <div *ngIf="!this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && PlayerPokemon.waitingMove === null">
+    <p>{{this.hubService.Player.credits}} PokéDollz</p>
     <app-pokemon-moves [PokemonMoves]="PlayerPokemon.moves" [DisabledMoves]="PlayerPokemon.cantUseMoves" (PokemonMovesChange)="useMove($event)"></app-pokemon-moves>
     <app-bag-item *ngFor="let item of hubService.Player.items" (click)="itemClicked(item)"  [item]="item" />
-    <p>{{this.hubService.Player.credits}} PokéDollz</p>
     <button (click)="openReplacePokemon=true">Changer Pokémon</button>
   </div>
   <div *ngIf="PlayerPokemon.waitingMove !== null">

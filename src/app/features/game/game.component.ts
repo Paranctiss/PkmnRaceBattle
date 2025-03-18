@@ -20,6 +20,7 @@ import {PokeCenterComponent} from './components/poke-center/poke-center.componen
   styleUrl: './game.component.css'
 })
 export class GameComponent {
+  TrainerContinue: boolean = false;
 
   constructor(public hubService:HubService) {
   }
@@ -41,8 +42,10 @@ export class GameComponent {
     });
     this.hubService.responseTrainerFight((trainerOpponent) => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
+      this.TrainerContinue = false;
       this.turnType = "TrainerFight";
       this.opponent = trainerOpponent;
+      this.TrainerContinue = false;
       this.hubService.pending = false;
     });
     this.hubService.responsePokeCenter((player) => {

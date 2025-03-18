@@ -9,7 +9,6 @@ import {HubService} from '../../../../core/services/Hub/hub.service';
 @Component({
   selector: 'app-trainer-fight',
   imports: [
-    WildFightComponent,
     NgIf
   ],
   templateUrl: './trainer-fight.component.html',
@@ -18,6 +17,7 @@ import {HubService} from '../../../../core/services/Hub/hub.service';
 export class TrainerFightComponent {
 
   @Input() Foe!: PlayerModel;
+  @Output() TrainerContinue = new EventEmitter<void>();
   continuer:boolean = false;
 
   constructor(private hubService: HubService) {
@@ -25,10 +25,7 @@ export class TrainerFightComponent {
   }
 
   ngOnInit() {
-    this.hubService.onTrainerSwitchPokemon(response => {
-      this.Foe = response;
-      this.hubService.pending = false;
-    })
+
     this.hubService.responseTrainerFight(responsePokemon => {
       this.continuer = false;
     })

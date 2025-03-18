@@ -16,7 +16,6 @@ import {resolve} from '@angular/compiler-cli';
 })
 export class WildFightComponent {
   @Input() Foe!: PlayerModel;
-  @Output() FoeIsDead = new EventEmitter<void>();
   TurnConext!:TurnContextModel;
   OnBoardPokemon!:PokemonTeamModel;
   constructor(private hubService: HubService) {
@@ -35,6 +34,10 @@ export class WildFightComponent {
       this.OnBoardPokemon = updatedPlayer.team[0]
       this.Foe = updatedOpponent;
       this.hubService.pending=false;
+    })
+    this.hubService.onTrainerSwitchPokemon(response => {
+      this.Foe = response;
+      this.hubService.pending = false;
     })
   }
 
