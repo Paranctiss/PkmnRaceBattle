@@ -28,7 +28,14 @@ export class StarterSelectionComponent {
   }
   Starters:PokemonBaseModel[] = [];
   Host:boolean = false;
-  TrainerSprites:string[] = ["acerola", "acetrainer", "acetrainerf", "adaman", "akari", "alec", "ballguy", "bea", "brendan", "cynthia", "dawn", "delinquent", "gardenia", "oak", "red", "zinnia", "n", "gold"];
+  TrainerSprites:string[] =
+    [
+      "aaron", "aarune", "acerola", "acetrainer", "acetrainer1", "acetrainer2", "acetrainer3", "acetrainerf", "acetrainerf1", "acetrainerf2", "acetrainerf3",
+      "acetrainersnow", "acetrainersnowf", "adaman", "akari", "akari-isekai", "alder", "alec", "allister", "anthea", "aquagrunt", "aquagrunt1", "aquagruntf",
+      "archie", "arezu", "ariana", "artistf", "arven", "ash", "ballguy", "barry", "bea", "beauty", "bede", "birch", "blue", "brendan", "brock", "buck", "burnet",
+      "cynthia", "dawn", "delinquent", "elesa", "erika", "gardenia", "geeta", "ghetsis", "gladion", "gold", "hala", "iono", "iris", "leon", "lillie", "lucy", "misty", "n", "oak", "ogreclan",
+      "red", "ryuki", "swimmer", "volo", "youngn", "zinnia"
+    ];
   trainerSprite:string = "";
   roomCode:string = "";
   username:string = "";
@@ -40,13 +47,11 @@ export class StarterSelectionComponent {
     this.Host = this.route.snapshot.queryParams['host'] === 'true';
     this.changeTrainerSprite()
     this.hubService.onGameCreated((gameCode, userId) => {
-      console.log("Code de la game : " + gameCode + "UserId : " + userId);
       this.hubService.userId = userId;
       this.hubService.gameCode = gameCode;
       this.router.navigate(['/room']);
     })
     this.hubService.onJoinSuccess((gameCode, userId) => {
-      console.log("Join success");
       this.hubService.userId = userId;
       this.hubService.gameCode = gameCode;
       this.router.navigate(['/room']);
@@ -57,7 +62,6 @@ export class StarterSelectionComponent {
   loadPokemon(id:number){
     this.pokemonBaseService.getPokemonById(id).subscribe({
       next: (data)=>{
-        console.log(data);
         this.Starters.push(data)
       },
       error: (error)=>console.log('Erreur lors du chargement du Pokémon', error)

@@ -1,0 +1,9 @@
+<div class="trainerPresentation" *ngIf="!continuer">
+
+  <img src="assets/trainers-sprites/{{Foe.sprite}}.png" style="width: 200px"/>
+
+  <div>
+    <h1>{{Foe.name}} veut se battre !</h1>
+    <button (click)="this.TrainerContinue.emit()">Continuer</button>
+  </div>
+</div>

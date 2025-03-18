@@ -4,6 +4,8 @@ import {NgForOf, NgIf} from '@angular/common';
 import {WildFightComponent} from './components/wild-fight/wild-fight.component';
 import {PlayerModel, PokemonTeamModel} from '../../shared/models/player.model';
 import {MyTeamComponent} from './components/my-team/my-team.component';
+import {TrainerFightComponent} from './components/trainer-fight/trainer-fight.component';
+import {PokeCenterComponent} from './components/poke-center/poke-center.component';
 
 @Component({
   selector: 'app-game',
@@ -11,17 +13,20 @@ import {MyTeamComponent} from './components/my-team/my-team.component';
     NgIf,
     WildFightComponent,
     MyTeamComponent,
+    TrainerFightComponent,
+    PokeCenterComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
 export class GameComponent {
+  TrainerContinue: boolean = false;
 
   constructor(public hubService:HubService) {
   }
 
   turnType:string="";
-  wildPokemon!:PokemonTeamModel;
+  opponent!:PlayerModel;
 
 
   ngOnInit() {
@@ -29,10 +34,23 @@ export class GameComponent {
       this.hubService.Player = response;
     })
     this.hubService.getCurrentUser()
-    this.hubService.responseWildFight((wildPokemon) => {
+    this.hubService.responseWildFight((wildOpponent) => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.turnType = "WildFight";
-      this.wildPokemon = wildPokemon;
+      this.opponent = wildOpponent;
+      this.hubService.pending = false;
+    });
+    this.hubService.responseTrainerFight((trainerOpponent) => {
+      if(this.turnType !== "") this.hubService.getCurrentUser()
+      this.TrainerContinue = false;
+      this.turnType = "TrainerFight";
+      this.opponent = trainerOpponent;
+      this.TrainerContinue = false;
+      this.hubService.pending = false;
+    });
+    this.hubService.responsePokeCenter((player) => {
+      if(this.turnType !== "") this.hubService.getCurrentUser()
+      this.turnType = "PokeCenter";
       this.hubService.pending = false;
     });
     this.hubService.getWildFight();

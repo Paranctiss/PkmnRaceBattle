@@ -19,13 +19,15 @@ export class HubService {
     team: [],
     roomId: "",
     isHost: false,
+    isPlayer: false,
+    isTrainer: false,
     name:"",
     sprite:"",
     credits: 0,
     items: []
   }
 
-  constructor(private signalRService: SignalRService, private http: HttpClient) {}
+  constructor(public signalRService: SignalRService, private http: HttpClient) {}
 
   joinGame(userName: string, starterId:number, trainerSprite:string, roomCode: string) {
     this.signalRService.connection.invoke('JoinGame', userName, starterId, trainerSprite, roomCode).catch(err => console.error(err));
@@ -76,8 +78,8 @@ export class HubService {
     this.signalRService.connection.on('GameStarted', callback);
   }
 
-  getNewTurn(userId:string) {
-    this.signalRService.connection.invoke('GetNewTurn', userId).catch(err => console.error(err));
+  getNewTurn() {
+    this.signalRService.connection.invoke('GetNewTurn', this.userId).catch(err => console.error(err));
   }
 
   onNewTurn(callback:(turnType:string) => void) {
@@ -85,22 +87,42 @@ export class HubService {
   }
 
   getWildFight() {
-    this.signalRService.connection.invoke('GetWildFight', this.userId).catch(err => console.error(err));
+    this.signalRService.connection.invoke('GetNewTurn', this.userId).catch(err => console.error(err));
   }
 
-  responseWildFight(callback:(responsePokemon:PokemonTeamModel) => void) {
+  onTrainerSwitchPokemon(callback:(responseTrainer:PlayerModel) => void) {
+    this.signalRService.connection.on('onTrainerSwitchPokemon', callback);
+  }
+
+  responseWildFight(callback:(responsePokemon:PlayerModel) => void) {
     this.signalRService.connection.on('responseWildFight', callback);
   }
 
-  useMove(playerPokemonId:string, usedMoveName:string, wildPokemonId:string, isAttacking:boolean) {
-    this.signalRService.connection.invoke('UseMove', this.userId, playerPokemonId, usedMoveName, wildPokemonId, isAttacking).catch(err => console.error(err));
+  responseTrainerFight(callback:(responsePokemon:PlayerModel) => void) {
+    this.signalRService.connection.on('responseTrainerFight', callback);
+  }
+
+  responsePokeCenter(callback:(responsePokemon:PlayerModel) => void) {
+    this.signalRService.connection.on('responsePokeCenter', callback);
+  }
+
+  healedPokeCenter(callback:(responsePokemon:PlayerModel) => void) {
+    this.signalRService.connection.on('healedPokeCenter', callback);
+  }
+
+  usePokeCenter(){
+    this.signalRService.connection.invoke('UsePokeCenter', this.userId).catch(err => console.error(err));
+  }
+
+  useMove(playerPokemonId:string, usedMoveName:string, wildOpponentId:string, wildPokemonId:string, isAttacking:boolean) {
+    this.signalRService.connection.invoke('UseMove', this.userId, playerPokemonId, usedMoveName, wildOpponentId, wildPokemonId, isAttacking).catch(err => console.error(err));
   }
 
   onUseMoveResponse(callback:(turnContext:TurnContextModel) => void) {
     this.signalRService.connection.on('useMoveResult', callback);
   }
 
-  onTurnFinished(callback: (updatedPlayer:PlayerModel, wildPokemon:PokemonTeamModel) => void) {
+  onTurnFinished(callback: (updatedPlayer:PlayerModel, wildOpponent:PlayerModel) => void) {
     this.signalRService.connection.on('turnFinished', callback);
   }
 
@@ -112,12 +134,12 @@ export class HubService {
     this.signalRService.connection.on('catchResult', callback);
   }
 
-  onCaughtPokemon(callback:(pokemon:PokemonTeamModel) => void) {
+  onCaughtPokemon(callback:(opponent:PlayerModel) => void) {
     this.signalRService.connection.on('caughtPokemon', callback);
   }
 
-  addPokemonToTeam(wildPokemonId:string, index:number = 0){
-    this.signalRService.connection.invoke('AddPokemonToTeam', this.userId, wildPokemonId, index).catch(err => console.error(err));
+  addPokemonToTeam(opponentId:string, index:number = 0){
+    this.signalRService.connection.invoke('AddPokemonToTeam', this.userId, opponentId, index).catch(err => console.error(err));
   }
 
   finishFight(wildPokemonId:string){
@@ -136,8 +158,8 @@ export class HubService {
     this.signalRService.connection.on('pokemonLevelUp', callback);
   }
 
-  replacePokemon(pokemonId:string, wildPokemonId:string){
-    this.signalRService.connection.invoke('ReplacePokemon', this.userId, pokemonId, wildPokemonId).catch(err => console.error(err));
+  replacePokemon(pokemonId:string, wildOpponentId:string){
+    this.signalRService.connection.invoke('ReplacePokemon', this.userId, pokemonId, wildOpponentId).catch(err => console.error(err));
   }
 
   onReplacePokemon(callback:(pokemon:PokemonTeamModel, message:string) => void) {

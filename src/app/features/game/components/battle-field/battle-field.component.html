@@ -6,7 +6,7 @@
   <div class="replace-pokemon" *ngIf="openReplacePokemon">
     <h1 class="close-replace-pokemon" (click)="openReplacePokemon=false">X</h1>
     <div class="replace-pokemon-card-container">
-      <div *ngFor="let pokemon of this.hubService.Player.team" class="replacePokemonCard" (click)="replacePokemon(pokemon)">
+      <div *ngFor="let pokemon of this.hubService.Player.team; let i = index" class="replacePokemonCard" (click)="replacePokemon(pokemon, i)">
         <p>Lvl.{{pokemon.level}} {{pokemon.nameFr}}</p>
         <img src="{{pokemon.frontSprite}}" [ngStyle]="{'filter': pokemon.currHp <= 0 ? 'grayscale(1)' : 'none'}" />
       </div>
@@ -25,8 +25,13 @@
       <div *ngFor="let item of logs" class="item">{{ item }}</div>
     </div>
   </div>
-
   <div class="flexRight">
+       <div *ngIf="Opponent.isTrainer">
+         <img style="width: 150px" src="assets/trainers-sprites/{{Opponent.sprite}}.png">
+         <div>
+           <img *ngFor="let team of Opponent.team" src="assets/balls-sprites/Pokeball.webp" [ngStyle]="{'filter': team.currHp <= 0 ? 'grayscale(1)' : 'none'}">
+         </div>
+       </div>
     <div class="oppositeSide">
       <h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>
       <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
@@ -39,6 +44,7 @@
       <p *ngIf="OppositePokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
       <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
     </div>
+
   </div>
 
 
@@ -66,9 +72,9 @@
     <p>{{PlayerPokemon.xpFromLastLvl}} / {{PlayerPokemon.currXP}} / {{PlayerPokemon.xpForNextLvl}}</p>
   </div>
   <div *ngIf="!this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && PlayerPokemon.waitingMove === null">
+    <p>{{this.hubService.Player.credits}} PokéDollz</p>
     <app-pokemon-moves [PokemonMoves]="PlayerPokemon.moves" [DisabledMoves]="PlayerPokemon.cantUseMoves" (PokemonMovesChange)="useMove($event)"></app-pokemon-moves>
     <app-bag-item *ngFor="let item of hubService.Player.items" (click)="itemClicked(item)"  [item]="item" />
-    <p>{{this.hubService.Player.credits}} PokéDollz</p>
     <button (click)="openReplacePokemon=true">Changer Pokémon</button>
   </div>
   <div *ngIf="PlayerPokemon.waitingMove !== null">

@@ -1,0 +1,83 @@
+.container{
+  background-image: url('https://media.sketchfab.com/models/c497ebb33ca343a6a4cc4ab685b9235c/thumbnails/c162e2d47ab1404ea780c4c10d38c855/bd2319e29f174c789f43e0cedf775948.jpeg');
+  background-size: cover;
+  height: 70vh;
+  width: 50vw;
+  text-align: center;
+  margin-left: 15%;
+  padding-top: 1%;
+}
+p{
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 10px;
+  padding-top: 0;
+}
+
+.text{
+  padding: 20px;
+  margin-left: 5%;
+  margin-right: 5%;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+}
+
+.pokeContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pkmnCard{
+  border: black solid 1px;
+  margin: 20px;
+  padding: 20px;
+  width: 25%;
+  box-sizing: border-box;
+}
+
+.pokeName{
+  color: white;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+}
+
+.ailments{
+  display: flex;
+  flex-direction: row;
+}
+
+.ailmentCard{
+  padding: 0;
+  color: white;
+  width: 40px;
+  text-align: center;
+  margin: 0 5px 0 0;
+}
+
+.fakeAilment{
+  height: 8px;
+}
+
+.brulure {
+  background: firebrick;
+}
+
+.paralysie{
+  background: darkgoldenrod;
+}
+
+.poison{
+  background: indigo;
+}
+
+.gel{
+  background: #04b0ff;
+}
+
+.sleep{
+  background: darkslategray;
+}

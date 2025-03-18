@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, Output, SimpleChanges, OnDestroy} from '@angular/core';
 import {
   BagItemModel,
   PlayerModel,
@@ -30,8 +30,9 @@ import {PokemonMoveBaseModel} from '../../../../shared/models/pokemon-base.model
   templateUrl: './battle-field.component.html',
   styleUrl: './battle-field.component.css'
 })
-export class BattleFieldComponent {
+export class BattleFieldComponent implements OnDestroy {
   @Input() OppositePokemon!: PokemonTeamModel;
+  @Input() Opponent!:PlayerModel;
   @Input() PlayerPokemon!: PokemonTeamModel;
   @Input() TurnContext!: TurnContextModel;
   @Output() UsingMove: EventEmitter<PokemonTeamMoveModel> = new EventEmitter();
@@ -43,25 +44,31 @@ export class BattleFieldComponent {
   catchValue: number | null = null;
   isAnimating:boolean = false;
   openReplacePokemon: boolean = false;
+  waitForReplaceByWildPokemon: boolean = false;
   openLearnMove:boolean = false;
   logs:string[] = [];
   movesToLearn:PokemonMoveBaseModel[][] = [];
   pokemonWantToLearn:PokemonTeamModel[] = [];
+
+  // Add this to keep track of the event names we've subscribed to
+  private signalREventNames: string[] = [];
+
   constructor(public hubService:HubService) {
   }
 
   ngOnInit(){
-    this.hubService.onLaunchBall((pokeballName, turnContext) => {
+    // Register event handlers but track them so we can remove them later
+    this.registerSignalREvent('launchBall', (pokeballName, turnContext) => {
       this.TurnContext = turnContext;
       this.catchingBall = pokeballName;
-    })
+    });
 
-    this.hubService.onCatchResult((catchValue:number) => {
-        this.catchValue = catchValue;
-        this.startBallAnimation();
-    })
+    this.registerSignalREvent('catchResult', (catchValue:number) => {
+      this.catchValue = catchValue;
+      this.startBallAnimation();
+    });
 
-    this.hubService.onPokemonLevelUp((message, pokemon, movesToLearn) => {
+    this.registerSignalREvent('pokemonLevelUp', (message, pokemon, movesToLearn) => {
       if(message.includes("|")){
         var messages = message.split("|");
         this.TurnContext.messages = messages;
@@ -69,48 +76,59 @@ export class BattleFieldComponent {
       }else{
         this.displayMessage(message);
       }
-      console.log(movesToLearn)
-      console.log(movesToLearn.length)
       if(movesToLearn.length > 0){
         this.pokemonWantToLearn.push(pokemon);
         this.movesToLearn.push(movesToLearn);
         this.openLearnMove = true;
         this.hubService.pending = true;
       }
-    })
+    });
 
-    this.hubService.onLearnedMove(player => {
+    this.registerSignalREvent('moveLearned', player => {
       this.hubService.Player = player;
       this.PlayerPokemon = player.team[0]
       this.DismissLearn();
-    })
+    });
 
-    this.hubService.onCaughtPokemon(caughtPokemon => {
-        if(this.hubService.Player.team.length <= 6){
-          this.addPokemonToTeam(caughtPokemon);
-        }else{
-          this.openReplacePokemon = true;
-        }
-    })
+    this.registerSignalREvent('caughtPokemon', caughtPokemon => {
+      if(this.hubService.Player.team.length < 6){
+        this.addPokemonToTeam(caughtPokemon);
+      }else{
+        this.openReplacePokemon = true;
+        this.waitForReplaceByWildPokemon = true;
+      }
+    });
 
-    this.hubService.onPlayerPokemonDeath(message => {
+    this.registerSignalREvent('playerPokemonDeath', message => {
       this.hubService.pending = true;
       this.displayMessage(message)
       timer(1000).pipe(take(1)).subscribe(() => {
         this.openReplacePokemon = true;
       });
-    })
+    });
 
-    this.hubService.onPlayerLooseFight(message => {
+    this.registerSignalREvent('playerLooseFight', message => {
       this.hubService.pending = true;
       this.displayMessage(message);
-    })
+    });
 
-    this.hubService.onReplacePokemon((pokemon, message) => {
+    this.registerSignalREvent('swapPokemon', (pokemon, message) => {
       this.PlayerPokemon = pokemon;
       this.displayMessage(message);
-    })
+    });
+  }
 
+  // Helper method to register SignalR events and track them
+  private registerSignalREvent(eventName: string, callback: (...args: any[]) => void): void {
+    this.signalREventNames.push(eventName);
+    this.hubService.signalRService.connection.on(eventName, callback);
+  }
+
+  ngOnDestroy(): void {
+    // Remove all SignalR event handlers when component is destroyed
+    this.signalREventNames.forEach(eventName => {
+      this.hubService.signalRService.connection.off(eventName);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -230,7 +248,6 @@ export class BattleFieldComponent {
     }else{
       nbTilt = 3;
     }
-    console.log("Trying to catch with value : " + this.catchValue);
     this.isAnimating = true;
     const delayBetweenShakes = 1000;
     for (let i = 0; i < nbTilt; i++) {
@@ -254,12 +271,12 @@ export class BattleFieldComponent {
   }
 
   displayMessage(message:string){
-      this.currentMessage = message;
-      this.logs.unshift(this.currentMessage)
+    this.currentMessage = message;
+    this.logs.unshift(this.currentMessage)
     timer(2000).pipe(take(1)).subscribe(() => {
       this.currentMessage = null;
     });
-}
+  }
 
   applyTiltAnimation(direction: 'left' | 'right') {
     const pokeballElement = document.querySelector('.ballImg') as HTMLElement;
@@ -270,11 +287,11 @@ export class BattleFieldComponent {
     }
   }
 
-  addPokemonToTeam(pokemon:PokemonTeamModel, index:number = 0){
-      this.hubService.addPokemonToTeam(pokemon.id, index)
-      this.displayMessage(pokemon.nameFr + " a été ajouté à l'équipe !")
-      this.catchValue = 0;
-      this.catchingBall = "";
+  addPokemonToTeam(opponent:PlayerModel, index:number = -1){
+    this.hubService.addPokemonToTeam(opponent._id, index)
+    this.displayMessage(opponent.team[0].nameFr + " a été ajouté à l'équipe !")
+    this.catchValue = 0;
+    this.catchingBall = "";
   }
 
   useMove($event: PokemonTeamMoveModel) {
@@ -284,20 +301,23 @@ export class BattleFieldComponent {
   itemClicked(item:BagItemModel) {
     if(item.number > 0){
       this.hubService.pending = true;
-      item.number--;
-      this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name, this.OppositePokemon.id, true)
+      this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name, this.Opponent._id, this.OppositePokemon.id, true)
     }else{
       this.displayMessage("T'as plus de " + item.name + " t'es con ou quoi" )
     }
-
   }
 
-  replacePokemon(pokemon: PokemonTeamModel) {
+  replacePokemon(pokemon: PokemonTeamModel, index:number) {
+    if(!this.waitForReplaceByWildPokemon){
       if(this.hubService.Player.team[0].id !== pokemon.id && pokemon.currHp > 0){
         this.openReplacePokemon = false;
         this.hubService.pending = true;
-        this.hubService.replacePokemon(pokemon.id, this.OppositePokemon.id)
+        this.hubService.replacePokemon(pokemon.id, this.Opponent._id)
       }
+    }else{
+      this.openReplacePokemon = false;
+      this.addPokemonToTeam(this.Opponent, index)
+    }
   }
 
   ReplaceMoveBy(oldMoveId:number, newMoveId: number, pokemonId:string) {

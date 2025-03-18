@@ -22,15 +22,12 @@ export class PokemonMovesComponent {
   constructor(private hubService: HubService) {}
 
   onMouseEnter(move: PokemonTeamMoveModel) {
-    console.log("Mouse Enter");
     this.hoverTimeout = setTimeout(() => {
-      console.log("hovered true");
       move.isHovered = true;
     }, 500);
   }
 
   onMouseLeave(move: PokemonTeamMoveModel) {
-    console.log("Mouse leave");
     clearTimeout(this.hoverTimeout);
     move.isHovered = false;
   }

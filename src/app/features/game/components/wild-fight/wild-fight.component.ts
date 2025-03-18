@@ -15,8 +15,7 @@ import {resolve} from '@angular/compiler-cli';
   styleUrl: './wild-fight.component.css'
 })
 export class WildFightComponent {
-  @Input() PokemonFoe!: PokemonTeamModel;
-  @Output() FoeIsDead = new EventEmitter<void>();
+  @Input() Foe!: PlayerModel;
   TurnConext!:TurnContextModel;
   OnBoardPokemon!:PokemonTeamModel;
   constructor(private hubService: HubService) {
@@ -30,12 +29,15 @@ export class WildFightComponent {
     this.hubService.onUseMoveResponse((turnContext:TurnContextModel) => {
         this.TurnConext = turnContext;
     });
-    this.hubService.onTurnFinished((updatedPlayer:PlayerModel, wildPokemon:PokemonTeamModel) => {
+    this.hubService.onTurnFinished((updatedPlayer:PlayerModel, updatedOpponent:PlayerModel) => {
       this.hubService.Player = updatedPlayer;
-      console.log(this.hubService.Player);
       this.OnBoardPokemon = updatedPlayer.team[0]
-      this.PokemonFoe = wildPokemon;
+      this.Foe = updatedOpponent;
       this.hubService.pending=false;
+    })
+    this.hubService.onTrainerSwitchPokemon(response => {
+      this.Foe = response;
+      this.hubService.pending = false;
     })
   }
 
@@ -46,7 +48,8 @@ export class WildFightComponent {
 
   useMove(move: PokemonTeamMoveModel) {
     this.hubService.pending = true;
-    this.hubService.useMove(this.OnBoardPokemon.id, move.nameFr, this.PokemonFoe.id, true)
+    console.log(this.Foe.team[0].nameFr)
+    this.hubService.useMove(this.OnBoardPokemon.id, move.nameFr, this.Foe._id, this.Foe.team[0].id, true)
   }
 
 }

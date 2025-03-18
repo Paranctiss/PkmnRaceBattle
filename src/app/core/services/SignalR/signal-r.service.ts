@@ -11,8 +11,8 @@ export class SignalRService {
 
   constructor(private http: HttpClient) {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:7200/gameHub', {
-      //.withUrl('http://57.129.71.128:5000/gameHub', {
+      //.withUrl('http://localhost:7200/gameHub', {
+      .withUrl('http://57.129.71.128:5000/gameHub', {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets
       })
