@@ -6,6 +6,7 @@ import {PlayerModel, PokemonTeamModel} from '../../shared/models/player.model';
 import {MyTeamComponent} from './components/my-team/my-team.component';
 import {TrainerFightComponent} from './components/trainer-fight/trainer-fight.component';
 import {PokeCenterComponent} from './components/poke-center/poke-center.component';
+import {PokeShopComponent} from './components/poke-shop/poke-shop.component';
 
 @Component({
   selector: 'app-game',
@@ -15,6 +16,7 @@ import {PokeCenterComponent} from './components/poke-center/poke-center.componen
     MyTeamComponent,
     TrainerFightComponent,
     PokeCenterComponent,
+    PokeShopComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -51,6 +53,11 @@ export class GameComponent {
     this.hubService.responsePokeCenter((player) => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.turnType = "PokeCenter";
+      this.hubService.pending = false;
+    });
+    this.hubService.responsePokeShop(() => {
+      if(this.turnType !== "") this.hubService.getCurrentUser()
+      this.turnType = "PokeShop";
       this.hubService.pending = false;
     });
     this.hubService.getWildFight();

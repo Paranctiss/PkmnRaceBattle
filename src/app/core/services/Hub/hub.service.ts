@@ -106,6 +106,10 @@ export class HubService {
     this.signalRService.connection.on('responsePokeCenter', callback);
   }
 
+  responsePokeShop(callback:() => void) {
+    this.signalRService.connection.on('responsePokeShop', callback);
+  }
+
   healedPokeCenter(callback:(responsePokemon:PlayerModel) => void) {
     this.signalRService.connection.on('healedPokeCenter', callback);
   }
@@ -114,12 +118,23 @@ export class HubService {
     this.signalRService.connection.invoke('UsePokeCenter', this.userId).catch(err => console.error(err));
   }
 
-  useMove(playerPokemonId:string, usedMoveName:string, wildOpponentId:string, wildPokemonId:string, isAttacking:boolean) {
-    this.signalRService.connection.invoke('UseMove', this.userId, playerPokemonId, usedMoveName, wildOpponentId, wildPokemonId, isAttacking).catch(err => console.error(err));
+  buyItem(itemName:string){
+    this.signalRService.connection.invoke('BuyItem', this.userId, itemName).catch(err => console.error(err));
+  }
+
+  onBuyItemResponse(callback:(message:string, player:PlayerModel) => void) {
+    this.signalRService.connection.on('onBuyItemResponse', callback);
+  }
+
+  useMove(playerPokemonId:string, usedMoveName:string, wildOpponentId:string, wildPokemonId:string, isAttacking:boolean, index:number = 0, skipTurn=false) {
+    this.signalRService.connection.invoke('UseMove', this.userId, playerPokemonId, usedMoveName, wildOpponentId, wildPokemonId, isAttacking, index, skipTurn).catch(err => console.error(err));
   }
 
   onUseMoveResponse(callback:(turnContext:TurnContextModel) => void) {
     this.signalRService.connection.on('useMoveResult', callback);
+  }
+  onUseItemResponse(callback: (turnContext: TurnContextModel, index:number) => void) {
+    this.signalRService.connection.on('useItemResult', callback);
   }
 
   onTurnFinished(callback: (updatedPlayer:PlayerModel, wildOpponent:PlayerModel) => void) {

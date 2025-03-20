@@ -12,6 +12,7 @@
   position: relative;
   margin-left: 10px;
   overflow: visible; /* Permet à la info-box de déborder */
+  width: 25%;
 }
 
 .pokemonMove {
@@ -21,6 +22,7 @@
   color: white;
   border-radius: 3px;
   cursor: pointer;
+
 }
 
 .pokemonMove:hover {

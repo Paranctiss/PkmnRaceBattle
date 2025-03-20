@@ -1,0 +1,12 @@
+.bagItem:hover{
+  cursor:pointer;
+}
+
+img{
+  width: 100px;
+}
+
+p{
+  font-size: 1rem;
+  text-align: center;
+}

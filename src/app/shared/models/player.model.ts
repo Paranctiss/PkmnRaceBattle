@@ -50,11 +50,13 @@ export interface PokemonTeamModel{
   moves:PokemonTeamMoveModel[];
   cantUseMoves:string[];
   substitute:PokemonTeamModel;
+  evolutionDetails:EvolutionDetailModel[];
 }
 
 export interface BagItemModel {
   name:string;
   number:number;
+  type:string;
 }
 
 export interface PokemonTeamMoveModel {
@@ -81,4 +83,11 @@ export interface MoveStatsChangeModel {
 export interface PokemonTypeModel{
   slot:number;
   name:string;
+}
+
+export interface EvolutionDetailModel{
+  pokemonName?:string;
+  minLevel?:number;
+  evolutionTrigger?:string;
+  item?:string;
 }

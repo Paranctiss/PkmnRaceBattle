@@ -1,80 +1,117 @@
 <div class="pageContent">
-
-  <div class="message-container" *ngIf="currentMessage">
-    {{ currentMessage }}
-  </div>
-  <div class="replace-pokemon" *ngIf="openReplacePokemon">
-    <h1 class="close-replace-pokemon" (click)="openReplacePokemon=false">X</h1>
-    <div class="replace-pokemon-card-container">
-      <div *ngFor="let pokemon of this.hubService.Player.team; let i = index" class="replacePokemonCard" (click)="replacePokemon(pokemon, i)">
-        <p>Lvl.{{pokemon.level}} {{pokemon.nameFr}}</p>
-        <img src="{{pokemon.frontSprite}}" [ngStyle]="{'filter': pokemon.currHp <= 0 ? 'grayscale(1)' : 'none'}" />
+  <div class="battleField">
+    <div class="message-container" *ngIf="currentMessage">
+      {{ currentMessage }}
+    </div>
+    <div class="replace-pokemon" *ngIf="openReplacePokemon">
+      <h1 class="close-replace-pokemon" (click)="CloseReplacePokemon()">X</h1>
+      <div class="replace-pokemon-card-container">
+        <div *ngFor="let pokemon of this.hubService.Player.team; let i = index" class="replacePokemonCard" (click)="replacePokemon(pokemon, i)"
+             [ngStyle]="{'filter': canEvolveWithItem(pokemon, itemToUse) ? 'none' : 'grayscale(1)'}">
+          <p>Lvl.{{pokemon.level}} {{pokemon.nameFr}}</p>
+          <img src="{{pokemon.frontSprite}}" [ngStyle]="{'filter': pokemon.currHp <= 0 ? 'grayscale(1)' : 'none'}" />
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="learn-move" *ngIf="openLearnMove">
-    <h4>{{pokemonWantToLearn[0].nameFr}} veut apprendre {{movesToLearn[0][0].nameFr}}</h4>
-    <p>Par quelle capacité voulez vous le remplacer ?</p>
-    <div *ngFor="let move of pokemonWantToLearn[0].moves" class="moveToLearn" (click)="ReplaceMoveBy(move.id, movesToLearn[0][0].id, pokemonWantToLearn[0].id)"> {{move.nameFr}} </div>
-    <div (click)="DismissLearn()">{{movesToLearn[0][0].nameFr}}</div>
-  </div>
-
-  <div class="scrollable-box">
-    <div class="content">
-      <div *ngFor="let item of logs" class="item">{{ item }}</div>
+    <div class="opened-bag" *ngIf="openBag">
+      <h1 class="close-replace-pokemon" (click)="openBag=false">X</h1>
+      <div class="item-bag-card-container">
+        <div *ngFor="let item of this.balls;" (click)="itemClicked(item)"  class="itemBagCard">
+          <app-bag-item [item]="item"></app-bag-item>
+        </div>
+      </div>
+      <div class="item-bag-card-container">
+        <div *ngFor="let item of this.potions;" (click)="itemClicked(item)"  class="itemBagCard">
+          <app-bag-item [item]="item"></app-bag-item>
+        </div>
+      </div>
+      <div class="item-bag-card-container">
+        <div *ngFor="let item of this.ailments;" (click)="itemClicked(item)"  class="itemBagCard">
+          <app-bag-item [item]="item"></app-bag-item>
+        </div>
+      </div>
+      <div class="item-bag-card-container">
+        <div *ngFor="let item of this.specials;" (click)="itemClicked(item)"  class="itemBagCard">
+          <app-bag-item [item]="item"></app-bag-item>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="flexRight">
-       <div *ngIf="Opponent.isTrainer">
-         <img style="width: 150px" src="assets/trainers-sprites/{{Opponent.sprite}}.png">
-         <div>
-           <img *ngFor="let team of Opponent.team" src="assets/balls-sprites/Pokeball.webp" [ngStyle]="{'filter': team.currHp <= 0 ? 'grayscale(1)' : 'none'}">
+
+    <div class="learn-move" *ngIf="openLearnMove">
+      <h4>{{pokemonWantToLearn[0].nameFr}} veut apprendre {{movesToLearn[0][0].nameFr}}</h4>
+      <p>Par quelle capacité voulez vous le remplacer ?</p>
+      <div *ngFor="let move of pokemonWantToLearn[0].moves" class="moveToLearn" (click)="ReplaceMoveBy(move.id, movesToLearn[0][0].id, pokemonWantToLearn[0].id)"> {{move.nameFr}} </div>
+      <div (click)="DismissLearn()">{{movesToLearn[0][0].nameFr}}</div>
+    </div>
+
+    <div class="scrollable-box">
+      <div class="content">
+        <div *ngFor="let item of logs" class="item">{{ item }}</div>
+      </div>
+    </div>
+    <div class="flexRight">
+         <div *ngIf="Opponent.isTrainer">
+           <img style="width: 150px" src="assets/trainers-sprites/{{Opponent.sprite}}.png">
+           <div>
+             <img *ngFor="let team of Opponent.team" src="assets/balls-sprites/Pokeball.webp" [ngStyle]="{'filter': team.currHp <= 0 ? 'grayscale(1)' : 'none'}">
+           </div>
          </div>
-       </div>
-    <div class="oppositeSide">
-      <h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>
-      <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
-      <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{catchingBall}}.webp" alt="oppositePokemon">
-      <app-stats-changes [Pokemon]="OppositePokemon" />
-      <p *ngIf="OppositePokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
-      <p *ngIf="OppositePokemon.isBurning" class="ailmentCard brulure">BRU</p>
-      <p *ngIf="OppositePokemon.isPoisoned" class="ailmentCard poison">PSN</p>
-      <p *ngIf="OppositePokemon.isFrozen" class="ailmentCard gel">GEL</p>
-      <p *ngIf="OppositePokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
-      <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
+      <div class="oppositeSide">
+        <h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>
+        <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
+        <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{catchingBall}}.webp" alt="oppositePokemon">
+        <app-stats-changes [Pokemon]="OppositePokemon" />
+        <p *ngIf="OppositePokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
+        <p *ngIf="OppositePokemon.isBurning" class="ailmentCard brulure">BRU</p>
+        <p *ngIf="OppositePokemon.isPoisoned" class="ailmentCard poison">PSN</p>
+        <p *ngIf="OppositePokemon.isFrozen" class="ailmentCard gel">GEL</p>
+        <p *ngIf="OppositePokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
+        <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
+      </div>
+
     </div>
 
-  </div>
 
-
-  <div class="playerSide">
-    <div *ngIf="PlayerPokemon.substitute !== null">
-      <img class="pokemonImg" src="{{PlayerPokemon.substitute.backSprite}}" alt="playerPokemon">
-      <app-stats-changes [Pokemon]="PlayerPokemon.substitute" />
-      <app-hp-bar [CurrHP]="PlayerPokemon.substitute.currHp" [BaseHP]="PlayerPokemon.substitute.baseHp" ></app-hp-bar>
-      <p *ngIf="PlayerPokemon.substitute.isParalyzed" class="ailmentCard paralysie">PAR</p>
-      <p *ngIf="PlayerPokemon.substitute.isBurning" class="ailmentCard brulure">BRU</p>
-      <p *ngIf="PlayerPokemon.substitute.isPoisoned" class="ailmentCard poison">PSN</p>
-      <p *ngIf="PlayerPokemon.substitute.isFrozen" class="ailmentCard gel">GEL</p>
-      <p *ngIf="PlayerPokemon.substitute.isSleeping > 0" class="ailmentCard sleep">DOR</p>
+    <div class="playerSide">
+      <div *ngIf="PlayerPokemon.substitute !== null">
+        <img class="pokemonImg" src="{{PlayerPokemon.substitute.backSprite}}" alt="playerPokemon">
+        <app-stats-changes [Pokemon]="PlayerPokemon.substitute" />
+        <app-hp-bar [CurrHP]="PlayerPokemon.substitute.currHp" [BaseHP]="PlayerPokemon.substitute.baseHp" ></app-hp-bar>
+        <p *ngIf="PlayerPokemon.substitute.isParalyzed" class="ailmentCard paralysie">PAR</p>
+        <p *ngIf="PlayerPokemon.substitute.isBurning" class="ailmentCard brulure">BRU</p>
+        <p *ngIf="PlayerPokemon.substitute.isPoisoned" class="ailmentCard poison">PSN</p>
+        <p *ngIf="PlayerPokemon.substitute.isFrozen" class="ailmentCard gel">GEL</p>
+        <p *ngIf="PlayerPokemon.substitute.isSleeping > 0" class="ailmentCard sleep">DOR</p>
+      </div>
+      <div *ngIf="PlayerPokemon.substitute === null">
+        <img *ngIf="PlayerPokemon.untargetable === null" class="pokemonImg" src="{{PlayerPokemon.backSprite}}" alt="playerPokemon">
+        <app-stats-changes [Pokemon]="PlayerPokemon" />
+        <app-hp-bar [CurrHP]="PlayerPokemon.currHp" [BaseHP]="PlayerPokemon.baseHp" ></app-hp-bar>
+        <p *ngIf="PlayerPokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
+        <p *ngIf="PlayerPokemon.isBurning" class="ailmentCard brulure">BRU</p>
+        <p *ngIf="PlayerPokemon.isPoisoned" class="ailmentCard poison">PSN</p>
+        <p *ngIf="PlayerPokemon.isFrozen" class="ailmentCard gel">GEL</p>
+        <p *ngIf="PlayerPokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
+      </div>
+      <app-exp-bar [BaseExp]="PlayerPokemon.xpFromLastLvl" [CurrExp]="PlayerPokemon.currXP" [NextLevelExp]="PlayerPokemon.xpForNextLvl" ></app-exp-bar>
     </div>
-    <div *ngIf="PlayerPokemon.substitute === null">
-      <img *ngIf="PlayerPokemon.untargetable === null" class="pokemonImg" src="{{PlayerPokemon.backSprite}}" alt="playerPokemon">
-      <app-stats-changes [Pokemon]="PlayerPokemon" />
-      <app-hp-bar [CurrHP]="PlayerPokemon.currHp" [BaseHP]="PlayerPokemon.baseHp" ></app-hp-bar>
-      <p *ngIf="PlayerPokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
-      <p *ngIf="PlayerPokemon.isBurning" class="ailmentCard brulure">BRU</p>
-      <p *ngIf="PlayerPokemon.isPoisoned" class="ailmentCard poison">PSN</p>
-      <p *ngIf="PlayerPokemon.isFrozen" class="ailmentCard gel">GEL</p>
-      <p *ngIf="PlayerPokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
-    </div>
-    <p>{{PlayerPokemon.xpFromLastLvl}} / {{PlayerPokemon.currXP}} / {{PlayerPokemon.xpForNextLvl}}</p>
   </div>
   <div *ngIf="!this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && PlayerPokemon.waitingMove === null">
     <p>{{this.hubService.Player.credits}} PokéDollz</p>
-    <app-pokemon-moves [PokemonMoves]="PlayerPokemon.moves" [DisabledMoves]="PlayerPokemon.cantUseMoves" (PokemonMovesChange)="useMove($event)"></app-pokemon-moves>
-    <app-bag-item *ngFor="let item of hubService.Player.items" (click)="itemClicked(item)"  [item]="item" />
+    <div class="actionBar">
+      <div class="movesActions">
+        <app-pokemon-moves [PokemonMoves]="PlayerPokemon.moves" [DisabledMoves]="PlayerPokemon.cantUseMoves" (PokemonMovesChange)="useMove($event)"></app-pokemon-moves>
+      </div>
+      <div class="otherActions">
+        <div class="bag" (mouseenter)="bagHovered=true" (mouseleave)="bagHovered=false" (click)="openBagDialog()">
+          <img src="assets/items-sprites/Sac.png" *ngIf="!bagHovered">
+          <img src="assets/items-sprites/Sac_Open.png" *ngIf="bagHovered">
+        </div>
+
+      </div>
+
+    </div>
     <button (click)="openReplacePokemon=true">Changer Pokémon</button>
   </div>
   <div *ngIf="PlayerPokemon.waitingMove !== null">

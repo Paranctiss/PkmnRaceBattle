@@ -27,7 +27,13 @@ export class WildFightComponent {
       this.OnBoardPokemon = response.team[0]
     })
     this.hubService.onUseMoveResponse((turnContext:TurnContextModel) => {
-        this.TurnConext = turnContext;
+      console.log(turnContext);
+      this.TurnConext = turnContext;
+      this.TurnConext.player.index = 0;
+    });
+    this.hubService.onUseItemResponse((turnContext:TurnContextModel, index) => {
+      this.TurnConext = turnContext;
+      this.TurnConext.player.index = index;
     });
     this.hubService.onTurnFinished((updatedPlayer:PlayerModel, updatedOpponent:PlayerModel) => {
       this.hubService.Player = updatedPlayer;

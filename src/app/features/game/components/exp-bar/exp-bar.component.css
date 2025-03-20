@@ -1,0 +1,17 @@
+.expBar {
+  margin-top: 5px;
+  background-color: whitesmoke;
+  position: relative;
+  height: 10px;
+  width: 100%;
+  border-radius: 5px;
+  box-shadow: 0 0 2px 0px #000;
+}
+
+.bar {
+  height: 100%;
+  transition: width 0.5s ease-in-out;
+  background-color: #29caff;
+  position: relative;
+  border-radius: 5px;
+}

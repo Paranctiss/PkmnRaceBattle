@@ -1,1 +1,4 @@
-<button>{{item.name}} ({{item.number}})</button>
+<div class="bagItem" xmlns="http://www.w3.org/1999/html">
+  <img src="assets/items-sprites/{{item.name.replace(' ', '_')}}.png" [ngStyle]="{'filter': item.number <= 0 ? 'grayscale(1)' : 'none'}" >
+  <p>{{item.name}} <br> <b *ngIf="item.number > 0">({{item.number}})</b></p>
+</div>
