@@ -1,0 +1,52 @@
+<div class="message-container" *ngIf="currentMessage">
+  {{ currentMessage }}
+</div>
+<div class="opened-bag" *ngIf="openBag">
+  <h1 class="close-replace-pokemon" (click)="openBag=false">X</h1>
+  <div class="item-bag-card-container">
+    <div *ngFor="let item of this.balls;" class="itemBagCard">
+      <app-bag-item [item]="item"></app-bag-item>
+    </div>
+  </div>
+  <div class="item-bag-card-container">
+    <div *ngFor="let item of this.potions;" class="itemBagCard">
+      <app-bag-item [item]="item"></app-bag-item>
+    </div>
+  </div>
+  <div class="item-bag-card-container">
+    <div *ngFor="let item of this.ailments;" class="itemBagCard">
+      <app-bag-item [item]="item"></app-bag-item>
+    </div>
+  </div>
+  <div class="item-bag-card-container">
+    <div *ngFor="let item of this.specials;" class="itemBagCard">
+      <app-bag-item [item]="item"></app-bag-item>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div>
+    <p>Crédits : {{this.hubService.Player.credits}} <img src="assets/items-sprites/credits.png"> </p>
+    <div class="shop">
+      <div class="text">
+        <h1>Boutique Pokémon</h1>
+      </div>
+      <div class="objContainer">
+        <div class="objCard" *ngFor="let item of this.items" (click)="buyItem(item)">
+          <div class="objName" [ngStyle]="{'filter': this.hubService.Player.credits < item.price ? 'grayscale(1)' : 'none'}">
+            <img src="assets/items-sprites/{{item.name.replace(' ', '_')}}.png" class="objImg">
+            <p>{{item.name}}</p>
+            <p>{{item.price}} <img src="assets/items-sprites/credits.png"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bag" (mouseenter)="bagHovered=true" (mouseleave)="bagHovered=false" (click)="openBagDialog()">
+    <img src="assets/items-sprites/Sac.png" *ngIf="!bagHovered">
+    <img src="assets/items-sprites/Sac_Open.png" *ngIf="bagHovered">
+  </div>
+  <div class="exitIcon" (click)="nextTurn()">
+    <img src="assets/items-sprites/exit.png">
+  </div>
+</div>

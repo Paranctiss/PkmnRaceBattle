@@ -7,8 +7,8 @@ import {PokemonBaseModel} from '../../../shared/models/pokemon-base.model';
   providedIn: 'root'
 })
 export class PokemonBaseService {
-  private baseUrl = 'http://57.129.71.128:5000/Pokemon/';
-  //private baseUrl = 'http://localhost:7200/Pokemon/';
+  //private baseUrl = 'http://57.129.71.128:5000/Pokemon/';
+  private baseUrl = 'http://localhost:7200/Pokemon/';
   constructor(private http: HttpClient) {}
 
   getPokemonById(id: number): Observable<PokemonBaseModel> {

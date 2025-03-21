@@ -13,4 +13,5 @@ export interface PokemonChangesTurn{
   def: number;
   defSpe: number;
   speed:number;
+  index:number;
 }

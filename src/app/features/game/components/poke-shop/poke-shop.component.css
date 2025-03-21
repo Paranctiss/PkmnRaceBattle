@@ -1,0 +1,156 @@
+.message-container {
+  position: fixed;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 1.2em;
+  z-index: 1000;
+}
+
+.opened-bag {
+  position: fixed;
+  width: 60%;
+  height: 80%;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(220, 165, 77, 1);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 1.2em;
+  z-index: 2;
+}
+
+.item-bag-card-container{
+  margin-top: 2%;
+  margin-left: 5%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.item-bag-card-container:hover{
+  cursor: pointer;
+}
+
+.close-replace-pokemon {
+  position: absolute;
+  left: 90%;
+}
+
+.itemBagCard{
+  width: 14%;
+  height: 20%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.itemBagCard:hover{
+  background-color: rgb(196, 136, 86);
+}
+
+.container{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  text-align: right;
+  height: 70vh;
+  width: 55vw;
+  margin-left: 15%;
+  padding-top: 1%;
+}
+.shop{
+  background-image: url('/assets/backgroundShop.png');
+  background-size: cover;
+  text-align: center;
+}
+p{
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 10px;
+  padding-top: 0;
+}
+
+.text{
+  padding: 20px;
+  margin-left: 5%;
+  margin-right: 5%;
+  color: #ffffff;
+  background-color: rgba(102, 148, 227, 0.8);
+  border-radius: 10px;
+}
+
+.objContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.objCard{
+  border: black solid 1px;
+  background-color: white;
+  margin: 10px 15px;
+  width: 12%;
+  box-sizing: border-box;
+}
+
+.objCard:hover{
+  cursor: pointer;
+  background-color: rgba(102, 148, 227, 0.8);
+}
+
+.objName{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #333333;
+  border-radius: 10px;
+}
+
+.objImg{
+  width: 50px;
+}
+
+.bag{
+  padding: 10px;
+}
+.bag img{
+  width: 70px;
+}
+.bag:hover{
+
+  cursor: pointer;
+}
+
+.exitIcon {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.exitIcon img {
+  width: 80px;
+  transition: width 0.3s ease;
+  position: absolute;
+}
+
+.exitIcon:hover {
+  cursor: pointer;
+}
+
+.exitIcon:hover img {
+  width: 100px;
+}

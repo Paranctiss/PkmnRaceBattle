@@ -11,6 +11,9 @@
     <div *ngIf="this.turnType === 'PokeCenter'">
       <app-poke-center />
     </div>
+    <div *ngIf="this.turnType === 'PokeShop'">
+      <app-poke-shop />
+    </div>
   </div>
 
   <div class="myTeam" *ngIf="this.hubService.Player?.team">

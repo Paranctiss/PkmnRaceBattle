@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output, SimpleChanges, OnDestroy} from '@angular/core';
 import {
-  BagItemModel,
+  BagItemModel, EvolutionDetailModel,
   PlayerModel,
   PokemonTeamModel,
   PokemonTeamMoveModel
@@ -15,6 +15,7 @@ import {resolve} from '@angular/compiler-cli';
 import {BagItemComponent} from './bag-item/bag-item.component';
 import {HubService} from '../../../../core/services/Hub/hub.service';
 import {PokemonMoveBaseModel} from '../../../../shared/models/pokemon-base.model';
+import {ExpBarComponent} from '../exp-bar/exp-bar.component';
 
 @Component({
   selector: 'app-battle-field',
@@ -26,6 +27,7 @@ import {PokemonMoveBaseModel} from '../../../../shared/models/pokemon-base.model
     BagItemComponent,
     NgForOf,
     NgStyle,
+    ExpBarComponent,
   ],
   templateUrl: './battle-field.component.html',
   styleUrl: './battle-field.component.css'
@@ -44,9 +46,16 @@ export class BattleFieldComponent implements OnDestroy {
   catchValue: number | null = null;
   isAnimating:boolean = false;
   openReplacePokemon: boolean = false;
+  itemToUse?: BagItemModel;
+  openBag: boolean = false;
+  bagHovered: boolean = false;
   waitForReplaceByWildPokemon: boolean = false;
   openLearnMove:boolean = false;
   logs:string[] = [];
+  balls!: BagItemModel[];
+  potions!: BagItemModel[];
+  ailments!: BagItemModel[];
+  specials!: BagItemModel[];
   movesToLearn:PokemonMoveBaseModel[][] = [];
   pokemonWantToLearn:PokemonTeamModel[] = [];
 
@@ -132,14 +141,15 @@ export class BattleFieldComponent implements OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log("TurnContextChanged !")
+    console.log(changes)
     if (changes['TurnContext'] && this.TurnContext) {
-      console.log("TurnContextChanged !")
       console.log(this.TurnContext)
       this.TurnContext = changes['TurnContext'].currentValue;
       this.startDisplayingPrioMessages()
         .then(() => this.ChangesBoard())
-        .then(() => this.startDisplayingPvChanges(this.TurnContext.player.hp, true))
-        .then(() => this.startDisplayingPvChanges(this.TurnContext.opponent.hp, false))
+        .then(() => this.startDisplayingPvChanges(this.TurnContext.player.hp, true, this.TurnContext.player.index))
+        .then(() => this.startDisplayingPvChanges(this.TurnContext.opponent.hp, false, this.TurnContext.opponent.index))
         .then(() => this.startDisplayingMessages())
         .catch(error => console.error('Une erreur est survenue:', error));
     }
@@ -184,15 +194,19 @@ export class BattleFieldComponent implements OnDestroy {
     });
   }
 
-  startDisplayingPvChanges(hpChanges:number[], player:boolean): Promise<void> {
+  startDisplayingPvChanges(hpChanges:number[], player:boolean, index:number): Promise<void> {
     return new Promise((resolve) => {
       const displayNextPvChanges = () => {
         if (hpChanges.length > 0) {
           if(player) {
-            if(this.PlayerPokemon.substitute !== null){
-              this.PlayerPokemon.substitute.currHp -= hpChanges.shift()!;
+            if(index !== 0){
+              this.hubService.Player.team[index].currHp -= hpChanges.shift()!;
             }else{
-              this.PlayerPokemon.currHp -= hpChanges.shift()!;
+              if(this.PlayerPokemon.substitute !== null){
+                this.PlayerPokemon.substitute.currHp -= hpChanges.shift()!;
+              }else{
+                this.PlayerPokemon.currHp -= hpChanges.shift()!;
+              }
             }
           }else{
             if(this.OppositePokemon.substitute !== null){
@@ -300,24 +314,40 @@ export class BattleFieldComponent implements OnDestroy {
 
   itemClicked(item:BagItemModel) {
     if(item.number > 0){
+      this.openBag = false;
       this.hubService.pending = true;
-      this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name, this.Opponent._id, this.OppositePokemon.id, true)
+      if(item.type !== "ball"){
+        this.openReplacePokemon = true;
+        this.itemToUse = item
+      }else{
+        this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name+":"+item.type, this.Opponent._id, this.OppositePokemon.id, true)
+      }
+
     }else{
-      this.displayMessage("T'as plus de " + item.name + " t'es con ou quoi" )
+      this.displayMessage("T'as pas de " + item.name + " t'es con ou quoi" )
     }
   }
 
   replacePokemon(pokemon: PokemonTeamModel, index:number) {
     if(!this.waitForReplaceByWildPokemon){
-      if(this.hubService.Player.team[0].id !== pokemon.id && pokemon.currHp > 0){
-        this.openReplacePokemon = false;
-        this.hubService.pending = true;
-        this.hubService.replacePokemon(pokemon.id, this.Opponent._id)
+      if(this.itemToUse !== undefined){
+        if(this.itemToUse.type === "special" && this.itemToUse.name !== "Super Bonbon" && !this.canEvolveWithItem(pokemon, this.itemToUse)) return
+        let skip:boolean = false;
+        if(this.itemToUse.type === "special") skip = true;
+        this.hubService.useMove(this.PlayerPokemon.id, "item:"+this.itemToUse.name+":"+this.itemToUse.type, this.Opponent._id, this.OppositePokemon.id, true, index, skip)
+      }else{
+        if(this.hubService.Player.team[0].id !== pokemon.id && pokemon.currHp > 0){
+          this.hubService.replacePokemon(pokemon.id, this.Opponent._id)
+        }else{
+          return;
+        }
       }
     }else{
-      this.openReplacePokemon = false;
+      this.waitForReplaceByWildPokemon = false;
       this.addPokemonToTeam(this.Opponent, index)
     }
+    this.CloseReplacePokemon()
+    this.hubService.pending = true;
   }
 
   ReplaceMoveBy(oldMoveId:number, newMoveId: number, pokemonId:string) {
@@ -334,5 +364,55 @@ export class BattleFieldComponent implements OnDestroy {
         this.hubService.pending = false;
       }
     }
+  }
+
+  openBagDialog(){
+    this.filterItems()
+    this.openBag = true;
+  }
+
+  filterItems(){
+    this.balls = this.hubService.Player.items.filter(item => item.type === "ball");
+    this.potions = this.hubService.Player.items.filter(item => item.type === "potion");
+    this.ailments = this.hubService.Player.items.filter(item => item.type === "ailment");
+    this.specials = this.hubService.Player.items.filter(item => item.type === "special");
+  }
+
+  CloseReplacePokemon() {
+    this.itemToUse = undefined;
+    this.openReplacePokemon = false;
+    this.hubService.pending = false;
+  }
+
+  canEvolveWithItem(pokemon: any, item: BagItemModel | undefined): boolean {
+    let itemName = item?.name;
+    if(!itemName || itemName === "Super Bonbon" || item?.type !== "special") {
+      return true;
+    }
+    if (!pokemon.evolutionDetails) {
+      return false;
+    }
+    let stoneLabel = this.getStoneLabel(itemName);
+    // Vérifier si au moins une évolution utilise cet item
+    return pokemon.evolutionDetails.some(
+      (evolution: EvolutionDetailModel) =>
+        evolution.item === stoneLabel && evolution.evolutionTrigger === 'use-item'
+    );
+  }
+
+  getStoneLabel(stoneName: string): string {
+    switch(stoneName) {
+      case "Pierre Feu":
+        return "fire-stone";
+      case "Pierre Eau":
+        return "water-stone";
+      case "Pierre Foudre":
+        return "thunder-stone";
+      case "Pierre Plante":
+        return "leaf-stone";
+      case "Pierre Lune":
+        return "moon-stone";
+    }
+    return "coin";
   }
 }
