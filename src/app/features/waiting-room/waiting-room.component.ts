@@ -4,13 +4,15 @@ import {PlayerModel} from '../../shared/models/player.model';
 import {NgForOf, NgIf} from '@angular/common';
 import {TrainerCardComponent} from './trainer-card/trainer-card.component';
 import {Router} from '@angular/router';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-game',
   imports: [
     NgForOf,
     NgIf,
-    TrainerCardComponent
+    TrainerCardComponent,
+    FormsModule
   ],
   templateUrl: './waiting-room.component.html',
   styleUrl: './waiting-room.component.css'
@@ -22,6 +24,7 @@ export class WaitingRoomComponent {
   }
   players: PlayerModel[] = [];
   myPlayer?:PlayerModel;
+  checkedTimer: boolean=false;
 
     ngOnInit() {
       this.hubService.onResponsePlayersInRoom((players) => {
@@ -38,6 +41,7 @@ export class WaitingRoomComponent {
     }
 
   StartGame() {
-    this.hubService.startGame(this.hubService.gameCode);
+      console.log(this.checkedTimer);
+    this.hubService.startGame(this.hubService.gameCode, this.checkedTimer);
   }
 }

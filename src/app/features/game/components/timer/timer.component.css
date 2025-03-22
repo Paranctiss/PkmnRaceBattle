@@ -1,0 +1,29 @@
+.timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  margin: 10px 0;
+  transition: background-color 0.3s ease;
+}
+
+.timer-label {
+  font-size: 14px;
+  color: #555;
+}
+
+.timer-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.timer-warning {
+  background-color: #fff3cd;
+}
+
+.timer-danger {
+  background-color: #f8d7da;
+}

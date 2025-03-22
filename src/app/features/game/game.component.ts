@@ -7,6 +7,8 @@ import {MyTeamComponent} from './components/my-team/my-team.component';
 import {TrainerFightComponent} from './components/trainer-fight/trainer-fight.component';
 import {PokeCenterComponent} from './components/poke-center/poke-center.component';
 import {PokeShopComponent} from './components/poke-shop/poke-shop.component';
+import {TimerComponent} from './components/timer/timer.component';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-game',
@@ -17,6 +19,9 @@ import {PokeShopComponent} from './components/poke-shop/poke-shop.component';
     TrainerFightComponent,
     PokeCenterComponent,
     PokeShopComponent,
+    TimerComponent,
+    NgForOf,
+    RouterLink,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -60,10 +65,17 @@ export class GameComponent {
       this.turnType = "PokeShop";
       this.hubService.pending = false;
     });
+    this.hubService.onTimerEnded((gameCode: string) => {
+      this.turnType = "Finito";
+    });
     this.hubService.getWildFight();
   }
 
   newTurn() {
     this.hubService.getWildFight();
+  }
+
+  BackToMenu() {
+
   }
 }
