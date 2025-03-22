@@ -26,6 +26,8 @@ export class HubService {
     credits: 0,
     items: []
   }
+  public remainingSeconds: number = 0;
+  public timerActive: boolean = false;
 
   constructor(public signalRService: SignalRService, private http: HttpClient) {}
 
@@ -71,11 +73,35 @@ export class HubService {
     this.signalRService.connection.on('ResponsePlayersInRoom', callback);
   }
 
-  startGame(gameCode: string) {
-    this.signalRService.connection.invoke('StartGame', gameCode).catch(err => console.error(err));
+  startGame(gameCode: string, checkedTimer:boolean) {
+    this.signalRService.connection.invoke('StartGame', gameCode, checkedTimer).catch(err => console.error(err));
   }
   onStartedGame(callback:(gameCode:string) => void) {
     this.signalRService.connection.on('GameStarted', callback);
+  }
+
+  onTimerUpdate(callback: (remainingSeconds: number) => void) {
+    this.signalRService.connection.on('TimerUpdate', (seconds: number) => {
+      this.remainingSeconds = seconds;
+      this.timerActive = true;
+      callback(seconds);
+    });
+  }
+
+  // Écouter la fin du timer
+  onTimerEnded(callback: (gameCode: string) => void) {
+    this.signalRService.connection.on('TimerEnded', (gameCode: string) => {
+      this.timerActive = false;
+      this.remainingSeconds = 0;
+      callback(gameCode);
+    });
+  }
+
+  // Formater le temps restant pour l'affichage (MM:SS)
+  formatRemainingTime(): string {
+    const minutes = Math.floor(this.remainingSeconds / 60);
+    const seconds = Math.floor(this.remainingSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 
   getNewTurn() {

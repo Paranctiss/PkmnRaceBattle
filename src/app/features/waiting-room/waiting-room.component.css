@@ -12,3 +12,10 @@
   align-items: center;
   flex-direction: column;
 }
+
+h2{
+  user-select: text;
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+}

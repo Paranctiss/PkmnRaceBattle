@@ -1,4 +1,11 @@
 <div class="gameField">
+  <div>
+    <button  routerLink="/">Retour au menu</button>
+    <app-timer></app-timer><br>
+
+  </div>
+
+
   <div class="turnField">
     <div *ngIf="(this.turnType === 'WildFight' || this.turnType === 'TrainerFight') && this.opponent !== undefined && this.hubService.Player.team.length > 0">
       <div *ngIf="this.turnType === 'TrainerFight' && !this.TrainerContinue ">
@@ -14,6 +21,17 @@
     <div *ngIf="this.turnType === 'PokeShop'">
       <app-poke-shop />
     </div>
+    <div *ngIf="this.turnType === 'Finito'">
+      <h1 style="text-align: center">Finito pipo au dodo les asticots</h1>
+      <div class="endedPveTeam">
+        <div *ngFor="let pkmn of this.hubService.Player.team" class="endedPvePkmn">
+          <img src="{{pkmn.frontSprite}}">
+          <p>Lvl. {{pkmn.level}} {{pkmn.nameFr}}</p>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
   <div class="myTeam" *ngIf="this.hubService.Player?.team">
