@@ -97,6 +97,9 @@
       <app-exp-bar [BaseExp]="PlayerPokemon.xpFromLastLvl" [CurrExp]="PlayerPokemon.currXP" [NextLevelExp]="PlayerPokemon.xpForNextLvl" ></app-exp-bar>
     </div>
   </div>
+  <div *ngIf="this.waitingOpponent" class="waitingOpponent">
+    <h2>En attente de l'adversaire...</h2>
+  </div>
   <div *ngIf="!this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && PlayerPokemon.waitingMove === null">
     <p>{{this.hubService.Player.credits}} PokéDollz</p>
     <div class="actionBar">

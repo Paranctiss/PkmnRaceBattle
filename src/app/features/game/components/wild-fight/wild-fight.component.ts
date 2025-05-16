@@ -16,7 +16,7 @@ import {resolve} from '@angular/compiler-cli';
 })
 export class WildFightComponent {
   @Input() Foe!: PlayerModel;
-  TurnConext!:TurnContextModel;
+  TurnContext!:TurnContextModel;
   OnBoardPokemon!:PokemonTeamModel;
   constructor(private hubService: HubService) {
   }
@@ -28,18 +28,20 @@ export class WildFightComponent {
     })
     this.hubService.onUseMoveResponse((turnContext:TurnContextModel) => {
       console.log(turnContext);
-      this.TurnConext = turnContext;
-      this.TurnConext.player.index = 0;
+      this.TurnContext = turnContext;
+      this.TurnContext.player.index = 0;
     });
     this.hubService.onUseItemResponse((turnContext:TurnContextModel, index) => {
-      this.TurnConext = turnContext;
-      this.TurnConext.player.index = index;
+      this.TurnContext = turnContext;
+      this.TurnContext.player.index = index;
     });
     this.hubService.onTurnFinished((updatedPlayer:PlayerModel, updatedOpponent:PlayerModel) => {
       this.hubService.Player = updatedPlayer;
       this.OnBoardPokemon = updatedPlayer.team[0]
       this.Foe = updatedOpponent;
-      this.hubService.pending=false;
+      if(updatedOpponent.team[0].currHp > 0){
+        this.hubService.pending=false;
+      }
     })
     this.hubService.onTrainerSwitchPokemon(response => {
       this.Foe = response;
@@ -55,7 +57,7 @@ export class WildFightComponent {
   useMove(move: PokemonTeamMoveModel) {
     this.hubService.pending = true;
     console.log(this.Foe.team[0].nameFr)
-    this.hubService.useMove(this.OnBoardPokemon.id, move.nameFr, this.Foe._id, this.Foe.team[0].id, true)
+    this.hubService.useMove(this.OnBoardPokemon.id, move.nameFr, this.Foe._id, this.Foe.team[0].id, true, this.Foe.isPlayer)
   }
 
 }

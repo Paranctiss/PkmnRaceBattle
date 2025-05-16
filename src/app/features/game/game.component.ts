@@ -9,6 +9,8 @@ import {PokeCenterComponent} from './components/poke-center/poke-center.componen
 import {PokeShopComponent} from './components/poke-shop/poke-shop.component';
 import {TimerComponent} from './components/timer/timer.component';
 import {RouterLink} from '@angular/router';
+import {BracketComponent} from './components/bracket/bracket.component';
+import {BracketModel} from '../../shared/models/bracket.model';
 
 @Component({
   selector: 'app-game',
@@ -22,6 +24,7 @@ import {RouterLink} from '@angular/router';
     TimerComponent,
     NgForOf,
     RouterLink,
+    BracketComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -34,7 +37,7 @@ export class GameComponent {
 
   turnType:string="";
   opponent!:PlayerModel;
-
+  bracket!:BracketModel;
 
   ngOnInit() {
     this.hubService.onGetPlayerResponse((response:PlayerModel) => {
@@ -68,6 +71,19 @@ export class GameComponent {
     this.hubService.onTimerEnded((gameCode: string) => {
       this.turnType = "Finito";
     });
+    this.hubService.responsePvpFight((opponent) => {
+      if(this.turnType !== "") this.hubService.getCurrentUser()
+      this.turnType = "PvpFight";
+      this.opponent = opponent;
+      this.hubService.pending = false;
+    });
+    this.hubService.onBracketCreated((bracket) => {
+      this.turnType = "Bracket";
+      this.bracket = bracket;
+    })
+    this.hubService.onTriggerTournament(() => {
+      this.hubService.getPvpFight();
+    })
     this.hubService.getWildFight();
   }
 

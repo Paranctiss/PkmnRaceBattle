@@ -7,11 +7,11 @@
 
 
   <div class="turnField">
-    <div *ngIf="(this.turnType === 'WildFight' || this.turnType === 'TrainerFight') && this.opponent !== undefined && this.hubService.Player.team.length > 0">
+    <div *ngIf="(this.turnType === 'WildFight' || this.turnType === 'TrainerFight' || this.turnType === 'PvpFight') && this.opponent !== undefined && this.hubService.Player.team.length > 0">
       <div *ngIf="this.turnType === 'TrainerFight' && !this.TrainerContinue ">
         <app-trainer-fight [Foe]="opponent" (TrainerContinue)="this.TrainerContinue = true"/>
       </div>
-      <div *ngIf="this.TrainerContinue || this.turnType === 'WildFight'">
+      <div *ngIf="this.turnType === 'WildFight' || (this.turnType === 'TrainerFight' && this.TrainerContinue) || this.turnType === 'PvpFight'">
         <app-wild-fight [Foe]="opponent" />
       </div>
     </div>
@@ -22,6 +22,7 @@
       <app-poke-shop />
     </div>
     <div *ngIf="this.turnType === 'Finito'">
+      <button *ngIf="hubService.Player.isHost" (click)="this.hubService.buildTournament();">Créer tournoi</button>
       <h1 style="text-align: center">Finito pipo au dodo les asticots</h1>
       <div class="endedPveTeam">
         <div *ngFor="let pkmn of this.hubService.Player.team" class="endedPvePkmn">
@@ -29,8 +30,11 @@
           <p>Lvl. {{pkmn.level}} {{pkmn.nameFr}}</p>
         </div>
       </div>
-
     </div>
+      <div *ngIf="this.turnType === 'Bracket'">
+        <app-bracket [bracket]="this.bracket" />
+      </div>
+
 
   </div>
 

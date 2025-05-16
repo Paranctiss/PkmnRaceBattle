@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {PlayerModel, PokemonTeamModel, PokemonTeamMoveModel} from '../../../shared/models/player.model';
 import {TurnContextModel} from '../../../shared/models/turn-context.model';
 import {PokemonMoveBaseModel} from '../../../shared/models/pokemon-base.model';
+import {BracketModel} from '../../../shared/models/bracket.model';
 
 @Injectable({
   providedIn: 'root'
@@ -73,8 +74,8 @@ export class HubService {
     this.signalRService.connection.on('ResponsePlayersInRoom', callback);
   }
 
-  startGame(gameCode: string, checkedTimer:boolean) {
-    this.signalRService.connection.invoke('StartGame', gameCode, checkedTimer).catch(err => console.error(err));
+  startGame(gameCode: string, checkedTimer:boolean, timerTime:number) {
+    this.signalRService.connection.invoke('StartGame', gameCode, checkedTimer, timerTime).catch(err => console.error(err));
   }
   onStartedGame(callback:(gameCode:string) => void) {
     this.signalRService.connection.on('GameStarted', callback);
@@ -116,6 +117,26 @@ export class HubService {
     this.signalRService.connection.invoke('GetNewTurn', this.userId).catch(err => console.error(err));
   }
 
+  getPvpFight() {
+    this.signalRService.connection.invoke('GetPvpFight', this.gameCode, this.userId).catch(err => console.error(err));
+  }
+
+  buildTournament() {
+    this.signalRService.connection.invoke('BuildTournament', this.gameCode).catch(err => console.error(err));
+  }
+
+  launchTournament() {
+    this.signalRService.connection.invoke('LaunchTournament', this.gameCode).catch(err => console.error(err));
+  }
+
+  onTriggerTournament(callback:() => void) {
+    this.signalRService.connection.on('triggerTournament', callback);
+  }
+
+  onBracketCreated(callback:(bracket:BracketModel)=> void){
+    this.signalRService.connection.on('bracketCreated', callback);
+  }
+
   onTrainerSwitchPokemon(callback:(responseTrainer:PlayerModel) => void) {
     this.signalRService.connection.on('onTrainerSwitchPokemon', callback);
   }
@@ -126,6 +147,10 @@ export class HubService {
 
   responseTrainerFight(callback:(responsePokemon:PlayerModel) => void) {
     this.signalRService.connection.on('responseTrainerFight', callback);
+  }
+
+  responsePvpFight(callback:(responsePokemon:PlayerModel) => void) {
+    this.signalRService.connection.on('responsePvpFight', callback);
   }
 
   responsePokeCenter(callback:(responsePokemon:PlayerModel) => void) {
@@ -152,8 +177,12 @@ export class HubService {
     this.signalRService.connection.on('onBuyItemResponse', callback);
   }
 
-  useMove(playerPokemonId:string, usedMoveName:string, wildOpponentId:string, wildPokemonId:string, isAttacking:boolean, index:number = 0, skipTurn=false) {
-    this.signalRService.connection.invoke('UseMove', this.userId, playerPokemonId, usedMoveName, wildOpponentId, wildPokemonId, isAttacking, index, skipTurn).catch(err => console.error(err));
+  useMove(playerPokemonId:string, usedMoveName:string, wildOpponentId:string, wildPokemonId:string, isAttacking:boolean, isPvp:boolean,  index:number = 0, skipTurn=false) {
+    this.signalRService.connection.invoke('HandleMove', this.userId, playerPokemonId, usedMoveName, wildOpponentId, wildPokemonId, isAttacking, isPvp, index, skipTurn).catch(err => console.error(err));
+  }
+
+  onWaitingOpponent(callback:() => void) {
+    this.signalRService.connection.on('waitingOpponent', callback);
   }
 
   onUseMoveResponse(callback:(turnContext:TurnContextModel) => void) {
@@ -199,8 +228,8 @@ export class HubService {
     this.signalRService.connection.on('pokemonLevelUp', callback);
   }
 
-  replacePokemon(pokemonId:string, wildOpponentId:string){
-    this.signalRService.connection.invoke('ReplacePokemon', this.userId, pokemonId, wildOpponentId).catch(err => console.error(err));
+  replacePokemon(pokemonId:string, wildOpponentId:string, pvp:boolean){
+    this.signalRService.connection.invoke('ReplacePokemon', this.userId, pokemonId, wildOpponentId, pvp).catch(err => console.error(err));
   }
 
   onReplacePokemon(callback:(pokemon:PokemonTeamModel, message:string) => void) {

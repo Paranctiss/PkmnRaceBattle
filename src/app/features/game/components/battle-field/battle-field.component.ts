@@ -51,6 +51,7 @@ export class BattleFieldComponent implements OnDestroy {
   bagHovered: boolean = false;
   waitForReplaceByWildPokemon: boolean = false;
   openLearnMove:boolean = false;
+  waitingOpponent: boolean = false;
   logs:string[] = [];
   balls!: BagItemModel[];
   potions!: BagItemModel[];
@@ -61,6 +62,7 @@ export class BattleFieldComponent implements OnDestroy {
 
   // Add this to keep track of the event names we've subscribed to
   private signalREventNames: string[] = [];
+
 
   constructor(public hubService:HubService) {
   }
@@ -122,8 +124,23 @@ export class BattleFieldComponent implements OnDestroy {
     });
 
     this.registerSignalREvent('swapPokemon', (pokemon, message) => {
+      this.waitingOpponent = false;
       this.PlayerPokemon = pokemon;
       this.displayMessage(message);
+    });
+
+    this.registerSignalREvent('foeSwapPokemon', (pokemon, message) => {
+      this.waitingOpponent = false;
+      this.OppositePokemon = pokemon;
+      this.displayMessage(message);
+    })
+
+    this.registerSignalREvent('waitingOpponent', () => {
+      this.waitingOpponent = true;
+      this.hubService.pending = true;
+    });
+    this.registerSignalREvent('useMoveResult', (turnContext:TurnContextModel) => {
+      this.waitingOpponent = false;
     });
   }
 
@@ -320,7 +337,7 @@ export class BattleFieldComponent implements OnDestroy {
         this.openReplacePokemon = true;
         this.itemToUse = item
       }else{
-        this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name+":"+item.type, this.Opponent._id, this.OppositePokemon.id, true)
+        this.hubService.useMove(this.PlayerPokemon.id, "item:"+item.name+":"+item.type, this.Opponent._id, this.OppositePokemon.id, true, this.Opponent.isPlayer)
       }
 
     }else{
@@ -334,10 +351,10 @@ export class BattleFieldComponent implements OnDestroy {
         if(this.itemToUse.type === "special" && this.itemToUse.name !== "Super Bonbon" && !this.canEvolveWithItem(pokemon, this.itemToUse)) return
         let skip:boolean = false;
         if(this.itemToUse.type === "special") skip = true;
-        this.hubService.useMove(this.PlayerPokemon.id, "item:"+this.itemToUse.name+":"+this.itemToUse.type, this.Opponent._id, this.OppositePokemon.id, true, index, skip)
+        this.hubService.useMove(this.PlayerPokemon.id, "item:"+this.itemToUse.name+":"+this.itemToUse.type, this.Opponent._id, this.OppositePokemon.id, true, this.Opponent.isPlayer, index, skip)
       }else{
         if(this.hubService.Player.team[0].id !== pokemon.id && pokemon.currHp > 0){
-          this.hubService.replacePokemon(pokemon.id, this.Opponent._id)
+          this.hubService.replacePokemon(pokemon.id, this.Opponent._id, this.Opponent.isPlayer)
         }else{
           return;
         }

@@ -13,6 +13,13 @@
   flex-direction: column;
 }
 
+.timerChoice{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
 h2{
   user-select: text;
   -moz-user-select: text;

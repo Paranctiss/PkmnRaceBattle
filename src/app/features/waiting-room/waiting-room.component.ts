@@ -24,7 +24,8 @@ export class WaitingRoomComponent {
   }
   players: PlayerModel[] = [];
   myPlayer?:PlayerModel;
-  checkedTimer: boolean=false;
+  checkedTimer: boolean=true;
+  timerTime: number=5;
 
     ngOnInit() {
       this.hubService.onResponsePlayersInRoom((players) => {
@@ -41,7 +42,6 @@ export class WaitingRoomComponent {
     }
 
   StartGame() {
-      console.log(this.checkedTimer);
-    this.hubService.startGame(this.hubService.gameCode, this.checkedTimer);
+    this.hubService.startGame(this.hubService.gameCode, this.checkedTimer, this.timerTime);
   }
 }
