@@ -1,0 +1,22 @@
+<div class="container">
+  <button *ngIf="hubService.Player.isHost" (click)="startTournament()">Lancer le tournoi</button>
+  <div class="roundCards">
+    <div class="playerCard">
+      <h1>?</h1>
+    </div>
+  </div>
+  <div *ngFor="let bracketRound of this.bracket.rounds" class="roundCards">
+    <div class="playerCard" *ngFor="let playerId of bracketRound.playersInRace">
+      <div *ngIf="playerId === '?'">
+        <h1>?</h1>
+      </div>
+      <div *ngIf="playerId !== '?'">
+        <h3>{{getName(playerId)}}</h3>
+        <img src="assets/trainers-sprites/{{getSprite(playerId)}}.png">
+        <div class="teamBalls">
+          <img *ngFor="let team of getTeam(playerId)" src="assets/balls-sprites/Pokeball.webp">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

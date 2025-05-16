@@ -1,4 +1,4 @@
-<div class="timer-container" [ngClass]="{'timer-warning': isWarning(), 'timer-danger': isDanger()}">
+<div class="timer-container" *ngIf="hubService.remainingSeconds !== 0" [ngClass]="{'timer-warning': isWarning(), 'timer-danger': isDanger()}">
   <div class="timer-label">Temps restant:</div>
   <div class="timer-value">{{ hubService.formatRemainingTime() }}</div>
 </div>

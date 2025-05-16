@@ -1,10 +1,23 @@
 <ng-container *ngIf="players.length > 0; else loading">
   <div class="title">
     <h2>Waiting room | Code : {{this.myPlayer?.roomId}}</h2>
-    <label><h3>
-      <input type="checkbox" [(ngModel)]="checkedTimer"> Activer le timer</h3>
-    </label>
-    <button (click)="StartGame()" *ngIf="myPlayer?.isHost">Commencer</button>
+    <div *ngIf="myPlayer?.isHost" >
+      <label><h3>
+        <input type="checkbox" [(ngModel)]="checkedTimer"> Activer le timer</h3>
+      </label>
+      <div *ngIf="checkedTimer" class="timerChoice">
+        <label><h3>
+          <input type="radio" [(ngModel)]="timerTime" [value]="5">5 min</h3>
+        </label>
+        <label><h3>
+          <input type="radio" [(ngModel)]="timerTime" [value]="10">10 min</h3>
+        </label>
+        <label><h3>
+          <input type="radio" [(ngModel)]="timerTime" [value]="15">15 min</h3>
+        </label>
+      </div>
+      <button (click)="StartGame()" *ngIf="myPlayer?.isHost">Commencer</button>
+    </div>
   </div>
 
   <div *ngFor="let player of players">

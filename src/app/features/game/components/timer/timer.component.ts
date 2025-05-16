@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import {NgClass} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {HubService} from '../../../../core/services/Hub/hub.service';
 
 @Component({
   selector: 'app-timer',
   imports: [
-    NgClass
+    NgClass,
+    NgIf
   ],
   templateUrl: './timer.component.html',
   styleUrl: './timer.component.css'
