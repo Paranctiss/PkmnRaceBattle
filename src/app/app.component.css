@@ -41,7 +41,6 @@ img{
   width: 100%;
   height: 100%;
   /* Ajoutez du padding si nécessaire pour éviter que le contenu touche les bords */
-  padding: 20px;
 }
 
 /* Les éléments du fond restent en absolute mais dans leur conteneur */
