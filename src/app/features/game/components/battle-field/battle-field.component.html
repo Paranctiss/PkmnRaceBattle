@@ -59,8 +59,11 @@
          </div>
       <div class="oppositeSide">
         <h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>
-        <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
-        <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{catchingBall}}.webp" alt="oppositePokemon">
+        <div class="pokemonSpriteContainer">
+          <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
+          <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{catchingBall}}.webp" alt="oppositePokemon">
+          <div class="platform"></div>
+        </div>
         <app-stats-changes [Pokemon]="OppositePokemon" />
         <p *ngIf="OppositePokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
         <p *ngIf="OppositePokemon.isBurning" class="ailmentCard brulure">BRU</p>
@@ -68,6 +71,7 @@
         <p *ngIf="OppositePokemon.isFrozen" class="ailmentCard gel">GEL</p>
         <p *ngIf="OppositePokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
         <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
+
       </div>
 
     </div>
@@ -75,7 +79,10 @@
 
     <div class="playerSide">
       <div *ngIf="PlayerPokemon.substitute !== null">
-        <img class="pokemonImg" src="{{PlayerPokemon.substitute.backSprite}}" alt="playerPokemon">
+        <div class="pokemonSpriteContainer">
+          <img class="pokemonImg" src="{{PlayerPokemon.substitute.backSprite}}" alt="playerPokemon">
+          <div class="platform"></div>
+        </div>
         <app-stats-changes [Pokemon]="PlayerPokemon.substitute" />
         <app-hp-bar [CurrHP]="PlayerPokemon.substitute.currHp" [BaseHP]="PlayerPokemon.substitute.baseHp" ></app-hp-bar>
         <p *ngIf="PlayerPokemon.substitute.isParalyzed" class="ailmentCard paralysie">PAR</p>
@@ -85,7 +92,10 @@
         <p *ngIf="PlayerPokemon.substitute.isSleeping > 0" class="ailmentCard sleep">DOR</p>
       </div>
       <div *ngIf="PlayerPokemon.substitute === null">
-        <img *ngIf="PlayerPokemon.untargetable === null" class="pokemonImg" src="{{PlayerPokemon.backSprite}}" alt="playerPokemon">
+        <div class="pokemonSpriteContainer">
+          <img *ngIf="PlayerPokemon.untargetable === null" class="pokemonImg" src="{{PlayerPokemon.backSprite}}" alt="playerPokemon">
+          <div class="platform"></div>
+        </div>
         <app-stats-changes [Pokemon]="PlayerPokemon" />
         <app-hp-bar [CurrHP]="PlayerPokemon.currHp" [BaseHP]="PlayerPokemon.baseHp" ></app-hp-bar>
         <p *ngIf="PlayerPokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
