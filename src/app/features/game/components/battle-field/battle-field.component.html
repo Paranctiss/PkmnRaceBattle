@@ -58,7 +58,14 @@
            </div>
          </div>
       <div class="oppositeSide">
-        <h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>
+        <div class="pokemon-card">
+          <div class="pokemon-header">
+            <h2 class="pokemon-name">{{OppositePokemon.nameFr}}</h2>
+            <span class="pokemon-level">Lv .{{OppositePokemon.level}}</span>
+          </div>
+          <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
+        </div>
+        <!--<h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>-->
         <div class="pokemonSpriteContainer">
           <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
           <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{catchingBall}}.webp" alt="oppositePokemon">
@@ -70,7 +77,6 @@
         <p *ngIf="OppositePokemon.isPoisoned" class="ailmentCard poison">PSN</p>
         <p *ngIf="OppositePokemon.isFrozen" class="ailmentCard gel">GEL</p>
         <p *ngIf="OppositePokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
-        <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
 
       </div>
 
@@ -97,7 +103,13 @@
           <div class="platform"></div>
         </div>
         <app-stats-changes [Pokemon]="PlayerPokemon" />
-        <app-hp-bar [CurrHP]="PlayerPokemon.currHp" [BaseHP]="PlayerPokemon.baseHp" ></app-hp-bar>
+        <div class="pokemon-card">
+          <div class="pokemon-header">
+            <h2 class="pokemon-name">{{PlayerPokemon.nameFr}}</h2>
+            <span class="pokemon-level">Lv .{{PlayerPokemon.level}}</span>
+          </div>
+          <app-hp-bar [CurrHP]="PlayerPokemon.currHp" [BaseHP]="PlayerPokemon.baseHp" ></app-hp-bar>
+        </div>
         <p *ngIf="PlayerPokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
         <p *ngIf="PlayerPokemon.isBurning" class="ailmentCard brulure">BRU</p>
         <p *ngIf="PlayerPokemon.isPoisoned" class="ailmentCard poison">PSN</p>

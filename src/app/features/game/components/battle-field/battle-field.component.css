@@ -281,8 +281,8 @@
 
 .pokemonSpriteContainer {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
 }
 
 .pokemonImg {
@@ -290,7 +290,7 @@
   top: 0;
   left: 0;
   z-index: 2;
-  width: 200px;
+  width: 250px;
 }
 
 .ballImg {
@@ -321,10 +321,10 @@
 .pokemonSpriteContainer .platform {
   position: absolute;
   border-radius: 50%;
-  top: 130px;
+  top: 155px;
   left: 0;
   z-index: 1;
-  width: 200px;
+  width: 250px;
   height: 60px;
   background: rgba(0, 0, 0, 0.15);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -352,4 +352,44 @@
   background: rgba(0, 0, 0, 0.1);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
   border-radius: 50%;
+}
+
+.pokemon-card {
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(115, 115, 115, 0.5);
+  border-radius: 12px;
+  padding: 16px;
+  width: 280px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+  0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+.pokemon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pokemon-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: -0.025em;
+}
+
+.pokemon-level {
+  font-size: 14px;
+  color: #a3a3a3;
+  font-weight: 500;
+}
+
+/* Optionnel: Animation au hover */
+.pokemon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.4),
+  0 15px 15px -5px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
 }
