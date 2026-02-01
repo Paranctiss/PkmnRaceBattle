@@ -1,7 +1,16 @@
-<div class="hpBar">
+<!--<div class="hpBar">
   <div class="bar" [ngStyle]="{ 'width':  (CurrHP / BaseHP) | number: '1.0-3' | percent,
                     'background-color': getHpColor(CurrHP, BaseHP)
   }">
     <p>{{CurrHP}} / {{BaseHP}}</p>
   </div>
+</div> -->
+
+<div class="hp-bar-container">
+
+  <div class="hp-bar" [ngStyle]="{ 'width':  (CurrHP / BaseHP) | number: '1.0-3' | percent,
+                    'background': getHpColor(CurrHP, BaseHP)
+  }">
+  </div>
+  <div class="hp-bar-value">{{ CurrHP }} / {{ BaseHP }}</div>
 </div>

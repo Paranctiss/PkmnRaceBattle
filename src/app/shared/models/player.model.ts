@@ -73,6 +73,7 @@ export interface PokemonTeamMoveModel {
   flavorText:string;
   statsChanges:MoveStatsChangeModel[]
   isHovered:boolean;
+  hover:boolean;
 }
 
 export interface MoveStatsChangeModel {

@@ -1,14 +1,36 @@
+/* Container principal - reste sans position pour ne pas perturber le layout */
 .pageContent {
   padding-right: 10vw;
   padding-left: 10vw;
   height: 100%;
+  position: relative; /* Seulement pour contenir les éléments absolute du fond */
 }
 
-.battleField{
+/* Couche de fond - en arrière-plan */
+.background-layer {
+  position: fixed; /* Fixed au lieu d'absolute pour rester en place */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Derrière tout le contenu */
+  pointer-events: none;
+}
+
+/* Couche de contenu - flux normal du document */
+.content-layer {
+  position: relative;
+  z-index: 1;
+  /* PAS de padding ici, on garde celui de pageContent */
+}
+
+/* BattleField - retour au flux normal */
+.battleField {
   padding-right: 10vw;
-  padding-left: 3vw;
   display: flex;
   flex-direction: column;
+  position: relative; /* Pour les enfants en absolute */
+  /* Pas de height fixe pour permettre au contenu de définir la hauteur */
 }
 
 .message-container {
@@ -51,10 +73,10 @@
   padding: 10px 20px;
   border-radius: 10px;
   font-size: 1.2em;
-  z-index: 2;
+  z-index: 1001; /* Au-dessus de replace-pokemon */
 }
 
-.learn-move{
+.learn-move {
   position: fixed;
   width: 60%;
   height: 50%;
@@ -78,8 +100,9 @@
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   border-radius: 10px;
-  overflow-y: auto; /* Permet le défilement vertical */
+  overflow-y: auto;
   box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
 }
 
 .content {
@@ -95,24 +118,24 @@
   border-bottom: none;
 }
 
-.moveToLearn{
+.moveToLearn {
   background-color: rgba(55, 92, 148, 0.8);
   color: white;
   padding: 5px;
 }
 
-.moveToLearn:hover{
+.moveToLearn:hover {
   background-color: rgba(148, 55, 55, 0.8);
 }
 
-.replace-pokemon-card-container{
+.replace-pokemon-card-container {
   margin-top: 7%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
 
-.item-bag-card-container{
+.item-bag-card-container {
   margin-top: 2%;
   margin-left: 5%;
   display: flex;
@@ -120,7 +143,7 @@
   flex-wrap: wrap;
 }
 
-.item-bag-card-container:hover{
+.item-bag-card-container:hover {
   cursor: pointer;
 }
 
@@ -135,10 +158,7 @@
   cursor: pointer;
 }
 
-.replacePokemonCard{
-  & img{
-    width: 200px;
-  }
+.replacePokemonCard {
   width: 50%;
   height: 33%;
   display: flex;
@@ -147,11 +167,15 @@
   justify-content: center;
 }
 
-.replacePokemonCard:hover{
+.replacePokemonCard img {
+  width: 200px;
+}
+
+.replacePokemonCard:hover {
   background-color: rgb(196, 136, 86);
 }
 
-.itemBagCard{
+.itemBagCard {
   width: 14%;
   height: 20%;
   display: flex;
@@ -160,15 +184,23 @@
   justify-content: center;
 }
 
-.itemBagCard:hover{
+.itemBagCard:hover {
   background-color: rgb(196, 136, 86);
 }
 
-.oppositeSide, .playerSide {
+/* Positionnement des Pokémon - IMPORTANT */
+.oppositeSide {
   width: 30%;
+  float: right;
+  margin-top: 20px; /* Ajustez selon votre besoin */
 }
 
-.waitingOpponent{
+.playerSide {
+  width: 30%;
+  margin-top: 20px; /* Pour espacer du Pokémon adverse */
+}
+
+.waitingOpponent {
   position: fixed;
   bottom: 10%;
   left: 50%;
@@ -181,34 +213,20 @@
   z-index: 1000;
 }
 
-.actionBar{
+.actionBar {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
+  margin-top: 20px;
 }
 
-.movesActions{
-  width: 33vw;
+.movesActions {
+
 }
 
-.otherActions{
-  height: 100%;
-}
-
-.bag{
-  padding: 10px;
-}
-.bag img{
-  width: 70px;
-}
-.bag:hover{
-
-  cursor: pointer;
-}
-
-.ailmentCard{
+.ailmentCard {
   padding: 0;
   margin: 0;
   color: white;
@@ -220,23 +238,23 @@
   background: firebrick;
 }
 
-.paralysie{
+.paralysie {
   background: darkgoldenrod;
 }
 
-.poison{
+.poison {
   background: indigo;
 }
 
-.gel{
+.gel {
   background: #04b0ff;
 }
 
-.sleep{
+.sleep {
   background: darkslategray;
 }
 
-.flexRight{
+.flexRight {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -244,34 +262,36 @@
   align-items: flex-start;
 }
 
-.oppositeSide{
-  float: right;
+.pokemonSpriteContainer {
+  position: relative;
+  width: 250px;
+  height: 250px;
 }
 
 .pokemonImg {
-  width: 200px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 250px;
 }
 
 .ballImg {
   width: 60px;
 }
 
-
-/* Animation pour incliner la Pokéball à gauche */
 @keyframes tiltLeft {
   0% { transform: rotate(0deg); }
   50% { transform: rotate(-15deg); }
   100% { transform: rotate(0deg); }
 }
 
-/* Animation pour incliner la Pokéball à droite */
 @keyframes tiltRight {
   0% { transform: rotate(0deg); }
   50% { transform: rotate(15deg); }
   100% { transform: rotate(0deg); }
 }
 
-/* Classe pour appliquer l'animation */
 .pokeball-tilt-left {
   animation: tiltLeft 0.5s ease-in-out;
 }
@@ -280,4 +300,79 @@
   animation: tiltRight 0.5s ease-in-out;
 }
 
+/* Plateformes sous les Pokémon dans le battleField */
+.pokemonSpriteContainer .platform {
+  position: absolute;
+  border-radius: 50%;
+  top: 135px;
+  left: 0;
+  z-index: 1;
+  width: 250px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.8s ease;
+}
 
+/* Plateformes du fond d'écran (dans background-layer) */
+.background-layer .platform-player {
+  position: absolute;
+  bottom: 10%;
+  right: 20%;
+  width: 180px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
+
+.background-layer .platform-opponent {
+  position: absolute;
+  top: 45%;
+  left: 15%;
+  width: 140px;
+  height: 45px;
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+}
+
+.pokemon-card {
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(115, 115, 115, 0.5);
+  border-radius: 12px;
+  padding: 16px;
+  width: 280px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+  0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+.pokemon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pokemon-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: -0.025em;
+}
+
+.pokemon-level {
+  font-size: 14px;
+  color: #a3a3a3;
+  font-weight: 500;
+}
+
+/* Optionnel: Animation au hover */
+.pokemon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.4),
+  0 15px 15px -5px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
