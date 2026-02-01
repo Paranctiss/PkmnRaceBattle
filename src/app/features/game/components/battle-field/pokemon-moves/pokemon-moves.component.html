@@ -1,35 +1,77 @@
-<div class="pokemonMoves">
-  <div
-    *ngFor="let PokemonMove of PokemonMoves"
-    class="move-container"
-    (mouseenter)="onMouseEnter(PokemonMove)"
-    (mouseleave)="onMouseLeave(PokemonMove)"
-  >
+<div class="moves-container">
+  <div class="moves-grid">
     <div
-      class="pokemonMove"
-      (click)="useMove(PokemonMove)"
-      *ngIf="!this.DisabledMoves.includes(PokemonMove.nameFr)"
+      *ngFor="let PokemonMove of PokemonMoves"
+      class="move-wrapper"
+      (mouseenter)="onMouseEnter(PokemonMove)"
+      (mouseleave)="onMouseLeave(PokemonMove)"
     >
-      <p>{{ PokemonMove.nameFr }}</p>
-      <p>{{ PokemonMove.pp }}</p>
-    </div>
+      <button
+        class="move-button"
+        [class.move-disabled]="DisabledMoves.includes(PokemonMove.nameFr)"
+        [style.border-color]="!DisabledMoves.includes(PokemonMove.nameFr) ? typeConfig[PokemonMove.type.toLowerCase()].colorBorder : 'rgba(115, 115, 115, 0.3)'"
+        [style.background]="!DisabledMoves.includes(PokemonMove.nameFr) && PokemonMove.hover ? typeConfig[PokemonMove.type.toLowerCase()].colorHover : (!DisabledMoves.includes(PokemonMove.nameFr) ? typeConfig[PokemonMove.type.toLowerCase()].color : 'rgba(64, 64, 64, 0.2)')"
+        (click)="!DisabledMoves.includes(PokemonMove.nameFr) && useMove(PokemonMove)"
+      >
+        <!-- Gradient au hover -->
+        <div
+          class="move-gradient"
+          [style.background]="'linear-gradient(135deg, ' + typeConfig[PokemonMove.type.toLowerCase()].color + ', transparent)'"
+          [style.opacity]="PokemonMove.hover && !DisabledMoves.includes(PokemonMove.nameFr) ? 1 : 0"
+        ></div>
 
-    <div
-      class="pokemonMoveDisabled"
-      *ngIf="this.DisabledMoves.includes(PokemonMove.nameFr)"
-    >
-      <p>{{ PokemonMove.nameFr }}</p>
-      <p>{{ PokemonMove.pp }}</p>
+        <div class="move-content">
+          <div class="move-header">
+            <span
+              class="move-name"
+              [style.color]="!DisabledMoves.includes(PokemonMove.nameFr) && PokemonMove.hover ? typeConfig[PokemonMove.type.toLowerCase()].colorText : (!DisabledMoves.includes(PokemonMove.nameFr) ? '#d4d4d4' : '#737373')"
+            >
+              {{ PokemonMove.nameFr }}
+            </span>
+            <span
+              class="move-icon"
+              [style.transform]="PokemonMove.hover && !DisabledMoves.includes(PokemonMove.nameFr) ? 'scale(1.1)' : 'scale(1)'"
+              [style.opacity]="DisabledMoves.includes(PokemonMove.nameFr) ? 0.3 : 0.7"
+            >
+              {{ getTypeIcon(PokemonMove.type) }}
+            </span>
+          </div>
+
+          <div class="move-footer">
+            <span
+              class="move-pp"
+              [style.color]="!DisabledMoves.includes(PokemonMove.nameFr) && PokemonMove.hover ? typeConfig[PokemonMove.type.toLowerCase()].colorText : '#737373'"
+            >
+              {{ PokemonMove.pp }} / {{ PokemonMove.pp }}
+            </span>
+          </div>
+        </div>
+      </button>
+
+      <!-- Info box au hover -->
+      <div *ngIf="PokemonMove.isHovered" class="info-box">
+        <h4 class="info-title">{{ PokemonMove.nameFr }}</h4>
+        <p class="info-description">{{ PokemonMove.flavorText }}</p>
+        <div class="info-stats">
+          <div class="info-stat">
+            <span class="info-stat-label">Type :</span>
+            <span class="info-stat-value">{{ PokemonMove.damageType }}</span>
+          </div>
+          <div class="info-stat">
+            <span class="info-stat-label">Puissance :</span>
+            <span class="info-stat-value">{{ PokemonMove.power || '-' }}</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- Bulle de texte intégrée -->
-    <div
-      *ngIf="PokemonMove.isHovered"
-      class="info-box"
-    >
-      <p>{{ PokemonMove.nameFr }}</p>
-      <p>{{ PokemonMove.flavorText }}</p>
-      <p>{{ PokemonMove.damageType }}</p>
-      <p><strong>Puissance :</strong> {{ PokemonMove.power }}</p>
+  </div>
+  <div class="otherActions">
+    <div class="otherAction" (click)="openReplacePokemon()">
+      <img class="otherAction swap" src="assets/items-sprites/swap.png"/>
+    </div>
+    <div class="otherAction" (mouseenter)="bagHovered=true" (mouseleave)="bagHovered=false" (click)="openBagDialog()">
+      <img src="assets/items-sprites/Sac.png" *ngIf="!bagHovered">
+      <img src="assets/items-sprites/Sac_Open.png" *ngIf="bagHovered">
     </div>
   </div>
 </div>

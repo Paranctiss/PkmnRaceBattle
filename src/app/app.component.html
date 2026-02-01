@@ -1,4 +1,13 @@
 <div class="pageContent battle-background" [ngClass]="environment" id="background">
+  <!-- Contrôles -->
+  <div class="controls">
+    <button class="btn-plains" (click)="changeEnvironment('plains')">Plaines</button>
+    <button class="btn-desert" (click)="changeEnvironment('desert')">Désert</button>
+    <button class="btn-volcano" (click)="changeEnvironment('volcano')">Volcan</button>
+    <button class="btn-snow" (click)="changeEnvironment('snow')">Neige</button>
+    <button class="btn-cave" (click)="changeEnvironment('cave')">Grotte</button>
+    <button class="btn-water" (click)="changeEnvironment('water')">Eau</button>
+  </div>
   <!-- Couche de fond -->
   <div class="background-layer">
     <div class="sky"></div>
@@ -11,15 +20,5 @@
     <div [@routeAnimations]="prepareRoute(outlet)">
       <router-outlet #outlet="outlet" />
     </div>
-  </div>
-
-  <!-- Contrôles -->
-  <div class="controls">
-    <button class="btn-plains" (click)="changeEnvironment('plains')">Plaines</button>
-    <button class="btn-desert" (click)="changeEnvironment('desert')">Désert</button>
-    <button class="btn-volcano" (click)="changeEnvironment('volcano')">Volcan</button>
-    <button class="btn-snow" (click)="changeEnvironment('snow')">Neige</button>
-    <button class="btn-cave" (click)="changeEnvironment('cave')">Grotte</button>
-    <button class="btn-water" (click)="changeEnvironment('water')">Eau</button>
   </div>
 </div>

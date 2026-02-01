@@ -126,18 +126,16 @@
     <p>{{this.hubService.Player.credits}} PokéDollz</p>
     <div class="actionBar">
       <div class="movesActions">
-        <app-pokemon-moves [PokemonMoves]="PlayerPokemon.moves" [DisabledMoves]="PlayerPokemon.cantUseMoves" (PokemonMovesChange)="useMove($event)"></app-pokemon-moves>
-      </div>
-      <div class="otherActions">
-        <div class="bag" (mouseenter)="bagHovered=true" (mouseleave)="bagHovered=false" (click)="openBagDialog()">
-          <img src="assets/items-sprites/Sac.png" *ngIf="!bagHovered">
-          <img src="assets/items-sprites/Sac_Open.png" *ngIf="bagHovered">
-        </div>
-
+        <app-pokemon-moves
+          [PokemonMoves]="PlayerPokemon.moves"
+          [DisabledMoves]="PlayerPokemon.cantUseMoves"
+          (PokemonMovesChange)="useMove($event)"
+          (OpenedBag)="openBagDialog()"
+          (ChangePokemon)="openReplacePokemon=true"
+        ></app-pokemon-moves>
       </div>
 
     </div>
-    <button (click)="openReplacePokemon=true">Changer Pokémon</button>
   </div>
   <div *ngIf="PlayerPokemon.waitingMove !== null">
     <button (click)="useMove(PlayerPokemon.waitingMove!)">Continuer</button>

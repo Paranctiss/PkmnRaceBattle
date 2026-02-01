@@ -27,7 +27,6 @@
 /* BattleField - retour au flux normal */
 .battleField {
   padding-right: 10vw;
-  padding-left: 3vw;
   display: flex;
   flex-direction: column;
   position: relative; /* Pour les enfants en absolute */
@@ -224,23 +223,7 @@
 }
 
 .movesActions {
-  width: 33vw;
-}
 
-.otherActions {
-  height: 100%;
-}
-
-.bag {
-  padding: 10px;
-}
-
-.bag img {
-  width: 70px;
-}
-
-.bag:hover {
-  cursor: pointer;
 }
 
 .ailmentCard {
@@ -321,7 +304,7 @@
 .pokemonSpriteContainer .platform {
   position: absolute;
   border-radius: 50%;
-  top: 155px;
+  top: 135px;
   left: 0;
   z-index: 1;
   width: 250px;
