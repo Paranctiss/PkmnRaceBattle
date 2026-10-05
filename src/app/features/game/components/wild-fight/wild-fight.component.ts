@@ -1,10 +1,8 @@
-import {Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {PlayerModel, PokemonTeamModel, PokemonTeamMoveModel} from '../../../../shared/models/player.model';
 import {BattleFieldComponent} from '../battle-field/battle-field.component';
 import {HubService} from '../../../../core/services/Hub/hub.service';
-import {NgForOf} from '@angular/common';
 import {TurnContextModel} from '../../../../shared/models/turn-context.model';
-import {resolve} from '@angular/compiler-cli';
 
 @Component({
   selector: 'app-wild-fight',
@@ -14,11 +12,20 @@ import {resolve} from '@angular/compiler-cli';
   templateUrl: './wild-fight.component.html',
   styleUrl: './wild-fight.component.css'
 })
-export class WildFightComponent {
+export class WildFightComponent implements OnChanges {
   @Input() Foe!: PlayerModel;
   TurnContext!:TurnContextModel;
   OnBoardPokemon!:PokemonTeamModel;
   constructor(private hubService: HubService) {
+  }
+
+  // Nouvel adversaire envoyé par le serveur (combat suivant) : le composant reste affiché
+  // d'un combat à l'autre, on reprend donc le Pokémon du joueur tel que le serveur l'a
+  // remis à zéro en fin de combat (attaque en deux tours, variations de stats…)
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['Foe'] && !changes['Foe'].firstChange) {
+      this.OnBoardPokemon = this.hubService.Player.team[0];
+    }
   }
 
   ngOnInit() {
@@ -27,7 +34,6 @@ export class WildFightComponent {
       this.OnBoardPokemon = response.team[0]
     })
     this.hubService.onUseMoveResponse((turnContext:TurnContextModel) => {
-      console.log(turnContext);
       this.TurnContext = turnContext;
       this.TurnContext.player.index = 0;
     });
@@ -46,6 +52,9 @@ export class WildFightComponent {
     this.hubService.onTrainerSwitchPokemon(response => {
       this.Foe = response;
       this.hubService.pending = false;
+      // Le serveur a clos le combat contre le Pokémon K.O. (FinishFight) : on récupère
+      // l'état remis à zéro du Pokémon du joueur (onGetPlayerResponse met à jour OnBoardPokemon)
+      this.hubService.getCurrentUser();
     })
   }
 
@@ -56,7 +65,6 @@ export class WildFightComponent {
 
   useMove(move: PokemonTeamMoveModel) {
     this.hubService.pending = true;
-    console.log(this.Foe.team[0].nameFr)
     this.hubService.useMove(this.OnBoardPokemon.id, move.nameFr, this.Foe._id, this.Foe.team[0].id, true, this.Foe.isPlayer)
   }
 

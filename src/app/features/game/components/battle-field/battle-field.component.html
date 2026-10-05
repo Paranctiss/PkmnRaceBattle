@@ -1,144 +1,115 @@
-<div class="pageContent">
-  <div class="battleField">
-    <div class="message-container" *ngIf="currentMessage">
-      {{ currentMessage }}
-    </div>
-    <div class="replace-pokemon" *ngIf="openReplacePokemon">
-      <h1 class="close-replace-pokemon" (click)="CloseReplacePokemon()">X</h1>
-      <div class="replace-pokemon-card-container">
-        <div *ngFor="let pokemon of this.hubService.Player.team; let i = index" class="replacePokemonCard" (click)="replacePokemon(pokemon, i)"
-             [ngStyle]="{'filter': canEvolveWithItem(pokemon, itemToUse) ? 'none' : 'grayscale(1)'}">
-          <p>Lvl.{{pokemon.level}} {{pokemon.nameFr}}</p>
-          <img src="{{pokemon.frontSprite}}" [ngStyle]="{'filter': pokemon.currHp <= 0 ? 'grayscale(1)' : 'none'}" />
-        </div>
-      </div>
-    </div>
+<div class="battle">
+  <!-- ===== Scène ===== -->
+  <div class="stage">
+    <!-- Adversaire : encadré à gauche du Pokémon, plateforme calée sur l'horizon -->
+    <div class="side side--foe">
+      <app-battle-hud class="hud-slot--foe"
+                      side="foe"
+                      [battler]="OppositePokemon"
+                      [level]="OppositePokemon.level"
+                      [trainerTeam]="Opponent.isTrainer ? Opponent.team : undefined"/>
 
-    <div class="opened-bag" *ngIf="openBag">
-      <h1 class="close-replace-pokemon" (click)="openBag=false">X</h1>
-      <div class="item-bag-card-container">
-        <div *ngFor="let item of this.balls;" (click)="itemClicked(item)"  class="itemBagCard">
-          <app-bag-item [item]="item"></app-bag-item>
-        </div>
-      </div>
-      <div class="item-bag-card-container">
-        <div *ngFor="let item of this.potions;" (click)="itemClicked(item)"  class="itemBagCard">
-          <app-bag-item [item]="item"></app-bag-item>
-        </div>
-      </div>
-      <div class="item-bag-card-container">
-        <div *ngFor="let item of this.ailments;" (click)="itemClicked(item)"  class="itemBagCard">
-          <app-bag-item [item]="item"></app-bag-item>
-        </div>
-      </div>
-      <div class="item-bag-card-container">
-        <div *ngFor="let item of this.specials;" (click)="itemClicked(item)"  class="itemBagCard">
-          <app-bag-item [item]="item"></app-bag-item>
-        </div>
+      <div class="spot spot--foe">
+        <img *ngIf="Opponent.isTrainer" appGroundedSprite class="foe-trainer pixel" src="assets/trainers-sprites/{{ Opponent.sprite }}.png" [alt]="Opponent.name">
+        <div class="platform"></div>
+        <img *ngIf="catchingBall === '' && OppositePokemon.untargetable == null"
+             appGroundedSprite
+             class="sprite sprite--foe pixel"
+             [src]="OppositePokemon.frontSprite"
+             [alt]="OppositePokemon.nameFr">
+        <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{ catchingBall }}.webp" [alt]="catchingBall">
       </div>
     </div>
 
-    <div class="learn-move" *ngIf="openLearnMove">
-      <h4>{{pokemonWantToLearn[0].nameFr}} veut apprendre {{movesToLearn[0][0].nameFr}}</h4>
-      <p>Par quelle capacité voulez vous le remplacer ?</p>
-      <div *ngFor="let move of pokemonWantToLearn[0].moves" class="moveToLearn" (click)="ReplaceMoveBy(move.id, movesToLearn[0][0].id, pokemonWantToLearn[0].id)"> {{move.nameFr}} </div>
-      <div (click)="DismissLearn()">{{movesToLearn[0][0].nameFr}}</div>
-    </div>
-
-    <div class="scrollable-box">
-      <div class="content">
-        <div *ngFor="let item of logs" class="item">{{ item }}</div>
-      </div>
-    </div>
-    <div class="flexRight">
-         <div *ngIf="Opponent.isTrainer">
-           <img style="width: 150px" src="assets/trainers-sprites/{{Opponent.sprite}}.png">
-           <div>
-             <img *ngFor="let team of Opponent.team" src="assets/balls-sprites/Pokeball.webp" [ngStyle]="{'filter': team.currHp <= 0 ? 'grayscale(1)' : 'none'}">
-           </div>
-         </div>
-      <div class="oppositeSide">
-        <div class="pokemon-card">
-          <div class="pokemon-header">
-            <h2 class="pokemon-name">{{OppositePokemon.nameFr}}</h2>
-            <span class="pokemon-level">Lv .{{OppositePokemon.level}}</span>
-          </div>
-          <app-hp-bar [CurrHP]="OppositePokemon.currHp" [BaseHP]="OppositePokemon.baseHp"></app-hp-bar>
-        </div>
-        <!--<h4>lvl.{{OppositePokemon.level}} {{OppositePokemon.nameFr}}</h4>-->
-        <div class="pokemonSpriteContainer">
-          <img *ngIf="catchingBall === '' && OppositePokemon.untargetable === null " class="pokemonImg" src="{{OppositePokemon.frontSprite}}" alt="oppositePokemon">
-          <img *ngIf="catchingBall !== ''" class="ballImg" src="/assets/balls-sprites/{{catchingBall}}.webp" alt="oppositePokemon">
-          <div class="platform"></div>
-        </div>
-        <app-stats-changes [Pokemon]="OppositePokemon" />
-        <p *ngIf="OppositePokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
-        <p *ngIf="OppositePokemon.isBurning" class="ailmentCard brulure">BRU</p>
-        <p *ngIf="OppositePokemon.isPoisoned" class="ailmentCard poison">PSN</p>
-        <p *ngIf="OppositePokemon.isFrozen" class="ailmentCard gel">GEL</p>
-        <p *ngIf="OppositePokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
-
+    <!-- Joueur : encadré à droite du Pokémon -->
+    <div class="side side--ally">
+      <div class="spot spot--ally">
+        <div class="platform"></div>
+        <img *ngIf="allyVisible" appGroundedSprite class="sprite sprite--ally pixel" [src]="allyBattler.backSprite" [alt]="allyBattler.nameFr">
       </div>
 
-    </div>
-
-
-    <div class="playerSide">
-      <div *ngIf="PlayerPokemon.substitute !== null">
-        <div class="pokemonSpriteContainer">
-          <img class="pokemonImg" src="{{PlayerPokemon.substitute.backSprite}}" alt="playerPokemon">
-          <div class="platform"></div>
-        </div>
-        <app-stats-changes [Pokemon]="PlayerPokemon.substitute" />
-        <app-hp-bar [CurrHP]="PlayerPokemon.substitute.currHp" [BaseHP]="PlayerPokemon.substitute.baseHp" ></app-hp-bar>
-        <p *ngIf="PlayerPokemon.substitute.isParalyzed" class="ailmentCard paralysie">PAR</p>
-        <p *ngIf="PlayerPokemon.substitute.isBurning" class="ailmentCard brulure">BRU</p>
-        <p *ngIf="PlayerPokemon.substitute.isPoisoned" class="ailmentCard poison">PSN</p>
-        <p *ngIf="PlayerPokemon.substitute.isFrozen" class="ailmentCard gel">GEL</p>
-        <p *ngIf="PlayerPokemon.substitute.isSleeping > 0" class="ailmentCard sleep">DOR</p>
-      </div>
-      <div *ngIf="PlayerPokemon.substitute === null">
-        <div class="pokemonSpriteContainer">
-          <img *ngIf="PlayerPokemon.untargetable === null" class="pokemonImg" src="{{PlayerPokemon.backSprite}}" alt="playerPokemon">
-          <div class="platform"></div>
-        </div>
-        <app-stats-changes [Pokemon]="PlayerPokemon" />
-        <div class="pokemon-card">
-          <div class="pokemon-header">
-            <h2 class="pokemon-name">{{PlayerPokemon.nameFr}}</h2>
-            <span class="pokemon-level">Lv .{{PlayerPokemon.level}}</span>
-          </div>
-          <app-hp-bar [CurrHP]="PlayerPokemon.currHp" [BaseHP]="PlayerPokemon.baseHp" ></app-hp-bar>
-        </div>
-        <p *ngIf="PlayerPokemon.isParalyzed" class="ailmentCard paralysie">PAR</p>
-        <p *ngIf="PlayerPokemon.isBurning" class="ailmentCard brulure">BRU</p>
-        <p *ngIf="PlayerPokemon.isPoisoned" class="ailmentCard poison">PSN</p>
-        <p *ngIf="PlayerPokemon.isFrozen" class="ailmentCard gel">GEL</p>
-        <p *ngIf="PlayerPokemon.isSleeping > 0" class="ailmentCard sleep">DOR</p>
-      </div>
-      <app-exp-bar [BaseExp]="PlayerPokemon.xpFromLastLvl" [CurrExp]="PlayerPokemon.currXP" [NextLevelExp]="PlayerPokemon.xpForNextLvl" ></app-exp-bar>
+      <app-battle-hud class="hud-slot--ally"
+                      side="ally"
+                      [battler]="allyBattler"
+                      [level]="PlayerPokemon.level"
+                      [expPokemon]="PlayerPokemon"/>
     </div>
   </div>
-  <div *ngIf="this.waitingOpponent" class="waitingOpponent">
-    <h2>En attente de l'adversaire...</h2>
-  </div>
-  <div *ngIf="!this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && PlayerPokemon.waitingMove === null">
-    <p>{{this.hubService.Player.credits}} PokéDollz</p>
-    <div class="actionBar">
-      <div class="movesActions">
-        <app-pokemon-moves
-          [PokemonMoves]="PlayerPokemon.moves"
-          [DisabledMoves]="PlayerPokemon.cantUseMoves"
-          (PokemonMovesChange)="useMove($event)"
-          (OpenedBag)="openBagDialog()"
-          (ChangePokemon)="openReplacePokemon=true"
-        ></app-pokemon-moves>
-      </div>
 
+  <!-- ===== Dialogue + commandes ===== -->
+  <div class="console" [class.console--wide]="!hasCommandPanel">
+    <div class="dialog frame">
+      <!-- Recréé à chaque nouveau texte pour rejouer l'effet "machine à écrire" -->
+      <p class="dialog__text" *ngFor="let text of [dialogText]" [class.is-message]="currentMessage">{{ text }}</p>
+      <span class="dialog__arrow blink" *ngIf="currentMessage" aria-hidden="true">▼</span>
+      <button type="button" class="dialog__log-toggle" (click)="showLog = !showLog" [attr.aria-expanded]="showLog">
+        Journal <span>{{ showLog ? '▾' : '▴' }}</span>
+      </button>
+      <ol class="log frame frame--dark" *ngIf="showLog" aria-label="Journal du combat">
+        <li *ngFor="let item of logs">{{ item }}</li>
+        <li *ngIf="logs.length === 0">Rien à signaler pour l’instant.</li>
+      </ol>
+    </div>
+
+    <div class="command-panel" *ngIf="canAct">
+      <app-pokemon-moves
+        [PokemonMoves]="PlayerPokemon.moves"
+        [DisabledMoves]="PlayerPokemon.cantUseMoves"
+        (PokemonMovesChange)="useMove($event)"
+        (OpenedBag)="openBagDialog()"
+        (ChangePokemon)="openReplacePokemon = true"
+        (OpenMapEmitter)="OpenMap()"/>
+    </div>
+
+    <div class="command-panel command-panel--single" *ngIf="PlayerPokemon.waitingMove != null && !hubService.pending">
+      <button type="button" class="btn btn--primary btn--lg" (click)="useMove(PlayerPokemon.waitingMove!)">
+        Continuer : {{ PlayerPokemon.waitingMove!.nameFr }} ▶
+      </button>
     </div>
   </div>
-  <div *ngIf="PlayerPokemon.waitingMove !== null">
-    <button (click)="useMove(PlayerPokemon.waitingMove!)">Continuer</button>
-  </div>
-
 </div>
+
+<!-- ===== Fenêtres ===== -->
+
+<app-game-modal *ngIf="openReplacePokemon" [title]="replaceTitle" accent="red" (closed)="CloseReplacePokemon()">
+  <p class="modal-lead">{{ replaceHint }}</p>
+  <div class="party-grid">
+    <button type="button"
+            class="party-pick"
+            *ngFor="let pokemon of hubService.Player.team; let i = index"
+            (click)="replacePokemon(pokemon, i)">
+      <app-pokemon-slot [pokemon]="pokemon" [lead]="i === 0" [dimmed]="!canEvolveWithItem(pokemon, itemToUse)" [showTypes]="true"/>
+    </button>
+  </div>
+</app-game-modal>
+
+<app-game-modal *ngIf="openBag" title="Sac" accent="gold" (closed)="openBag = false">
+  <app-bag [items]="hubService.Player.items" (itemSelected)="itemClicked($event)"/>
+</app-game-modal>
+
+<app-game-modal *ngIf="openLearnMove && pokemonWantToLearn.length > 0" title="Nouvelle capacité" accent="gold" size="sm" [closable]="false">
+  <p class="modal-lead">
+    <b>{{ pokemonWantToLearn[0].nameFr }}</b> veut apprendre <b>{{ movesToLearn[0][0].nameFr }}</b>,
+    mais il connaît déjà quatre capacités. Laquelle doit-il oublier ?
+  </p>
+  <div class="learn-list">
+    <button type="button"
+            *ngFor="let move of pokemonWantToLearn[0].moves"
+            class="btn btn--block menu-cursor learn-list__move"
+            [style.--btn-bg]="typeColor(move.type)"
+            [style.--btn-fg]="typeText(move.type)"
+            (click)="ReplaceMoveBy(move.id, movesToLearn[0][0].id, pokemonWantToLearn[0].id)">
+      {{ move.nameFr }}
+    </button>
+  </div>
+  <button type="button" class="btn btn--sm btn--dark btn--block" (click)="DismissLearn()">
+    Ne pas apprendre {{ movesToLearn[0][0].nameFr }}
+  </button>
+</app-game-modal>
+
+<app-game-modal *ngIf="openMap" title="Carte de la région" size="lg" (closed)="CloseMap()">
+  <app-map
+    [PathNodes]="hubService.Player.playerPath.pathPoints"
+    [CurrentNode]="hubService.Player.currentPath"
+    [TrainerSprite]="hubService.Player.sprite"/>
+</app-game-modal>

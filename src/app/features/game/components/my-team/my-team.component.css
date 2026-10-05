@@ -1,40 +1,30 @@
-.myTeam{
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: end;
+:host {
+  display: block;
 }
 
-.pokemon{
-  display: flex;
-  flex-direction: row;
-  border: #000 1px solid;
-  margin: 3px;
-  padding: 3px;
-  width: 200px;
+.team {
+  padding: 30px 12px 14px;
 }
 
-.pokemon:hover{
-  cursor: pointer;
-}
-.pokemonInformations{
+.team__slots {
   display: flex;
-  width: 100%;
   flex-direction: column;
+  gap: 12px;
 }
 
-.pokemonTypes{
-  display: flex;
-  flex-direction: column;
-  justify-content: center
+.team__empty {
+  display: grid;
+  place-items: center;
+  height: 64px;
+  border: 2px dashed rgba(251, 246, 232, 0.28);
+  border-radius: 14px 14px 14px 4px;
 }
 
-.pokemonSprite{
-  & img{
-    z-index: 2;
-    width: 100px;
-  }
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* Poké Ball vide en filigrane */
+.team__empty-ball {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(251, 246, 232, 0.28);
+  border-radius: 50%;
+  background: linear-gradient(to bottom, transparent 0 44%, rgba(251, 246, 232, 0.28) 44% 56%, transparent 56%);
 }

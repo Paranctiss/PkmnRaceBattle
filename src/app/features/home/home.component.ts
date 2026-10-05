@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {Router} from '@angular/router';
+import {EnvironmentService} from '../../core/services/Environment/environment.service';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +9,9 @@ import {Router} from '@angular/router';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  constructor(private router:Router) {
+  constructor(private router:Router, environmentService: EnvironmentService) {
+    // Retour à l'écran titre : on revient au décor de départ
+    environmentService.setEnvironment('Plaine');
   }
   host() {
     this.router.navigate(['/starter'], { queryParams: { host: true } });

@@ -1,52 +1,53 @@
-<div class="message-container" *ngIf="currentMessage">
-  {{ currentMessage }}
-</div>
-<div class="opened-bag" *ngIf="openBag">
-  <h1 class="close-replace-pokemon" (click)="openBag=false">X</h1>
-  <div class="item-bag-card-container">
-    <div *ngFor="let item of this.balls;" class="itemBagCard">
-      <app-bag-item [item]="item"></app-bag-item>
+<section class="mart frame frame--mart">
+  <header class="mart__sign">
+    <app-pixel-icon name="Shop" [size]="44"/>
+    <span class="mart__sign-text">Boutique Pokémon</span>
+    <span class="chip wallet" title="Pokédollars">₽ {{ hubService.Player.credits }}</span>
+  </header>
+
+  <div class="mart__tabs" role="tablist" aria-label="Rayons">
+    <button type="button"
+            role="tab"
+            *ngFor="let pocket of pockets"
+            class="mart__tab"
+            [class.is-active]="pocket.key === activePocket"
+            [attr.aria-selected]="pocket.key === activePocket"
+            (click)="activePocket = pocket.key">
+      {{ pocket.label }}
+    </button>
+  </div>
+
+  <div class="mart__shelf" role="tabpanel">
+    <button type="button"
+            *ngFor="let item of shelfItems"
+            class="ware"
+            [class.is-unaffordable]="hubService.Player.credits < item.price"
+            [attr.aria-disabled]="hubService.Player.credits < item.price"
+            (click)="buyItem(item)"
+            (mouseenter)="hovered = item"
+            (mouseleave)="hovered = undefined">
+      <span class="ware__owned" *ngIf="owned(item.name) > 0">×{{ owned(item.name) }}</span>
+      <img class="ware__sprite" [src]="sprite(item.name)" [alt]="item.name">
+      <span class="ware__name">{{ item.name }}</span>
+      <span class="ware__price">₽ {{ item.price }}</span>
+    </button>
+  </div>
+
+  <footer class="mart__footer">
+    <p class="mart__clerk" [class.is-purchase]="currentMessage">{{ clerkText }}</p>
+    <div class="mart__actions">
+      <button type="button" class="btn btn--sm" (click)="openBag = true">
+        <img class="btn__icon pixel" src="assets/items-sprites/Sac.png" alt="">
+        Sac
+      </button>
+      <button type="button" class="btn btn--blue" [disabled]="leaving" (click)="nextTurn()">
+        <app-pixel-icon name="Exit" [size]="24"/>
+        Quitter
+      </button>
     </div>
-  </div>
-  <div class="item-bag-card-container">
-    <div *ngFor="let item of this.potions;" class="itemBagCard">
-      <app-bag-item [item]="item"></app-bag-item>
-    </div>
-  </div>
-  <div class="item-bag-card-container">
-    <div *ngFor="let item of this.ailments;" class="itemBagCard">
-      <app-bag-item [item]="item"></app-bag-item>
-    </div>
-  </div>
-  <div class="item-bag-card-container">
-    <div *ngFor="let item of this.specials;" class="itemBagCard">
-      <app-bag-item [item]="item"></app-bag-item>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div>
-    <p>Crédits : {{this.hubService.Player.credits}} <img src="assets/items-sprites/credits.png"> </p>
-    <div class="shop">
-      <div class="text">
-        <h1>Boutique Pokémon</h1>
-      </div>
-      <div class="objContainer">
-        <div class="objCard" *ngFor="let item of this.items" (click)="buyItem(item)">
-          <div class="objName" [ngStyle]="{'filter': this.hubService.Player.credits < item.price ? 'grayscale(1)' : 'none'}">
-            <img src="assets/items-sprites/{{item.name.replace(' ', '_')}}.png" class="objImg">
-            <p>{{item.name}}</p>
-            <p>{{item.price}} <img src="assets/items-sprites/credits.png"></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="bag" (mouseenter)="bagHovered=true" (mouseleave)="bagHovered=false" (click)="openBagDialog()">
-    <img src="assets/items-sprites/Sac.png" *ngIf="!bagHovered">
-    <img src="assets/items-sprites/Sac_Open.png" *ngIf="bagHovered">
-  </div>
-  <div class="exitIcon" (click)="nextTurn()">
-    <img src="assets/items-sprites/exit.png">
-  </div>
-</div>
+  </footer>
+</section>
+
+<app-game-modal *ngIf="openBag" title="Sac" accent="gold" (closed)="openBag = false">
+  <app-bag [items]="hubService.Player.items" [selectable]="false"/>
+</app-game-modal>

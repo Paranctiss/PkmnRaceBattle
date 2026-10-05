@@ -1,22 +1,31 @@
-<div class="container">
-  <button *ngIf="hubService.Player.isHost" (click)="startTournament()">Lancer le tournoi</button>
-  <div class="roundCards">
-    <div class="playerCard">
-      <h1>?</h1>
-    </div>
+<section class="bracket frame frame--gold">
+  <h2 class="frame-title">Tournoi</h2>
+
+  <div class="champion">
+    <span class="champion__label">Champion</span>
+    <span class="champion__slot">?</span>
   </div>
-  <div *ngFor="let bracketRound of this.bracket.rounds" class="roundCards">
-    <div class="playerCard" *ngFor="let playerId of bracketRound.playersInRace">
-      <div *ngIf="playerId === '?'">
-        <h1>?</h1>
-      </div>
-      <div *ngIf="playerId !== '?'">
-        <h3>{{getName(playerId)}}</h3>
-        <img src="assets/trainers-sprites/{{getSprite(playerId)}}.png">
-        <div class="teamBalls">
-          <img *ngFor="let team of getTeam(playerId)" src="assets/balls-sprites/Pokeball.webp">
+
+  <div class="round" *ngFor="let matches of rounds">
+    <div class="match" *ngFor="let match of matches">
+      <ng-container *ngFor="let playerId of match; let last = last">
+        <div class="duelist" [class.is-unknown]="playerId === '?'">
+          <ng-container *ngIf="playerId !== '?'; else unknown">
+            <img class="duelist__sprite pixel" src="assets/trainers-sprites/{{ getSprite(playerId) }}.png" [alt]="getName(playerId)">
+            <span class="duelist__name">{{ getName(playerId) }}</span>
+            <span class="duelist__team">
+              <img *ngFor="let member of getTeam(playerId)" src="assets/balls-sprites/Pokeball.webp" alt="">
+            </span>
+          </ng-container>
+          <ng-template #unknown><span class="duelist__unknown">?</span></ng-template>
         </div>
-      </div>
+        <span class="match__vs" *ngIf="!last">VS</span>
+      </ng-container>
     </div>
   </div>
-</div>
+
+  <div class="bracket__actions">
+    <button type="button" class="btn btn--primary btn--lg" *ngIf="hubService.Player.isHost" (click)="startTournament()">Lancer le tournoi ▶</button>
+    <p class="bracket__wait" *ngIf="!hubService.Player.isHost"><span class="ball-loader"></span> En attente du lancement par l’hôte…</p>
+  </div>
+</section>

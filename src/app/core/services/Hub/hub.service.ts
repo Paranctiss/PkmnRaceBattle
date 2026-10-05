@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {SignalRService} from '../SignalR/signal-r.service';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {PlayerModel, PokemonTeamModel, PokemonTeamMoveModel} from '../../../shared/models/player.model';
+import {PathPoint, PlayerModel, PokemonTeamModel, PokemonTeamMoveModel} from '../../../shared/models/player.model';
 import {TurnContextModel} from '../../../shared/models/turn-context.model';
 import {PokemonMoveBaseModel} from '../../../shared/models/pokemon-base.model';
 import {BracketModel} from '../../../shared/models/bracket.model';
@@ -25,12 +25,17 @@ export class HubService {
     name:"",
     sprite:"",
     credits: 0,
-    items: []
+    items: [],
+    playerPath: {pathPoints: []},
+    currentPath: {environmentName:"Plaine", x:1, y:1},
+    mapFightCount: 0
   }
   public remainingSeconds: number = 0;
   public timerActive: boolean = false;
 
-  constructor(public signalRService: SignalRService, private http: HttpClient) {}
+  constructor(public signalRService: SignalRService, private http: HttpClient) {
+    console.log('HubService instance created', Math.random());
+  }
 
   joinGame(userName: string, starterId:number, trainerSprite:string, roomCode: string) {
     this.signalRService.connection.invoke('JoinGame', userName, starterId, trainerSprite, roomCode).catch(err => console.error(err));
@@ -113,6 +118,14 @@ export class HubService {
     this.signalRService.connection.on('NewTurn', callback);
   }
 
+  onChooseNextPath(callback:(options:PathPoint[]) => void) {
+    this.signalRService.connection.on('chooseNextPath', callback);
+  }
+
+  chooseNextPath(x:number, y:number) {
+    this.signalRService.connection.invoke('ChooseNextPath', this.userId, x, y).catch(err => console.error(err));
+  }
+
   getWildFight() {
     this.signalRService.connection.invoke('GetNewTurn', this.userId).catch(err => console.error(err));
   }
@@ -141,7 +154,7 @@ export class HubService {
     this.signalRService.connection.on('onTrainerSwitchPokemon', callback);
   }
 
-  responseWildFight(callback:(responsePokemon:PlayerModel) => void) {
+  responseWildFight(callback:(responsePokemon:PlayerModel, responsePlayer:PlayerModel) => void) {
     this.signalRService.connection.on('responseWildFight', callback);
   }
 
@@ -193,6 +206,7 @@ export class HubService {
   }
 
   onTurnFinished(callback: (updatedPlayer:PlayerModel, wildOpponent:PlayerModel) => void) {
+    console.log("onTurnFinished");
     this.signalRService.connection.on('turnFinished', callback);
   }
 

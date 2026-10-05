@@ -1,9 +1,13 @@
-<div class="trainerPresentation" *ngIf="!continuer">
-
-  <img src="assets/trainers-sprites/{{Foe.sprite}}.png" style="width: 200px"/>
-
-  <div>
-    <h1>{{Foe.name}} veut se battre !</h1>
-    <button (click)="this.TrainerContinue.emit()">Continuer</button>
+<section class="encounter">
+  <!-- Bandes diagonales façon introduction de combat -->
+  <div class="encounter__band">
+    <img class="encounter__trainer pixel" src="assets/trainers-sprites/{{ Foe.sprite }}.png" [alt]="Foe.name">
+    <div class="encounter__balls">
+      <img *ngFor="let member of Foe.team" src="assets/balls-sprites/Pokeball.webp" alt="">
+    </div>
   </div>
-</div>
+  <div class="encounter__dialog frame">
+    <p><b>{{ Foe.name }}</b> veut se battre !</p>
+    <button type="button" class="btn btn--primary btn--lg" (click)="TrainerContinue.emit()">Combattre ▶</button>
+  </div>
+</section>

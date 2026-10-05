@@ -1,77 +1,46 @@
-<div class="moves-container">
-  <div class="moves-grid">
-    <div
-      *ngFor="let PokemonMove of PokemonMoves"
-      class="move-wrapper"
-      (mouseenter)="onMouseEnter(PokemonMove)"
-      (mouseleave)="onMouseLeave(PokemonMove)"
-    >
-      <button
-        class="move-button"
-        [class.move-disabled]="DisabledMoves.includes(PokemonMove.nameFr)"
-        [style.border-color]="!DisabledMoves.includes(PokemonMove.nameFr) ? typeConfig[PokemonMove.type.toLowerCase()].colorBorder : 'rgba(115, 115, 115, 0.3)'"
-        [style.background]="!DisabledMoves.includes(PokemonMove.nameFr) && PokemonMove.hover ? typeConfig[PokemonMove.type.toLowerCase()].colorHover : (!DisabledMoves.includes(PokemonMove.nameFr) ? typeConfig[PokemonMove.type.toLowerCase()].color : 'rgba(64, 64, 64, 0.2)')"
-        (click)="!DisabledMoves.includes(PokemonMove.nameFr) && useMove(PokemonMove)"
-      >
-        <!-- Gradient au hover -->
-        <div
-          class="move-gradient"
-          [style.background]="'linear-gradient(135deg, ' + typeConfig[PokemonMove.type.toLowerCase()].color + ', transparent)'"
-          [style.opacity]="PokemonMove.hover && !DisabledMoves.includes(PokemonMove.nameFr) ? 1 : 0"
-        ></div>
-
-        <div class="move-content">
-          <div class="move-header">
-            <span
-              class="move-name"
-              [style.color]="!DisabledMoves.includes(PokemonMove.nameFr) && PokemonMove.hover ? typeConfig[PokemonMove.type.toLowerCase()].colorText : (!DisabledMoves.includes(PokemonMove.nameFr) ? '#d4d4d4' : '#737373')"
-            >
-              {{ PokemonMove.nameFr }}
-            </span>
-            <span
-              class="move-icon"
-              [style.transform]="PokemonMove.hover && !DisabledMoves.includes(PokemonMove.nameFr) ? 'scale(1.1)' : 'scale(1)'"
-              [style.opacity]="DisabledMoves.includes(PokemonMove.nameFr) ? 0.3 : 0.7"
-            >
-              {{ getTypeIcon(PokemonMove.type) }}
-            </span>
-          </div>
-
-          <div class="move-footer">
-            <span
-              class="move-pp"
-              [style.color]="!DisabledMoves.includes(PokemonMove.nameFr) && PokemonMove.hover ? typeConfig[PokemonMove.type.toLowerCase()].colorText : '#737373'"
-            >
-              {{ PokemonMove.pp }} / {{ PokemonMove.pp }}
-            </span>
-          </div>
-        </div>
+<div class="commands">
+  <div class="moves">
+    <div class="move-wrap"
+         *ngFor="let move of PokemonMoves"
+         (mouseenter)="onMouseEnter(move)"
+         (mouseleave)="onMouseLeave(move)">
+      <button type="button"
+              class="move"
+              [disabled]="isDisabled(move)"
+              [style.--move-color]="typeColor(move)"
+              [style.--move-text]="typeText(move)"
+              (click)="useMove(move)">
+        <span class="move__name">{{ move.nameFr }}</span>
+        <span class="move__meta">
+          <span class="move__type">{{ typeLabel(move) }}</span>
+          <span class="move__pp">PP {{ move.pp }}</span>
+        </span>
       </button>
 
-      <!-- Info box au hover -->
-      <div *ngIf="PokemonMove.isHovered" class="info-box">
-        <h4 class="info-title">{{ PokemonMove.nameFr }}</h4>
-        <p class="info-description">{{ PokemonMove.flavorText }}</p>
-        <div class="info-stats">
-          <div class="info-stat">
-            <span class="info-stat-label">Type :</span>
-            <span class="info-stat-value">{{ PokemonMove.damageType }}</span>
-          </div>
-          <div class="info-stat">
-            <span class="info-stat-label">Puissance :</span>
-            <span class="info-stat-value">{{ PokemonMove.power || '-' }}</span>
-          </div>
-        </div>
+      <div *ngIf="move.isHovered" class="move-info frame frame--dark">
+        <h4 class="move-info__title">{{ move.nameFr }}</h4>
+        <p class="move-info__text">{{ move.flavorText }}</p>
+        <dl class="move-info__stats">
+          <div><dt>Catégorie</dt><dd>{{ damageTypeLabel(move) }}</dd></div>
+          <div><dt>Puissance</dt><dd>{{ move.power || '—' }}</dd></div>
+          <div><dt>Précision</dt><dd>{{ move.accuracy ? move.accuracy + ' %' : '—' }}</dd></div>
+        </dl>
       </div>
     </div>
   </div>
-  <div class="otherActions">
-    <div class="otherAction" (click)="openReplacePokemon()">
-      <img class="otherAction swap" src="assets/items-sprites/swap.png"/>
-    </div>
-    <div class="otherAction" (mouseenter)="bagHovered=true" (mouseleave)="bagHovered=false" (click)="openBagDialog()">
-      <img src="assets/items-sprites/Sac.png" *ngIf="!bagHovered">
-      <img src="assets/items-sprites/Sac_Open.png" *ngIf="bagHovered">
-    </div>
+
+  <div class="actions">
+    <button type="button" class="action" (click)="openBagDialog()" (mouseenter)="bagHovered = true" (mouseleave)="bagHovered = false">
+      <img class="pixel action__icon" [src]="bagHovered ? 'assets/items-sprites/Sac_Open.png' : 'assets/items-sprites/Sac.png'" alt="">
+      <span>Sac</span>
+    </button>
+    <button type="button" class="action" (click)="openReplacePokemon()">
+      <app-pixel-icon name="Ball" [size]="30"/>
+      <span>Pokémon</span>
+    </button>
+    <button type="button" class="action" (click)="OpenMap()">
+      <img class="pixel action__icon" src="assets/items-sprites/map.png" alt="">
+      <span>Carte</span>
+    </button>
   </div>
 </div>

@@ -1,10 +1,78 @@
-.trainerPresentation{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+:host {
+  display: block;
+  width: min(760px, 100%);
 }
 
+.encounter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
 
+.encounter__band {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0 16px;
+  background:
+    repeating-linear-gradient(-60deg, rgba(255, 255, 255, 0.08) 0 18px, transparent 18px 36px),
+    linear-gradient(to bottom, var(--red) 0 50%, var(--red-dark) 50%);
+  border: var(--edge) solid var(--ink);
+  border-radius: 16px;
+  box-shadow: var(--drop);
+  overflow: hidden;
+  transform: skewY(-3deg);
+  animation: band-in 0.35s ease-out both;
+}
+
+.encounter__trainer {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  transform: skewY(3deg);
+  filter: drop-shadow(6px 6px 0 rgba(29, 34, 54, 0.45));
+  animation: trainer-in 0.5s 0.15s ease-out both;
+}
+
+.encounter__balls {
+  display: flex;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(29, 34, 54, 0.75);
+  border-radius: 10px;
+  transform: skewY(3deg);
+}
+
+.encounter__balls img {
+  width: 22px;
+  height: 22px;
+}
+
+.encounter__dialog {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  padding: 20px 24px;
+}
+
+.encounter__dialog p {
+  font-family: var(--font-pixel);
+  font-size: 26px;
+}
+
+.encounter__dialog b {
+  color: var(--red);
+}
+
+@keyframes band-in {
+  from { opacity: 0; transform: skewY(-3deg) scaleX(0.6); }
+}
+
+@keyframes trainer-in {
+  from { opacity: 0; transform: skewY(3deg) translateX(80px); }
+}

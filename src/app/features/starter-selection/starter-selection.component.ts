@@ -43,7 +43,6 @@ export class StarterSelectionComponent {
     this.loadPokemon(1)
     this.loadPokemon(4)
     this.loadPokemon(7)
-    this.changeTrainerSprite()
     this.Host = this.route.snapshot.queryParams['host'] === 'true';
     this.changeTrainerSprite()
     this.hubService.onGameCreated((gameCode, userId) => {
@@ -63,22 +62,42 @@ export class StarterSelectionComponent {
     this.pokemonBaseService.getPokemonById(id).subscribe({
       next: (data)=>{
         this.Starters.push(data)
+        this.Starters.sort((a, b) => a.id - b.id)
       },
       error: (error)=>console.log('Erreur lors du chargement du Pokémon', error)
     })
   }
 
-      selectedPokemonId:number = 0
+  selectedPokemonId:number = 0
 
-      selectPokemonId(id:number) {
-        this.selectedPokemonId = id;
-      }
+  selectPokemonId(id:number) {
+    this.selectedPokemonId = id;
+  }
+
+  get selectedStarter(): PokemonBaseModel | undefined {
+    return this.Starters.find(s => s.id === this.selectedPokemonId);
+  }
+
+  // Ce qu'il manque pour valider le formulaire (vide = prêt)
+  get missingHint(): string {
+    if (!this.selectedPokemonId) return 'Choisis un Pokémon de départ.';
+    if (this.username.trim().length === 0) return 'Entre ton nom de dresseur.';
+    if (!this.Host && this.roomCode.trim().length === 0) return 'Entre le code de la salle.';
+    return '';
+  }
+
+  submit() {
+    if (this.missingHint) return;
+    if (this.Host) this.createGame();
+    else this.joinGame();
+  }
 
   createGame() {
-    this.hubService.createGame(this.username, this.selectedPokemonId, this.trainerSprite)
+    this.hubService.createGame(this.username.trim(), this.selectedPokemonId, this.trainerSprite)
   }
   joinGame() {
-    this.hubService.joinGame(this.username, this.selectedPokemonId, this.trainerSprite, this.roomCode)
+    // Les codes de salle générés par le serveur sont en majuscules
+    this.hubService.joinGame(this.username.trim(), this.selectedPokemonId, this.trainerSprite, this.roomCode.trim().toUpperCase())
   }
 
   changeTrainerSprite() {

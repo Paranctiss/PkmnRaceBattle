@@ -30,7 +30,6 @@ export class TimerComponent {
 
     this.hubService.onTimerEnded((gameCode: string) => {
       // Actions à effectuer lorsque le timer est terminé
-      console.log('Le temps est écoulé!');
       // Par exemple, afficher une notification ou changer l'état du jeu
     });
   }

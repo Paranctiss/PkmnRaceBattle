@@ -1,0 +1,24 @@
+:host {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.stat {
+  padding: 0 6px 1px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+}
+
+.stat--up {
+  background: #2f9e57;
+}
+
+.stat--down {
+  background: #3d6fc4;
+}

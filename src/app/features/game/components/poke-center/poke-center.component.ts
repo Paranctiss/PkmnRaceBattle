@@ -1,21 +1,20 @@
-import {booleanAttribute, Component} from '@angular/core';
+import {Component} from '@angular/core';
+import {NgForOf, NgIf} from '@angular/common';
 import {HubService} from '../../../../core/services/Hub/hub.service';
-import {MyTeamComponent} from '../my-team/my-team.component';
-import {NgForOf, NgIf, NgStyle} from '@angular/common';
-import {HpBarComponent} from '../hp-bar/hp-bar.component';
+import {PokemonSlotComponent} from '../../../../shared/components/pokemon-slot/pokemon-slot.component';
+import {PixelIconComponent} from '../../../../shared/components/pixel-icon/pixel-icon.component';
 
 @Component({
   selector: 'app-poke-center',
   imports: [
     NgForOf,
-    HpBarComponent,
     NgIf,
-    NgStyle
+    PokemonSlotComponent,
+    PixelIconComponent
   ],
   templateUrl: './poke-center.component.html',
   styleUrl: './poke-center.component.css'
 })
-
 export class PokeCenterComponent {
   constructor(public hubService: HubService) {
   }
@@ -36,6 +35,7 @@ export class PokeCenterComponent {
   }
 
   nextTurn() {
+    this.hubService.pending = true;
     this.hubService.getNewTurn()
   }
 }

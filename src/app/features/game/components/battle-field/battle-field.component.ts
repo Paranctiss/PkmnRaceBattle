@@ -6,28 +6,31 @@ import {
   PokemonTeamMoveModel
 } from '../../../../shared/models/player.model';
 import {PokemonMovesComponent} from './pokemon-moves/pokemon-moves.component';
-import {HpBarComponent} from '../hp-bar/hp-bar.component';
-import {NgForOf, NgIf, NgStyle} from '@angular/common';
-import {StatsChangesComponent} from './stats-changes/stats-changes.component';
-import {interval, take, timer} from 'rxjs';
+import {NgForOf, NgIf} from '@angular/common';
+import {take, timer} from 'rxjs';
 import {TurnContextModel} from '../../../../shared/models/turn-context.model';
-import {resolve} from '@angular/compiler-cli';
-import {BagItemComponent} from './bag-item/bag-item.component';
 import {HubService} from '../../../../core/services/Hub/hub.service';
 import {PokemonMoveBaseModel} from '../../../../shared/models/pokemon-base.model';
-import {ExpBarComponent} from '../exp-bar/exp-bar.component';
+import {MapComponent} from './map/map.component';
+import {GameModalComponent} from '../../../../shared/components/game-modal/game-modal.component';
+import {BagComponent} from '../bag/bag.component';
+import {PokemonSlotComponent} from '../../../../shared/components/pokemon-slot/pokemon-slot.component';
+import {PokemonTypeService} from '../../../../core/services/PokemonType/pokemon-type.service';
+import {GroundedSpriteDirective} from '../../../../shared/directives/grounded-sprite.directive';
+import {BattleHudComponent} from './battle-hud/battle-hud.component';
 
 @Component({
   selector: 'app-battle-field',
   imports: [
     PokemonMovesComponent,
-    HpBarComponent,
     NgIf,
-    StatsChangesComponent,
-    BagItemComponent,
     NgForOf,
-    NgStyle,
-    ExpBarComponent,
+    MapComponent,
+    GameModalComponent,
+    BagComponent,
+    PokemonSlotComponent,
+    GroundedSpriteDirective,
+    BattleHudComponent,
   ],
   templateUrl: './battle-field.component.html',
   styleUrl: './battle-field.component.css'
@@ -48,15 +51,12 @@ export class BattleFieldComponent implements OnDestroy {
   openReplacePokemon: boolean = false;
   itemToUse?: BagItemModel;
   openBag: boolean = false;
-  bagHovered: boolean = false;
+  showLog: boolean = false;
   waitForReplaceByWildPokemon: boolean = false;
   openLearnMove:boolean = false;
   waitingOpponent: boolean = false;
   logs:string[] = [];
-  balls!: BagItemModel[];
-  potions!: BagItemModel[];
-  ailments!: BagItemModel[];
-  specials!: BagItemModel[];
+  openMap: boolean = false;
   movesToLearn:PokemonMoveBaseModel[][] = [];
   pokemonWantToLearn:PokemonTeamModel[] = [];
 
@@ -64,7 +64,52 @@ export class BattleFieldComponent implements OnDestroy {
   private signalREventNames: string[] = [];
 
 
-  constructor(public hubService:HubService) {
+  constructor(public hubService:HubService, private typeService: PokemonTypeService) {
+  }
+
+  // Le clone (Clonage) prend la place du Pokémon du joueur tant qu'il existe
+  get allyBattler(): PokemonTeamModel {
+    return this.PlayerPokemon.substitute ?? this.PlayerPokemon;
+  }
+
+  // Pokémon caché pendant une attaque en deux tours (Vol, Tunnel…)
+  get allyVisible(): boolean {
+    return this.PlayerPokemon.substitute != null || this.PlayerPokemon.untargetable == null;
+  }
+
+  get canAct(): boolean {
+    return !this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && this.PlayerPokemon.waitingMove == null;
+  }
+
+  get hasCommandPanel(): boolean {
+    return this.canAct || (this.PlayerPokemon.waitingMove != null && !this.hubService.pending);
+  }
+
+  get dialogText(): string {
+    if (this.currentMessage) return this.currentMessage;
+    if (this.waitingOpponent) return 'En attente de l’adversaire…';
+    if (this.canAct) return `Que doit faire ${this.allyBattler.nameFr} ?`;
+    return '…';
+  }
+
+  get replaceTitle(): string {
+    if (this.waitForReplaceByWildPokemon) return 'Équipe complète';
+    if (this.itemToUse) return this.itemToUse.name;
+    return 'Changer de Pokémon';
+  }
+
+  get replaceHint(): string {
+    if (this.waitForReplaceByWildPokemon) return `Quel Pokémon remplacer par ${this.OppositePokemon.nameFr} ?`;
+    if (this.itemToUse) return `Sur quel Pokémon utiliser ${this.itemToUse.name} ?`;
+    return 'Quel Pokémon envoyer au combat ?';
+  }
+
+  typeColor(type: string): string {
+    return this.typeService.getColorByType(type);
+  }
+
+  typeText(type: string): string {
+    return this.typeService.getTextColorByType(type);
   }
 
   ngOnInit(){
@@ -158,10 +203,7 @@ export class BattleFieldComponent implements OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log("TurnContextChanged !")
-    console.log(changes)
     if (changes['TurnContext'] && this.TurnContext) {
-      console.log(this.TurnContext)
       this.TurnContext = changes['TurnContext'].currentValue;
       this.startDisplayingPrioMessages()
         .then(() => this.ChangesBoard())
@@ -178,7 +220,6 @@ export class BattleFieldComponent implements OnDestroy {
         if (this.TurnContext.prioMessages.length > 0) {
           this.currentMessage = this.TurnContext.prioMessages.shift()!;
           this.logs.unshift(this.currentMessage)
-          console.log(this.currentMessage);
           timer(1000).pipe(take(1)).subscribe(() => {
             this.currentMessage = null;
             displayNextPrioMessage();
@@ -384,21 +425,17 @@ export class BattleFieldComponent implements OnDestroy {
   }
 
   openBagDialog(){
-    this.filterItems()
     this.openBag = true;
-  }
-
-  filterItems(){
-    this.balls = this.hubService.Player.items.filter(item => item.type === "ball");
-    this.potions = this.hubService.Player.items.filter(item => item.type === "potion");
-    this.ailments = this.hubService.Player.items.filter(item => item.type === "ailment");
-    this.specials = this.hubService.Player.items.filter(item => item.type === "special");
   }
 
   CloseReplacePokemon() {
     this.itemToUse = undefined;
     this.openReplacePokemon = false;
     this.hubService.pending = false;
+  }
+
+  CloseMap() {
+      this.openMap = false;
   }
 
   canEvolveWithItem(pokemon: any, item: BagItemModel | undefined): boolean {
@@ -432,4 +469,9 @@ export class BattleFieldComponent implements OnDestroy {
     }
     return "coin";
   }
+
+  OpenMap() {
+    this.openMap = true;
+  }
+
 }

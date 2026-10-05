@@ -1,1 +1,5 @@
-<img src="assets/pokemon-types/{{Type.name}}.png" class="type" [ngStyle]="{'width': Size}" alt="pokemon type">
+<span class="type"
+      [class.type--sm]="small"
+      [style.min-width]="Size"
+      [style.background-color]="color"
+      [style.color]="textColor">{{ label }}</span>

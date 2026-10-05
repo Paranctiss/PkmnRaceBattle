@@ -1,20 +1,29 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnChanges} from '@angular/core';
 import {PokemonTypeModel} from '../../models/pokemon-base.model';
-import {NgStyle} from '@angular/common';
+import {PokemonTypeService} from '../../../core/services/PokemonType/pokemon-type.service';
 
 @Component({
   selector: 'app-type-card',
-  imports: [
-    NgStyle
-  ],
+  imports: [],
   templateUrl: './type-card.component.html',
   styleUrl: './type-card.component.css'
 })
-export class TypeCardComponent {
-  @Input() Type!:PokemonTypeModel
+export class TypeCardComponent implements OnChanges {
+  @Input() Type!: PokemonTypeModel;
+  // Largeur minimale du badge (ex. '90px'), en dessous de 70px le badge passe en petit format
   @Input() Size: string = '90px';
 
-  ngOnInit(): void {
+  label = '';
+  color = '';
+  textColor = '';
+  small = false;
 
+  constructor(private typeService: PokemonTypeService) {}
+
+  ngOnChanges(): void {
+    this.label = this.typeService.getLabelByType(this.Type.name);
+    this.color = this.typeService.getColorByType(this.Type.name);
+    this.textColor = this.typeService.getTextColorByType(this.Type.name);
+    this.small = parseInt(this.Size, 10) < 70;
   }
 }

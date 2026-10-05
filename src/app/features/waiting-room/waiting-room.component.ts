@@ -7,7 +7,7 @@ import {Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 
 @Component({
-  selector: 'app-game',
+  selector: 'app-waiting-room',
   imports: [
     NgForOf,
     NgIf,
@@ -26,6 +26,8 @@ export class WaitingRoomComponent {
   myPlayer?:PlayerModel;
   checkedTimer: boolean=true;
   timerTime: number=5;
+  readonly timerChoices = [5, 10, 15];
+  copied: boolean = false;
 
     ngOnInit() {
       this.hubService.onResponsePlayersInRoom((players) => {
@@ -40,6 +42,15 @@ export class WaitingRoomComponent {
       })
       this.hubService.getAllUsersByRoomID(this.hubService.gameCode)
     }
+
+  copyCode() {
+    const code = this.myPlayer?.roomId;
+    if (!code || !navigator.clipboard) return;
+    navigator.clipboard.writeText(code).then(() => {
+      this.copied = true;
+      setTimeout(() => this.copied = false, 1500);
+    });
+  }
 
   StartGame() {
     this.hubService.startGame(this.hubService.gameCode, this.checkedTimer, this.timerTime);
