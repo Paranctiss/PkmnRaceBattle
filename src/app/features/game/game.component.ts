@@ -62,7 +62,8 @@ export class GameComponent {
     })
     this.hubService.getCurrentUser()
     this.hubService.responseWildFight((wildOpponent, responsePlayer) => {
-      if(this.turnType !== "") this.hubService.Player = responsePlayer;
+      // Le serveur renvoie le joueur à jour (position sur la carte), y compris au premier combat
+      this.hubService.Player = responsePlayer;
       this.turnType = "WildFight";
       this.opponent = wildOpponent;
       this.CheckEnvironment();

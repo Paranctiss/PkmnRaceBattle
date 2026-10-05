@@ -127,6 +127,12 @@ export class BattleFieldComponent implements OnDestroy {
     this.registerSignalREvent('pokemonLevelUp', (message, pokemon, movesToLearn) => {
       if(message.includes("|")){
         var messages = message.split("|");
+        // Peut arriver avant le premier résultat de tour (ex. Super Bonbon au premier tour)
+        if (!this.TurnContext) {
+          this.TurnContext = {actionName: '', messages: [], prioMessages: [],
+            player: {hp: [], atk: 0, atkSpe: 0, def: 0, defSpe: 0, speed: 0, index: 0},
+            opponent: {hp: [], atk: 0, atkSpe: 0, def: 0, defSpe: 0, speed: 0, index: 0}};
+        }
         this.TurnContext.messages = messages;
         this.startDisplayingMessages();
       }else{
