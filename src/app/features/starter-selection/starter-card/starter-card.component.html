@@ -1,18 +1,12 @@
-<div class="pokemon"
-     (mouseover)="hovered = true"
-     (mouseout)="hovered = false"
-     [ngStyle]="hovered || selectedPokemonId == Pokemon.id ? {'background-color': this.cardColor}:null">
-  <div class="pokemonSprite">
-    <img src="{{Pokemon.sprites.frontDefault}}">
+<button type="button" class="starter" role="radio" [attr.aria-checked]="selected" [class.is-selected]="selected">
+  <span class="starter__dex">N°{{ Pokemon.id | number:'3.0-0' }}</span>
+  <span class="starter__ribbon" *ngIf="selected">Choisi !</span>
+  <div class="starter__stage">
+    <span class="starter__platform"></span>
+    <img class="pixel" [src]="Pokemon.sprites.frontDefault" [alt]="Pokemon.nameFr">
   </div>
-  <div class="pokemonInformations" style="text-align: center">
-    <p>N°{{Pokemon.id}} {{Pokemon.nameFr}}</p>
-    <div class="pokemonTypes" style="display: flex; flex-direction: row; justify-content: center">
-      <app-type-card
-        *ngFor="let type of Pokemon.types"
-        [Type]="type"
-      >
-      </app-type-card>
-    </div>
+  <span class="starter__name">{{ Pokemon.nameFr }}</span>
+  <div class="starter__types">
+    <app-type-card *ngFor="let type of Pokemon.types" [Type]="type" [Size]="'76px'"/>
   </div>
-</div>
+</button>

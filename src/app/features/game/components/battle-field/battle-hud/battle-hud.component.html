@@ -1,0 +1,18 @@
+<div class="hud frame hud--{{ side }}">
+  <div class="hud__head">
+    <span class="hud__name">{{ battler.nameFr }}</span>
+    <span class="hud__level">N.{{ level }}</span>
+  </div>
+  <app-hp-bar [CurrHP]="battler.currHp" [BaseHP]="battler.baseHp" [ShowValue]="!!expPokemon"/>
+  <div class="hud__tags">
+    <app-ailment-badges [pokemon]="battler"/>
+    <app-stats-changes [Pokemon]="battler"/>
+  </div>
+  <app-exp-bar *ngIf="expPokemon"
+               [BaseExp]="expPokemon.xpFromLastLvl"
+               [CurrExp]="expPokemon.currXP"
+               [NextLevelExp]="expPokemon.xpForNextLvl"/>
+  <div class="hud__balls" *ngIf="trainerTeam">
+    <img *ngFor="let member of trainerTeam" src="assets/balls-sprites/Pokeball.webp" [class.is-out]="member.currHp <= 0" alt="">
+  </div>
+</div>

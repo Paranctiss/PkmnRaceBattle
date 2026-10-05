@@ -1,5 +1,6 @@
-<div class="expBar">
-  <div class="bar" [ngStyle]="{ 'width': getExpPercentage() | percent,
-  }">
+<div class="exp">
+  <span class="exp__tag">EXP</span>
+  <div class="exp__track">
+    <div class="exp__fill" [style.width.%]="getExpPercentage() * 100"></div>
   </div>
 </div>

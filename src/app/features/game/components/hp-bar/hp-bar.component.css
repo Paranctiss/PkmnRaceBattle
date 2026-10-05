@@ -1,46 +1,58 @@
-.hpBar{
-  margin-top: 0;
-  background-color: whitesmoke;
-  position: relative;
-
-}
-
-.bar{
-  width: 10%;
-  transition: width 0.5s ease-in-out;
-  background-color: green;
-  position: relative;
-  & p{
-    position: relative;
-    margin: 0;
-    padding: 0;
-    width: 100px;
-  }
-}
-
-.hp-bar-container {
-  position: relative;
+:host {
+  display: block;
   width: 100%;
-  height: 13px;
-  background: rgba(38, 38, 38, 0.8);
-  border-radius: 9999px;
-  overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.hp-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
+.hp {
+  display: flex;
+  align-items: center;
+  height: 16px;
+  padding: 2px 3px 2px 2px;
+  background: var(--ink);
+  border-radius: 6px;
+}
+
+.hp__tag {
+  padding: 0 5px 0 3px;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 12px;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+.hp__track {
+  position: relative;
+  flex: 1;
   height: 100%;
-  background: linear-gradient(90deg, #22c55e 0%, #10b981 100%);
-  border-radius: 9999px;
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-  transition: width 0.3s ease;
+  background: #4a4f63;
+  border-radius: 3px;
+  overflow: hidden;
 }
 
-.hp-bar-value {
-  position: absolute;
-  font-size: 13px;
-  padding-left: 5px;
+.hp__fill {
+  height: 100%;
+  border-radius: 3px;
+  /* Liseré clair en haut, comme les jauges des jeux */
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.35);
+  transition: width 0.45s steps(12, end), background-color 0.2s ease;
+}
+
+.hp__fill--high { background-color: var(--hp-high); }
+.hp__fill--mid { background-color: var(--hp-mid); }
+.hp__fill--low { background-color: var(--hp-low); }
+
+.hp__value {
+  margin-top: 3px;
+  text-align: right;
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.hp__value span {
+  margin: 0 2px;
+  opacity: 0.6;
 }

@@ -1,4 +1,643 @@
-body{
+/* ==========================================================================
+   PkmnRaceBattle — socle visuel
+   Inspiré des menus GBA / DS : cadres à double liseré, ombres franches,
+   police pixel pour les titres et les dialogues.
+   ========================================================================== */
+
+@import './styles/environment.css';
+
+:root {
+  /* Encre & papier */
+  --ink: #1d2236;
+  --ink-soft: #4a5170;
+  --ink-mute: #8a8778;
+  --paper: #fbf6e8;
+  --paper-2: #f2e9d1;
+  --paper-3: #e3d6b4;
+  --night: #1b2340;
+  --night-2: #2a3460;
+
+  /* Couleurs de la licence */
+  --red: #e3350d;
+  --red-dark: #a3260a;
+  --blue: #2a75bb;
+  --blue-dark: #1a4d7d;
+  --gold: #ffcb05;
+  --gold-dark: #c99e00;
+  --center: #f06c8f;
+  --center-dark: #b8405f;
+  --mart: #3d7fd6;
+
+  /* Jauges */
+  --hp-high: #4cc76c;
+  --hp-mid: #f5c031;
+  --hp-low: #ec4b37;
+  --exp: #3fa9f5;
+
+  /* Statuts */
+  --st-par: #d9b300;
+  --st-brn: #e0592f;
+  --st-psn: #9c43b5;
+  --st-frz: #55b9e6;
+  --st-slp: #7d8597;
+
+  --font-pixel: 'Pixelify Sans', 'Courier New', monospace;
+  --font-ui: 'M PLUS Rounded 1c', 'Segoe UI', system-ui, sans-serif;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --edge: 3px;
+  --drop: 6px 6px 0 rgba(29, 34, 54, 0.35);
+  --topbar-h: 72px;
+
+  /* Couleurs d'environnement (surchargées par [data-env], cf. plus bas) */
+  --env-accent: #5aa84a;
+  --plat-top: #a5d97a;
+  --plat-rim: #6aa84f;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
   margin: 0;
   padding: 0;
+  background: var(--night);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-pixel);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Sprites en pixel art : on garde des pixels nets quand on agrandit */
+.pixel,
+.pixel img {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Barres de défilement discrètes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-soft) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--ink-soft);
+  border: 3px solid transparent;
+  border-radius: 10px;
+  background-clip: padding-box;
+}
+
+/* --------------------------------------------------------------------------
+   Cadres (panneaux type menu de jeu)
+   -------------------------------------------------------------------------- */
+
+.frame {
+  --frame-accent: var(--blue);
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--edge) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow:
+    inset 0 0 0 3px var(--paper),
+    inset 0 0 0 5px var(--frame-accent),
+    var(--drop);
+}
+
+.frame--red { --frame-accent: var(--red); }
+.frame--gold { --frame-accent: var(--gold-dark); }
+.frame--center { --frame-accent: var(--center); }
+.frame--mart { --frame-accent: var(--mart); }
+
+.frame--dark {
+  --frame-accent: var(--gold);
+  background: var(--night);
+  color: var(--paper);
+  box-shadow:
+    inset 0 0 0 3px var(--night),
+    inset 0 0 0 5px var(--frame-accent),
+    var(--drop);
+}
+
+/* Plaque de titre posée à cheval sur le bord supérieur d'un cadre */
+.frame-title {
+  position: absolute;
+  top: -18px;
+  left: 22px;
+  padding: 4px 14px 5px;
+  background: var(--frame-accent, var(--blue));
+  color: #fff;
+  border: var(--edge) solid var(--ink);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-pixel);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.frame--gold .frame-title { color: var(--ink); background: var(--gold); text-shadow: none; }
+.frame--dark .frame-title { color: var(--ink); background: var(--gold); text-shadow: none; }
+
+/* --------------------------------------------------------------------------
+   Boutons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  --btn-bg: var(--paper);
+  --btn-fg: var(--ink);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 22px 10px;
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: var(--edge) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.16), 0 4px 0 var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.16), 0 5px 0 var(--ink);
+}
+
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.16), 0 0 0 var(--ink);
+}
+
+.btn:disabled,
+.btn.is-disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.85);
+  opacity: 0.55;
+  transform: none;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.16), 0 4px 0 var(--ink);
+}
+
+.btn--primary {
+  --btn-bg: var(--red);
+  --btn-fg: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.btn--accent {
+  --btn-bg: var(--gold);
+}
+
+.btn--blue {
+  --btn-bg: var(--blue);
+  --btn-fg: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.btn--center {
+  --btn-bg: var(--center);
+  --btn-fg: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.btn--dark {
+  --btn-bg: var(--night-2);
+  --btn-fg: var(--paper);
+}
+
+.btn--sm {
+  min-height: 38px;
+  padding: 5px 14px 7px;
+  font-size: 15px;
+  border-radius: 10px;
+  gap: 8px;
+}
+
+.btn--lg {
+  min-height: 60px;
+  padding: 12px 34px 14px;
+  font-size: 22px;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn__icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+/* Curseur ▶ des menus de jeu : apparaît au survol / focus */
+.menu-cursor {
+  padding-left: 34px;
+}
+
+.menu-cursor::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  margin-top: -7px;
+  border-style: solid;
+  border-width: 7px 0 7px 10px;
+  border-color: transparent transparent transparent currentColor;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.menu-cursor:hover::before,
+.menu-cursor:focus-visible::before {
+  opacity: 1;
+  transform: translateX(0);
+  animation: cursor-nudge 0.7s steps(2, jump-none) infinite;
+}
+
+@keyframes cursor-nudge {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(3px); }
+}
+
+/* Bouton de fermeture en forme de Poké Ball */
+.close-ball {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
+  background: linear-gradient(to bottom, var(--red) 0 44%, var(--ink) 44% 56%, #fff 56% 100%);
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.close-ball::after {
+  content: '✕';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  font: 700 9px/12px var(--font-ui);
+  text-align: center;
+}
+
+.close-ball:hover {
+  animation: ball-wobble 0.6s ease-in-out;
+}
+
+.close-ball:hover::after {
+  background: var(--gold);
+}
+
+@keyframes ball-wobble {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-18deg); }
+  55% { transform: rotate(14deg); }
+  80% { transform: rotate(-6deg); }
+}
+
+/* --------------------------------------------------------------------------
+   Champs de saisie
+   -------------------------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field__label {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 14px;
+  font-family: var(--font-pixel);
+  font-size: 20px;
+  color: var(--ink);
+  background: #fff;
+  border: var(--edge) solid var(--ink);
+  border-radius: 10px;
+  box-shadow: inset 0 3px 0 rgba(29, 34, 54, 0.1);
+  outline: none;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.input::placeholder {
+  color: #aaa48f;
+}
+
+.input:focus {
+  border-color: var(--blue-dark);
+  box-shadow: inset 0 3px 0 rgba(29, 34, 54, 0.1), 0 0 0 4px rgba(255, 203, 5, 0.7);
+}
+
+.input--code {
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+}
+
+/* Interrupteur ON/OFF */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  user-select: none;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch__track {
+  position: relative;
+  width: 58px;
+  height: 30px;
+  border: var(--edge) solid var(--ink);
+  border-radius: 30px;
+  background: var(--paper-3);
+  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.12);
+  transition: background 0.15s ease;
+}
+
+.switch__track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.switch input:checked + .switch__track {
+  background: var(--hp-high);
+}
+
+.switch input:checked + .switch__track::after {
+  transform: translateX(28px);
+}
+
+.switch input:focus-visible + .switch__track {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Choix segmenté (radios) */
+.segmented {
+  display: inline-flex;
+  border: var(--edge) solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+.segmented label {
+  position: relative;
+  cursor: pointer;
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented span {
+  display: block;
+  padding: 8px 16px;
+  font-family: var(--font-pixel);
+  font-size: 17px;
+  font-weight: 600;
+  background: var(--paper);
+  border-right: var(--edge) solid var(--ink);
+  transition: background 0.12s ease;
+}
+
+.segmented label:last-child span {
+  border-right: none;
+}
+
+.segmented input:checked + span {
+  background: var(--gold);
+}
+
+.segmented input:focus-visible + span {
+  box-shadow: inset 0 0 0 3px var(--blue);
+}
+
+/* --------------------------------------------------------------------------
+   Petits éléments réutilisables
+   -------------------------------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--edge) solid var(--ink);
+  border-radius: 40px;
+  box-shadow: 0 3px 0 var(--ink);
+  white-space: nowrap;
+}
+
+.chip--dark {
+  background: var(--night);
+  color: var(--paper);
+}
+
+/* Badges de statut (PAR, BRU, PSN, GEL, DOR) */
+.status {
+  display: inline-block;
+  padding: 1px 6px 2px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  color: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.status--par { background: var(--st-par); }
+.status--brn { background: var(--st-brn); }
+.status--psn { background: var(--st-psn); }
+.status--frz { background: var(--st-frz); }
+.status--slp { background: var(--st-slp); }
+
+/* Poké Ball de chargement */
+.ball-loader {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
+  background: linear-gradient(to bottom, var(--red) 0 44%, var(--ink) 44% 56%, #fff 56% 100%);
+  position: relative;
+  animation: ball-rock 1.1s ease-in-out infinite;
+}
+
+.ball-loader::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
+  background: #fff;
+}
+
+@keyframes ball-rock {
+  0%, 60%, 100% { transform: rotate(0); }
+  15% { transform: rotate(-22deg); }
+  35% { transform: rotate(18deg); }
+  50% { transform: rotate(-6deg); }
+}
+
+/* Animations partagées (entrées de combat, respiration des sprites) */
+@keyframes slide-from-left {
+  from { opacity: 0; transform: translateX(-40px); }
+}
+
+@keyframes slide-from-right {
+  from { opacity: 0; transform: translateX(40px); }
+}
+
+/* Respiration : léger écrasement vertical, les pieds restent au sol (transform-origin en bas) */
+@keyframes idle {
+  from { transform: scale(1, 1); }
+  to { transform: scale(1.02, 0.97); }
+}
+
+/* Texte de jeu qui clignote (▼ des boîtes de dialogue, invites…) */
+.blink {
+  animation: blink 1s steps(2, jump-none) infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Couleurs d'environnement (posées sur <html data-env="…">)
+   -------------------------------------------------------------------------- */
+
+[data-env="Plaine"] { --env-accent: #5aa84a; --plat-top: #b4e08a; --plat-rim: #6fae4e; }
+[data-env="Foret"] { --env-accent: #2f7a3a; --plat-top: #7fbf5c; --plat-rim: #3f7f34; }
+[data-env="Volcan"] { --env-accent: #d2512b; --plat-top: #b77a5a; --plat-rim: #6e3a26; }
+[data-env="Centrale"] { --env-accent: #c9a514; --plat-top: #c9c7b3; --plat-rim: #7f7b62; }
+[data-env="Grotte"] { --env-accent: #7a6250; --plat-top: #9b8774; --plat-rim: #5a4a3c; }
+[data-env="Eau"] { --env-accent: #2f86c9; --plat-top: #e8d9a4; --plat-rim: #b59f5e; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

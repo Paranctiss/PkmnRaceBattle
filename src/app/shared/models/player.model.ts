@@ -9,6 +9,9 @@ export interface PlayerModel {
   credits:number;
   team:PokemonTeamModel[];
   items:BagItemModel[];
+  currentPath:PathPoint;
+  playerPath:PlayerPath;
+  mapFightCount:number;
 }
 
 export interface PokemonTeamModel{
@@ -91,4 +94,15 @@ export interface EvolutionDetailModel{
   minLevel?:number;
   evolutionTrigger?:string;
   item?:string;
+}
+
+export interface PlayerPath {
+  pathPoints:PathPoint[];
+}
+
+export interface PathPoint {
+  x:number;
+  y:number;
+  environmentName:string;
+  isSkipped?:boolean;
 }

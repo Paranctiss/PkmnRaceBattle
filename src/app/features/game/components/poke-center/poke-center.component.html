@@ -1,27 +1,26 @@
-<div class="container">
-  <div class="text">
-    <h1>Centre Pokémon</h1>
-    <p>Soigner votre équipe ?</p>
-    <button *ngIf="!hubService.pending && !healed" (click)="usePokeCenter()">Soigner</button>
-    <button *ngIf="!hubService.pending && healed" (click)="nextTurn()">Continuer</button>
-  </div>
-  <div class="pokeContainer">
-    <div class="pkmnCard" *ngFor="let pkmn of this.hubService.Player.team">
+<section class="center frame frame--center">
+  <header class="center__sign">
+    <app-pixel-icon name="Centre" [size]="44"/>
+    <span>Centre Pokémon</span>
+    <app-pixel-icon name="Centre" [size]="44"/>
+  </header>
 
-      <div class="pokeName">
-        <img src="{{pkmn.frontSprite}}" [ngStyle]="{'filter': pkmn.currHp <= 0 ? 'grayscale(1)' : 'none'}" >
-        <p>{{pkmn.nameFr}}</p>
-      </div>
-      <div class="ailments">
-        <p *ngIf="pkmn.isParalyzed" class="ailmentCard paralysie">PAR</p>
-        <p *ngIf="pkmn.isBurning" class="ailmentCard brulure">BRU</p>
-        <p *ngIf="pkmn.isPoisoned" class="ailmentCard poison">PSN</p>
-        <p *ngIf="pkmn.isFrozen" class="ailmentCard gel">GEL</p>
-        <p *ngIf="pkmn.isSleeping > 0" class="ailmentCard sleep">DOR</p>
-        <p class="fakeAilment"></p>
-      </div>
+  <p class="center__dialog">
+    {{ healed
+      ? 'Vos Pokémon sont en pleine forme ! À bientôt !'
+      : 'Bienvenue au Centre Pokémon ! Voulez-vous que je soigne vos Pokémon ?' }}
+  </p>
 
-      <app-hp-bar [BaseHP]="pkmn.baseHp" [CurrHP]="pkmn.currHp" ></app-hp-bar>
-    </div>
+  <div class="center__team" [class.is-healed]="healed">
+    <app-pokemon-slot *ngFor="let pkmn of hubService.Player.team; let i = index" [pokemon]="pkmn" [lead]="i === 0"/>
   </div>
-</div>
+
+  <div class="center__actions">
+    <button type="button" class="btn btn--center btn--lg" *ngIf="!healed" [disabled]="hubService.pending" (click)="usePokeCenter()">
+      {{ hubService.pending ? 'Soins en cours…' : 'Soigner l’équipe' }}
+    </button>
+    <button type="button" class="btn btn--primary btn--lg" *ngIf="healed" [disabled]="hubService.pending" (click)="nextTurn()">
+      Reprendre la route ▶
+    </button>
+  </div>
+</section>

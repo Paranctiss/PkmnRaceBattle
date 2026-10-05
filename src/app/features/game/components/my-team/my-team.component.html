@@ -1,26 +1,9 @@
-<div class="myTeam">
-  <h1>Équipe :</h1>
-  <div *ngFor="let myPokemon of Team">
-    <div class="pokemon"
-         (mouseover)="hovered = true"
-         (mouseout)="hovered = false"
-         [ngStyle]="hovered ? {'background-color': this.getColor(myPokemon.types[0].name)}:null">
-      <div class="pokemonSprite">
-        <img src="{{myPokemon.frontSprite}}">
-        <app-hp-bar [BaseHP]="myPokemon.baseHp" [CurrHP]="myPokemon.currHp" ></app-hp-bar>
-
-      </div>
-      <div class="pokemonInformations" style="text-align: center">
-        <p>lvl.{{myPokemon.level}} {{myPokemon.nameFr}}</p>
-        <div class="pokemonTypes">
-          <app-type-card
-            *ngFor="let type of myPokemon.types"
-            [Type]="type"
-            [Size]="'50px'"
-          >
-          </app-type-card>
-        </div>
-      </div>
+<section class="team frame frame--dark">
+  <h2 class="frame-title">Équipe {{ Team.length }}/6</h2>
+  <div class="team__slots">
+    <app-pokemon-slot *ngFor="let pokemon of Team; let i = index" [pokemon]="pokemon" [lead]="i === 0" [compact]="true"/>
+    <div class="team__empty" *ngFor="let slot of emptySlots" aria-hidden="true">
+      <span class="team__empty-ball"></span>
     </div>
   </div>
-</div>
+</section>

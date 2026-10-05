@@ -1,0 +1,143 @@
+:host {
+  display: block;
+}
+
+.slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px 8px 8px;
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--edge) solid var(--ink);
+  border-radius: 14px 14px 14px 4px;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.08), 0 4px 0 var(--ink);
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+
+/* Survol : fond à la couleur du type principal */
+.slot:hover {
+  background: var(--type-color);
+  color: var(--type-text);
+  transform: translateY(-2px);
+}
+
+.slot--lead {
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 3px var(--gold), inset 0 -4px 0 rgba(0, 0, 0, 0.08), 0 4px 0 var(--ink);
+}
+
+.slot--lead::after {
+  content: 'AU COMBAT';
+  position: absolute;
+  top: -11px;
+  right: 10px;
+  padding: 1px 7px 2px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: var(--gold);
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+}
+
+.slot--dimmed {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+.slot--dimmed:hover {
+  transform: none;
+}
+
+.slot--fainted .slot__sprite img {
+  filter: grayscale(1) brightness(0.9);
+  opacity: 0.7;
+}
+
+.slot__sprite {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(29, 34, 54, 0.08);
+}
+
+.slot__sprite img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  margin-top: -6px;
+}
+
+.slot__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slot__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.slot__name {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slot__level {
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.slot__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 4px;
+}
+
+.status--ko {
+  background: var(--ink);
+}
+
+/* Format compact (panneau d'équipe latéral) */
+.slot--compact {
+  gap: 6px;
+  padding: 5px 10px 7px 4px;
+}
+
+.slot--compact .slot__sprite {
+  width: 52px;
+  height: 52px;
+}
+
+.slot--compact .slot__sprite img {
+  width: 64px;
+  height: 64px;
+}
+
+.slot--compact .slot__name {
+  font-size: 16px;
+}
+
+.slot--compact .slot__level {
+  font-size: 13px;
+}

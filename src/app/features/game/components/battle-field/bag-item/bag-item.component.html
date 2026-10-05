@@ -1,4 +1,5 @@
-<div class="bagItem" xmlns="http://www.w3.org/1999/html">
-  <img src="assets/items-sprites/{{item.name.replace(' ', '_')}}.png" [ngStyle]="{'filter': item.number <= 0 ? 'grayscale(1)' : 'none'}" >
-  <p>{{item.name}} <br> <b *ngIf="item.number > 0">({{item.number}})</b></p>
+<div class="bag-item" [class.is-empty]="item.number <= 0">
+  <img class="bag-item__sprite" [src]="sprite" [alt]="item.name">
+  <span class="bag-item__name">{{ item.name }}</span>
+  <span class="bag-item__count" *ngIf="item.number > 0">×{{ item.number }}</span>
 </div>

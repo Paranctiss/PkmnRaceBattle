@@ -1,31 +1,24 @@
 import {Component, Input} from '@angular/core';
+import {NgForOf} from '@angular/common';
 import {PokemonTeamModel} from '../../../../shared/models/player.model';
-import {NgForOf, NgStyle} from '@angular/common';
-import {TypeCardComponent} from '../../../../shared/components/type-card/type-card.component';
-import {PokemonTypeService} from '../../../../core/services/PokemonType/pokemon-type.service';
-import {HpBarComponent} from '../hp-bar/hp-bar.component';
+import {PokemonSlotComponent} from '../../../../shared/components/pokemon-slot/pokemon-slot.component';
+
+const TEAM_SIZE = 6;
 
 @Component({
   selector: 'app-my-team',
   imports: [
-    NgStyle,
     NgForOf,
-    TypeCardComponent,
-    HpBarComponent
+    PokemonSlotComponent
   ],
   templateUrl: './my-team.component.html',
   styleUrl: './my-team.component.css'
 })
 export class MyTeamComponent {
   @Input() Team!: PokemonTeamModel[];
-  hovered: boolean = false;
-  cardColor: string = "white";
-    constructor(private typeService:PokemonTypeService) {
-    }
 
-  getColor(typeName:string): string {
-      return this.typeService.getColorByType(typeName)
+  // Emplacements libres affichés en pointillés
+  get emptySlots(): number[] {
+    return Array.from({length: Math.max(0, TEAM_SIZE - (this.Team?.length ?? 0))}, (_, i) => i);
   }
-
-
 }

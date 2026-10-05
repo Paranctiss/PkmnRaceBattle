@@ -1,25 +1,27 @@
-import {Component, Input} from '@angular/core';
+import {Component, HostBinding, Input, OnInit} from '@angular/core';
+import {NgIf} from '@angular/common';
 import {PlayerModel} from '../../../shared/models/player.model';
 import {PokemonTypeService} from '../../../core/services/PokemonType/pokemon-type.service';
-import {NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-trainer-card',
-  imports: [
-    NgStyle
-  ],
+  imports: [NgIf],
   templateUrl: './trainer-card.component.html',
   styleUrl: './trainer-card.component.css'
 })
-export class TrainerCardComponent {
+export class TrainerCardComponent implements OnInit {
+  @Input() Player!: PlayerModel;
+  @Input() isMe: boolean = false;
 
-  @Input() Player!:PlayerModel
-  cardColor!: string;
-  hovered: boolean = false;
-  constructor(private typeService: PokemonTypeService) {
-  }
+  // Couleur du type du starter, utilisée au survol
+  @HostBinding('style.--type-color') cardColor = '';
+  @HostBinding('style.--type-text') textColor = '';
+
+  constructor(private typeService: PokemonTypeService) {}
 
   ngOnInit(): void {
-    this.cardColor = this.typeService.getColorByType(this.Player.team[0].types[0].name);
+    const starterType = this.Player.team[0]?.types[0]?.name ?? 'normal';
+    this.cardColor = this.typeService.getColorByType(starterType);
+    this.textColor = this.typeService.getTextColorByType(starterType);
   }
 }

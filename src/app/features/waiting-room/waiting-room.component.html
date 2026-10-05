@@ -1,32 +1,54 @@
-<ng-container *ngIf="players.length > 0; else loading">
-  <div class="title">
-    <h2>Waiting room | Code : {{this.myPlayer?.roomId}}</h2>
-    <div *ngIf="myPlayer?.isHost" >
-      <label><h3>
-        <input type="checkbox" [(ngModel)]="checkedTimer"> Activer le timer</h3>
-      </label>
-      <div *ngIf="checkedTimer" class="timerChoice">
-        <label><h3>
-          <input type="radio" [(ngModel)]="timerTime" [value]="5">5 min</h3>
-        </label>
-        <label><h3>
-          <input type="radio" [(ngModel)]="timerTime" [value]="10">10 min</h3>
-        </label>
-        <label><h3>
-          <input type="radio" [(ngModel)]="timerTime" [value]="15">15 min</h3>
-        </label>
+<main class="page" *ngIf="players.length > 0; else loading">
+  <header class="room-head">
+    <h1 class="page-title">Salle d’attente</h1>
+    <button type="button" class="room-code" (click)="copyCode()" title="Copier le code de la salle">
+      <span class="room-code__label">Code de la salle</span>
+      <span class="room-code__value">{{ myPlayer?.roomId }}</span>
+      <span class="room-code__copy">{{ copied ? 'Copié !' : 'Copier' }}</span>
+    </button>
+  </header>
+
+  <div class="room-body">
+    <section class="roster frame">
+      <h2 class="frame-title">Dresseurs · {{ players.length }}</h2>
+      <div class="roster__list">
+        <app-trainer-card *ngFor="let player of players" [Player]="player" [isMe]="player._id === myPlayer?._id"/>
       </div>
-      <button (click)="StartGame()" *ngIf="myPlayer?.isHost">Commencer</button>
-    </div>
-  </div>
+    </section>
 
-  <div *ngFor="let player of players">
-    <div class="trainerCards">
-      <app-trainer-card [Player]="player"/>
-    </div>
+    <aside class="settings frame frame--gold" *ngIf="myPlayer?.isHost; else guestWait">
+      <h2 class="frame-title">Règles</h2>
+      <label class="switch">
+        <input type="checkbox" [(ngModel)]="checkedTimer">
+        <span class="switch__track"></span>
+        Minuteur
+      </label>
+      <div class="settings__timer" *ngIf="checkedTimer">
+        <span class="field__label">Durée de la course</span>
+        <div class="segmented" role="radiogroup" aria-label="Durée">
+          <label *ngFor="let minutes of timerChoices">
+            <input type="radio" name="timerTime" [(ngModel)]="timerTime" [value]="minutes">
+            <span>{{ minutes }} min</span>
+          </label>
+        </div>
+      </div>
+      <p class="settings__hint" *ngIf="checkedTimer">À la fin du temps, les dresseurs s’affrontent en tournoi.</p>
+      <p class="settings__hint" *ngIf="!checkedTimer">Sans minuteur, la course n’a pas de limite de temps.</p>
+      <button type="button" class="btn btn--primary btn--lg btn--block" (click)="StartGame()">Lancer la partie ▶</button>
+    </aside>
+
+    <ng-template #guestWait>
+      <aside class="settings settings--guest frame">
+        <span class="ball-loader"></span>
+        <p>En attente du lancement<br>par l’hôte…</p>
+      </aside>
+    </ng-template>
   </div>
-</ng-container>
+</main>
+
 <ng-template #loading>
-  ça charge zebi
+  <div class="loading">
+    <span class="ball-loader"></span>
+    <span>Connexion à la salle…</span>
+  </div>
 </ng-template>
-

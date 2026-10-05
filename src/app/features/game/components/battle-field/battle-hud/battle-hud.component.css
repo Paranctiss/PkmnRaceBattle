@@ -1,0 +1,63 @@
+:host {
+  position: relative;
+  z-index: 3;
+  display: block;
+  width: clamp(270px, 21vw, 310px);
+}
+
+.hud {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px 14px;
+}
+
+.hud--foe {
+  border-radius: 14px 14px 4px 14px;
+  animation: slide-from-left 0.35s ease-out both;
+}
+
+.hud--ally {
+  border-radius: 14px 14px 14px 4px;
+  animation: slide-from-right 0.35s ease-out both;
+}
+
+.hud__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hud__name {
+  font-family: var(--font-pixel);
+  font-size: 23px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud__level {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hud__tags,
+.hud__balls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.hud__balls img {
+  width: 18px;
+  height: 18px;
+}
+
+.hud__balls img.is-out {
+  filter: grayscale(1);
+  opacity: 0.4;
+}

@@ -1,18 +1,106 @@
-.pokemon{
-  border: #000 1px solid;
-  margin: 3px;
-  padding: 3px;
-  width: 250px;
+:host {
+  display: block;
 }
 
-.pokemon:hover{
-  cursor: pointer;
-}
-
-.pokemonSprite{
-  & img{
-    width: 150px;
-  }
+.starter {
+  position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 220px;
+  padding: 16px 16px 20px;
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--edge) solid var(--ink);
+  border-radius: 16px;
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.08), 0 6px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Survol / sélection : fond à la couleur du type principal */
+.starter:hover,
+.starter.is-selected {
+  background: var(--type-color);
+  color: var(--type-text);
+}
+
+.starter:hover {
+  transform: translateY(-4px);
+}
+
+.starter.is-selected {
+  transform: translateY(-6px);
+  box-shadow: inset 0 0 0 4px var(--gold), inset 0 -5px 0 rgba(0, 0, 0, 0.12), 0 10px 0 var(--ink);
+}
+
+.starter__dex {
+  align-self: flex-start;
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.starter__ribbon {
+  position: absolute;
+  top: -14px;
+  right: -10px;
+  padding: 3px 10px 4px;
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--gold);
+  border: var(--edge) solid var(--ink);
+  border-radius: 8px;
+  transform: rotate(6deg);
+}
+
+.starter__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 170px;
+  height: 120px;
+}
+
+.starter__platform {
+  position: absolute;
+  bottom: 10px;
+  width: 140px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(29, 34, 54, 0.14);
+  box-shadow: inset 0 -5px 0 rgba(29, 34, 54, 0.12);
+}
+
+.starter__stage img {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+.starter:hover .starter__stage img,
+.starter.is-selected .starter__stage img {
+  animation: hop 0.5s steps(3, end) infinite alternate;
+}
+
+@keyframes hop {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+.starter__name {
+  font-family: var(--font-pixel);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.starter__types {
+  display: flex;
+  gap: 6px;
 }

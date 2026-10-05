@@ -1,27 +1,144 @@
-.container{
-margin-right: 5vw;
+:host {
+  display: block;
+  width: min(980px, 100%);
 }
 
-.roundCards{
+.bracket {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-
-.playerCard{
-  display: flex;
-flex-direction: column;
+  flex-direction: column;
   align-items: center;
-  border: 1px solid black;
-  background-color: white;
-  color: black;
-  width: 120px;
-  height: 180px;
-  padding: 10px 50px;
-  margin-top: 30px;
+  gap: 22px;
+  padding: 38px 24px 26px;
 }
 
-.teamBalls{
+/* ----- Champion ----- */
+
+.champion {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.champion__label {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+}
+
+.champion__slot {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  font-family: var(--font-pixel);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 35% 30%, #fff6c2 0 18%, transparent 19%),
+    var(--gold);
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
+  box-shadow: 0 5px 0 var(--ink);
+}
+
+/* ----- Tours ----- */
+
+.round {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  padding-top: 22px;
+  border-top: 2px dashed var(--paper-3);
+}
+
+.match {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--paper-2);
+  border: var(--edge) solid var(--ink);
+  border-radius: 14px;
+}
+
+.match__vs {
+  font-family: var(--font-pixel);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--red);
+  text-shadow: 0 2px 0 var(--ink);
+}
+
+.duelist {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 120px;
+  min-height: 150px;
+  padding: 6px 6px 10px;
+  background: #fff;
+  border: var(--edge) solid var(--ink);
+  border-radius: 10px;
+}
+
+.duelist.is-unknown {
+  justify-content: center;
+  background: transparent;
+  border-style: dashed;
+}
+
+.duelist__sprite {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.duelist__name {
+  max-width: 100%;
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.duelist__team {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+}
+
+.duelist__team img {
+  width: 14px;
+  height: 14px;
+}
+
+.duelist__unknown {
+  font-family: var(--font-pixel);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink-mute);
+}
+
+.bracket__actions {
+  padding-top: 6px;
+}
+
+.bracket__wait {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-pixel);
+  font-size: 18px;
 }

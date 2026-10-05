@@ -1,0 +1,35 @@
+<div class="bag">
+  <div class="bag__tabs" role="tablist" aria-label="Poches du sac">
+    <button type="button"
+            role="tab"
+            *ngFor="let pocket of pockets"
+            class="bag__tab"
+            [class.is-active]="pocket.key === activePocket"
+            [attr.aria-selected]="pocket.key === activePocket"
+            (click)="activePocket = pocket.key; hovered = undefined">
+      {{ pocket.label }}
+      <span class="bag__tab-count">{{ countIn(pocket.key) }}</span>
+    </button>
+  </div>
+
+  <div class="bag__grid" role="tabpanel">
+    <button type="button"
+            *ngFor="let item of pocketItems"
+            class="bag__cell"
+            [class.is-static]="!selectable"
+            (click)="select(item)"
+            (mouseenter)="hovered = item"
+            (mouseleave)="hovered = undefined">
+      <app-bag-item [item]="item"/>
+    </button>
+  </div>
+
+  <p class="bag__desc">
+    <ng-container *ngIf="hovered; else idle">
+      <b>{{ hovered.name }}</b> {{ description(hovered) }}
+    </ng-container>
+    <ng-template #idle>
+      {{ selectable ? 'Quel objet veux-tu utiliser ?' : 'Survole un objet pour lire sa description.' }}
+    </ng-template>
+  </p>
+</div>

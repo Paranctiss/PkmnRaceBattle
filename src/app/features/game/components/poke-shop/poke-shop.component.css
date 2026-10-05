@@ -1,156 +1,196 @@
-.message-container {
-  position: fixed;
-  bottom: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 1.2em;
-  z-index: 1000;
+:host {
+  display: block;
+  width: min(900px, 100%);
 }
 
-.opened-bag {
-  position: fixed;
-  width: 60%;
-  height: 80%;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(220, 165, 77, 1);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 1.2em;
-  z-index: 2;
-}
-
-.item-bag-card-container{
-  margin-top: 2%;
-  margin-left: 5%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.item-bag-card-container:hover{
-  cursor: pointer;
-}
-
-.close-replace-pokemon {
-  position: absolute;
-  left: 90%;
-}
-
-.itemBagCard{
-  width: 14%;
-  height: 20%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
-.itemBagCard:hover{
-  background-color: rgb(196, 136, 86);
-}
-
-.container{
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  text-align: right;
-  height: 70vh;
-  width: 55vw;
-  margin-left: 15%;
-  padding-top: 1%;
-}
-.shop{
-  background-image: url('/assets/backgroundShop.png');
-  background-size: cover;
-  text-align: center;
-}
-p{
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-bottom: 10px;
-  padding-top: 0;
-}
-
-.text{
-  padding: 20px;
-  margin-left: 5%;
-  margin-right: 5%;
-  color: #ffffff;
-  background-color: rgba(102, 148, 227, 0.8);
-  border-radius: 10px;
-}
-
-.objContainer{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.objCard{
-  border: black solid 1px;
-  background-color: white;
-  margin: 10px 15px;
-  width: 12%;
-  box-sizing: border-box;
-}
-
-.objCard:hover{
-  cursor: pointer;
-  background-color: rgba(102, 148, 227, 0.8);
-}
-
-.objName{
+.mart {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 18px;
+  padding: 24px 28px 26px;
+}
+
+/* Enseigne bleue de la boutique */
+.mart__sign {
+  display: flex;
   align-items: center;
-  color: #333333;
+  gap: 16px;
+  padding: 12px 14px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0 22px, transparent 22px 44px),
+    var(--mart);
+  border: var(--edge) solid var(--ink);
+  border-radius: 12px;
+  box-shadow: inset 0 -6px 0 var(--blue-dark);
+}
+
+.mart__sign app-pixel-icon {
+  padding: 4px;
+  background: var(--paper);
+  border: var(--edge) solid var(--ink);
   border-radius: 10px;
 }
 
-.objImg{
-  width: 50px;
+.mart__sign-text {
+  flex: 1;
+  font-family: var(--font-pixel);
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 3px 0 var(--blue-dark);
 }
 
-.bag{
-  padding: 10px;
-}
-.bag img{
-  width: 70px;
-}
-.bag:hover{
-
-  cursor: pointer;
+.wallet {
+  background: var(--gold);
 }
 
-.exitIcon {
-  position: relative;
-  width: 100px;
-  height: 100px;
+/* ----- Rayons ----- */
+
+.mart__tabs {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: 6px;
+  border-bottom: var(--edge) solid var(--ink);
 }
 
-.exitIcon img {
-  width: 80px;
-  transition: width 0.3s ease;
-  position: absolute;
-}
-
-.exitIcon:hover {
+.mart__tab {
+  margin-bottom: -3px;
+  padding: 8px 16px 9px;
+  font-family: var(--font-pixel);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--paper-2);
+  border: var(--edge) solid var(--ink);
+  border-radius: 10px 10px 0 0;
   cursor: pointer;
 }
 
-.exitIcon:hover img {
-  width: 100px;
+.mart__tab:hover {
+  color: var(--ink);
+}
+
+.mart__tab.is-active {
+  color: #fff;
+  background: var(--mart);
+  border-bottom-color: var(--mart);
+  text-shadow: 0 2px 0 var(--blue-dark);
+}
+
+.mart__shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  min-height: 300px;
+  align-content: start;
+}
+
+.ware {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px 10px;
+  color: var(--ink);
+  background: #fff;
+  border: var(--edge) solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 0 4px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.12s ease;
+}
+
+.ware:hover {
+  background: #e6f0ff;
+  transform: translateY(-2px);
+}
+
+.ware:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.ware.is-unaffordable {
+  cursor: not-allowed;
+}
+
+.ware.is-unaffordable .ware__sprite,
+.ware.is-unaffordable .ware__price {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+.ware.is-unaffordable:active {
+  transform: none;
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+.ware__sprite {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.ware__name {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.ware__price {
+  padding: 1px 8px 2px;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--gold);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+
+.ware__owned {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 0 6px 1px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 6px;
+}
+
+/* ----- Comptoir ----- */
+
+.mart__footer {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.mart__clerk {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 10px 16px;
+  font-size: 15px;
+  color: var(--paper);
+  background: var(--night);
+  border: var(--edge) solid var(--ink);
+  border-radius: 10px;
+}
+
+.mart__clerk.is-purchase {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  color: var(--gold);
+}
+
+.mart__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

@@ -1,0 +1,18 @@
+<app-game-modal title="Embranchement" accent="gold" [closable]="false">
+  <p class="lead">Le chemin se sépare. Où veux-tu aller ?<br><small>L’autre route ne sera plus accessible.</small></p>
+  <div class="routes">
+    <button type="button"
+            *ngFor="let option of Options; let i = index"
+            class="route-card"
+            [style.--route-color]="info(option).color"
+            (click)="choose(option)">
+      <span class="route-card__sign">{{ i === 0 ? '◀' : '▶' }}</span>
+      <span class="route-card__scene">
+        <app-pixel-icon [name]="option.environmentName" [size]="72"/>
+      </span>
+      <span class="route-card__name">{{ info(option).label }}</span>
+      <span class="route-card__flavor">{{ info(option).flavor }}</span>
+      <span class="route-card__cta">Prendre ce chemin</span>
+    </button>
+  </div>
+</app-game-modal>

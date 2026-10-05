@@ -1,45 +1,76 @@
-<div class="gameField">
-  <div>
-    <button  routerLink="/">Retour au menu</button>
-    <app-timer></app-timer><br>
+<div class="game">
+  <app-path-choice
+    *ngIf="pathOptions.length > 0 && turnType !== 'Finito'"
+    [Options]="pathOptions"
+    (PathChosen)="ChoosePath($event)"/>
 
-  </div>
+  <!-- ===== Barre du haut ===== -->
+  <header class="topbar">
+    <button type="button" class="btn btn--sm btn--dark" routerLink="/">◀ Menu</button>
 
-
-  <div class="turnField">
-    <div *ngIf="(this.turnType === 'WildFight' || this.turnType === 'TrainerFight' || this.turnType === 'PvpFight') && this.opponent !== undefined && this.hubService.Player.team.length > 0">
-      <div *ngIf="this.turnType === 'TrainerFight' && !this.TrainerContinue ">
-        <app-trainer-fight [Foe]="opponent" (TrainerContinue)="this.TrainerContinue = true"/>
+    <div class="route-plate" *ngIf="showRoute">
+      <app-pixel-icon [name]="routeEnvironment" [size]="34"/>
+      <div class="route-plate__text">
+        <span class="route-plate__name">{{ routeInfo.label }}</span>
+        <span class="route-plate__step">{{ routeStepLabel }}</span>
       </div>
-      <div *ngIf="this.turnType === 'WildFight' || (this.turnType === 'TrainerFight' && this.TrainerContinue) || this.turnType === 'PvpFight'">
-        <app-wild-fight [Foe]="opponent" />
-      </div>
+      <ol class="pips" *ngIf="isFightMap" aria-label="Progression sur la map">
+        <li *ngFor="let i of wildPips"
+            class="pip"
+            [class.is-done]="i < fightCount"
+            [class.is-current]="i === fightCount"></li>
+        <li class="pip pip--trainer" [class.is-current]="fightCount >= wildFightsPerMap">VS</li>
+      </ol>
     </div>
-    <div *ngIf="this.turnType === 'PokeCenter'">
-      <app-poke-center />
+
+    <div class="topbar__right">
+      <label class="dev-env" *ngIf="devMode" title="Changer le décor (développement)">
+        <span>Décor</span>
+        <select (change)="environmentService.setEnvironment($any($event.target).value)">
+          <option *ngFor="let env of environments" [value]="env" [selected]="env === environmentService.environment()">{{ env }}</option>
+        </select>
+      </label>
+      <app-timer/>
+      <span class="chip wallet" title="Pokédollars">₽ {{ hubService.Player.credits }}</span>
     </div>
-    <div *ngIf="this.turnType === 'PokeShop'">
-      <app-poke-shop />
-    </div>
-    <div *ngIf="this.turnType === 'Finito'">
-      <button *ngIf="hubService.Player.isHost" (click)="this.hubService.buildTournament();">Créer tournoi</button>
-      <h1 style="text-align: center">Finito pipo au dodo les asticots</h1>
-      <div class="endedPveTeam">
-        <div *ngFor="let pkmn of this.hubService.Player.team" class="endedPvePkmn">
-          <img src="{{pkmn.frontSprite}}">
-          <p>Lvl. {{pkmn.level}} {{pkmn.nameFr}}</p>
+  </header>
+
+  <!-- ===== Zone de jeu ===== -->
+  <div class="game__body">
+    <main class="turn" [class.turn--centered]="isCenteredScreen">
+      <ng-container *ngIf="(turnType === 'WildFight' || turnType === 'TrainerFight' || turnType === 'PvpFight') && opponent !== undefined && hubService.Player.team.length > 0">
+        <app-trainer-fight *ngIf="turnType === 'TrainerFight' && !TrainerContinue" [Foe]="opponent" (TrainerContinue)="TrainerContinue = true"/>
+        <app-wild-fight *ngIf="turnType === 'WildFight' || (turnType === 'TrainerFight' && TrainerContinue) || turnType === 'PvpFight'" [Foe]="opponent"/>
+      </ng-container>
+
+      <app-poke-center *ngIf="turnType === 'PokeCenter'"/>
+      <app-poke-shop *ngIf="turnType === 'PokeShop'"/>
+
+      <section class="ending frame frame--gold" *ngIf="turnType === 'Finito'">
+        <h2 class="frame-title">Fin de la course</h2>
+        <h1 class="ending__title">Temps écoulé !</h1>
+        <p class="ending__sub">Finito pipo, au dodo les asticots. Voici l’équipe avec laquelle tu entres dans le tournoi :</p>
+        <div class="ending__team">
+          <div *ngFor="let pkmn of hubService.Player.team" class="ending__pokemon">
+            <img class="pixel" [src]="pkmn.frontSprite" [alt]="pkmn.nameFr">
+            <span class="ending__name">{{ pkmn.nameFr }}</span>
+            <span class="ending__level">N.{{ pkmn.level }}</span>
+          </div>
         </div>
+        <button type="button" class="btn btn--primary btn--lg" *ngIf="hubService.Player.isHost" (click)="hubService.buildTournament()">Créer le tournoi ▶</button>
+        <p class="ending__wait" *ngIf="!hubService.Player.isHost"><span class="ball-loader"></span> L’hôte prépare le tournoi…</p>
+      </section>
+
+      <app-bracket *ngIf="turnType === 'Bracket'" [bracket]="bracket"/>
+
+      <div class="turn__loading" *ngIf="turnType === ''">
+        <span class="ball-loader"></span>
+        <span>En route…</span>
       </div>
-    </div>
-      <div *ngIf="this.turnType === 'Bracket'">
-        <app-bracket [bracket]="this.bracket" />
-      </div>
+    </main>
 
-
-  </div>
-
-  <div class="myTeam" *ngIf="this.hubService.Player?.team">
-    <app-my-team [Team]="this.hubService.Player.team" />
+    <aside class="party" *ngIf="hubService.Player?.team">
+      <app-my-team [Team]="hubService.Player.team"/>
+    </aside>
   </div>
 </div>
-

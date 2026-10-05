@@ -1,10 +1,20 @@
-<div class="ModeSelection">
+<main class="title-screen">
+  <header class="logo">
+    <div class="logo__ball" aria-hidden="true"></div>
+    <span class="logo__kicker">PKMN</span>
+    <h1 class="logo__title">Race<span>Battle</span></h1>
+  </header>
 
-  <div class="btnSelection soloPlayer">
-    <button (click)="host()">Créer une partie</button>
-  </div>
-  <div class="btnSelection multiPlayer disabled">
-    <button (click)="join()">Rejoindre une partie</button>
-  </div>
+  <nav class="menu frame" aria-label="Menu principal">
+    <button type="button" class="menu__item menu-cursor" (click)="host()">
+      <span class="menu__label">Créer une partie</span>
+      <span class="menu__hint">Deviens l’hôte et partage le code de la salle</span>
+    </button>
+    <button type="button" class="menu__item menu-cursor" (click)="join()">
+      <span class="menu__label">Rejoindre une partie</span>
+      <span class="menu__hint">Entre le code donné par l’hôte</span>
+    </button>
+  </nav>
 
-</div>
+  <p class="tagline">Capture, entraîne… puis affronte les autres dresseurs.</p>
+</main>

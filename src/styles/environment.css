@@ -1,0 +1,302 @@
+/* Décor global (composant app-environment-background), affiché derrière toutes les pages.
+   Ciels "à paliers" (dégradés en bandes nettes) et reliefs propres à chaque environnement. */
+
+.world {
+  --horizon: 46%;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #9fdcff;
+}
+
+.world > div {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
+.sky {
+  top: 0;
+  height: var(--horizon);
+  background: linear-gradient(to bottom,
+    #93d6ff 0 28%, #ade2ff 28% 52%, #c6ecff 52% 76%, #ddf5ff 76% 100%);
+}
+
+.sun {
+  top: 0;
+  height: var(--horizon);
+  background: radial-gradient(circle at 82% 26%, #fff7d1 0 34px, rgba(255, 247, 209, 0.45) 35px 52px, transparent 53px);
+}
+
+.clouds {
+  top: 0;
+  height: var(--horizon);
+}
+
+.cloud {
+  position: absolute;
+  left: 0;
+  width: 150px;
+  height: 24px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 5px 0 rgba(120, 170, 210, 0.35);
+  animation: drift linear infinite;
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  background: inherit;
+  border-radius: 40px 40px 0 0;
+}
+
+.cloud::before {
+  left: 26px;
+  width: 64px;
+  height: 36px;
+}
+
+.cloud::after {
+  left: 74px;
+  width: 44px;
+  height: 26px;
+}
+
+.cloud--1 { top: 16%; animation-duration: 140s; animation-delay: -30s; }
+.cloud--2 { top: 38%; transform: scale(0.7); animation-duration: 190s; animation-delay: -120s; opacity: 0.9; }
+.cloud--3 { top: 60%; transform: scale(0.5); animation-duration: 240s; animation-delay: -60s; opacity: 0.8; }
+
+@keyframes drift {
+  from { left: -200px; }
+  to { left: 100%; }
+}
+
+.far {
+  bottom: calc(100% - var(--horizon));
+  height: 18%;
+  /* Collines arrondies */
+  background:
+    radial-gradient(ellipse 26% 100% at 12% 100%, #7cc85a 99%, transparent 100%),
+    radial-gradient(ellipse 30% 70% at 46% 100%, #92d46c 99%, transparent 100%),
+    radial-gradient(ellipse 34% 90% at 86% 100%, #6fbb52 99%, transparent 100%);
+}
+
+.near {
+  top: var(--horizon);
+  height: 0;
+}
+
+.ground {
+  top: var(--horizon);
+  bottom: 0;
+  height: auto;
+  background:
+    conic-gradient(rgba(255, 255, 255, 0.04) 25%, transparent 0 50%, rgba(255, 255, 255, 0.04) 0 75%, transparent 0) 0 0 / 64px 64px,
+    linear-gradient(to bottom, #8fd462 0 10%, #80c856 10% 32%, #71bb4b 32% 62%, #62ac40 62% 100%);
+  box-shadow: inset 0 3px 0 rgba(29, 34, 54, 0.22);
+}
+
+.ceiling {
+  top: 0;
+  height: 0;
+}
+
+/* Trame + vignette sur l'ensemble */
+.grain {
+  inset: 0;
+  height: auto;
+  background:
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(10, 14, 30, 0.35) 100%),
+    conic-gradient(rgba(0, 0, 0, 0.035) 25%, transparent 0 50%, rgba(0, 0, 0, 0.035) 0 75%, transparent 0) 0 0 / 4px 4px;
+}
+
+/* ===== FORÊT ===== */
+
+.world[data-env="Foret"] .sky {
+  background: linear-gradient(to bottom,
+    #a9d98a 0 26%, #bfe3a0 26% 50%, #d3ecb6 50% 74%, #e4f3cb 74% 100%);
+}
+
+.world[data-env="Foret"] .sun {
+  /* Rais de lumière à travers le feuillage */
+  background: repeating-linear-gradient(105deg,
+    rgba(255, 255, 225, 0.22) 0 26px, transparent 26px 110px);
+}
+
+.world[data-env="Foret"] .cloud {
+  display: none;
+}
+
+.world[data-env="Foret"] .far {
+  height: 26%;
+  background:
+    radial-gradient(circle at 50% 100%, #2c6a2b 0 68%, transparent 69%) 0 100% / 74px 92px repeat-x,
+    radial-gradient(circle at 50% 100%, #3f8a37 0 68%, transparent 69%) 37px 100% / 96px 130px repeat-x,
+    radial-gradient(circle at 50% 100%, #57a44a 0 68%, transparent 69%) 12px 100% / 120px 170px repeat-x;
+}
+
+.world[data-env="Foret"] .ground {
+  background:
+    radial-gradient(circle, rgba(20, 60, 20, 0.35) 3px, transparent 4px) 0 0 / 46px 38px,
+    linear-gradient(to bottom, #4f9a3c 0 10%, #448a34 10% 34%, #3a7b2d 34% 64%, #306b27 64% 100%);
+  box-shadow: inset 0 3px 0 rgba(29, 34, 54, 0.3);
+}
+
+/* ===== VOLCAN ===== */
+
+.world[data-env="Volcan"] .sky {
+  background: linear-gradient(to bottom,
+    #3d1716 0 26%, #6e2419 26% 50%, #a8391d 50% 74%, #e0612a 74% 100%);
+}
+
+.world[data-env="Volcan"] .sun {
+  /* Lueur du cratère */
+  background: radial-gradient(ellipse 120px 70px at 68% 74%, rgba(255, 190, 70, 0.85) 0 30%, rgba(255, 106, 43, 0.4) 60%, transparent 100%);
+  z-index: 1;
+}
+
+.world[data-env="Volcan"] .cloud {
+  background: #5d4644;
+  box-shadow: 0 5px 0 rgba(30, 10, 10, 0.35);
+}
+
+.world[data-env="Volcan"] .far {
+  height: 34%;
+  background:
+    linear-gradient(to bottom, transparent 0 8%, #ff7a2b 8% 13%, transparent 13%) 0 0 / 100% 100% no-repeat,
+    linear-gradient(to bottom, #5a2d22, #3a1d18);
+  clip-path: polygon(40% 100%, 62% 8%, 72% 8%, 96% 100%);
+}
+
+.world[data-env="Volcan"] .ground {
+  background:
+    repeating-linear-gradient(115deg, transparent 0 90px, rgba(255, 106, 43, 0.45) 90px 93px, transparent 93px 190px),
+    linear-gradient(to bottom, #6e3b2a 0 10%, #5c3125 10% 34%, #4b281f 34% 64%, #3a1f19 64% 100%);
+  box-shadow: inset 0 3px 0 rgba(10, 5, 5, 0.4);
+}
+
+/* ===== CENTRALE ===== */
+
+.world[data-env="Centrale"] .sky {
+  background: linear-gradient(to bottom,
+    #8f8b6c 0 26%, #a5a07e 26% 50%, #bab592 50% 74%, #cec9a6 74% 100%);
+}
+
+.world[data-env="Centrale"] .sun {
+  background: radial-gradient(circle at 22% 30%, rgba(255, 245, 190, 0.8) 0 26px, transparent 27px);
+}
+
+.world[data-env="Centrale"] .cloud {
+  background: #b7b39b;
+  box-shadow: 0 5px 0 rgba(60, 58, 40, 0.25);
+}
+
+.world[data-env="Centrale"] .far {
+  height: 30%;
+  /* Silhouette d'usine : bâtiments et cheminées */
+  background:
+    linear-gradient(#5f5b48, #5f5b48) 6% 100% / 9% 46% no-repeat,
+    linear-gradient(#5f5b48, #5f5b48) 11% 100% / 1.6% 92% no-repeat,
+    linear-gradient(#6d6953, #6d6953) 20% 100% / 14% 30% no-repeat,
+    linear-gradient(#5f5b48, #5f5b48) 34% 100% / 6% 62% no-repeat,
+    linear-gradient(#5f5b48, #5f5b48) 37% 100% / 1.4% 100% no-repeat,
+    linear-gradient(#6d6953, #6d6953) 58% 100% / 18% 40% no-repeat,
+    linear-gradient(#5f5b48, #5f5b48) 66% 100% / 1.8% 84% no-repeat,
+    linear-gradient(#5f5b48, #5f5b48) 88% 100% / 12% 54% no-repeat,
+    linear-gradient(#5f5b48, #5f5b48) 93% 100% / 1.6% 96% no-repeat;
+}
+
+.world[data-env="Centrale"] .near {
+  height: 10px;
+  z-index: 1;
+  background: repeating-linear-gradient(-45deg, #ffcb05 0 14px, #1d2236 14px 28px);
+  border-bottom: 3px solid #1d2236;
+}
+
+.world[data-env="Centrale"] .ground {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.14) 2px, transparent 2px) 0 0 / 72px 72px,
+    linear-gradient(90deg, rgba(0, 0, 0, 0.14) 2px, transparent 2px) 0 0 / 72px 72px,
+    linear-gradient(to bottom, #8f8c79 0 10%, #84816d 10% 34%, #787561 34% 64%, #6b6854 64% 100%);
+}
+
+/* ===== GROTTE ===== */
+
+.world[data-env="Grotte"] .sky {
+  background: linear-gradient(to bottom,
+    #231e1b 0 26%, #2c2622 26% 50%, #352e29 50% 74%, #3f3630 74% 100%);
+}
+
+.world[data-env="Grotte"] .sun {
+  /* Lumière qui filtre de l'entrée */
+  background: radial-gradient(ellipse 30% 60% at 18% 90%, rgba(255, 230, 180, 0.16), transparent 70%);
+}
+
+.world[data-env="Grotte"] .cloud {
+  display: none;
+}
+
+.world[data-env="Grotte"] .ceiling {
+  height: 90px;
+  z-index: 1;
+  /* Stalactites */
+  background:
+    conic-gradient(from -20deg at 50% 100%, #1a1613 0 40deg, transparent 40deg) 0 0 / 56px 90px repeat-x,
+    conic-gradient(from -26deg at 50% 100%, #241f1b 0 52deg, transparent 52deg) 20px 0 / 84px 60px repeat-x;
+}
+
+.world[data-env="Grotte"] .far {
+  height: 22%;
+  background:
+    radial-gradient(ellipse 14% 80% at 10% 100%, #4d4239 99%, transparent 100%),
+    radial-gradient(ellipse 9% 50% at 32% 100%, #574a40 99%, transparent 100%),
+    radial-gradient(ellipse 18% 100% at 78% 100%, #4d4239 99%, transparent 100%),
+    radial-gradient(ellipse 8% 40% at 94% 100%, #574a40 99%, transparent 100%);
+}
+
+.world[data-env="Grotte"] .ground {
+  background:
+    radial-gradient(ellipse 7px 4px, rgba(0, 0, 0, 0.28) 98%, transparent) 0 0 / 70px 46px,
+    radial-gradient(ellipse 5px 3px, rgba(255, 255, 255, 0.07) 98%, transparent) 35px 23px / 70px 46px,
+    linear-gradient(to bottom, #5e4d3f 0 10%, #534437 10% 34%, #483b30 34% 64%, #3c3128 64% 100%);
+  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* ===== EAU ===== */
+
+.world[data-env="Eau"] .sky {
+  background: linear-gradient(to bottom,
+    #7ccbff 0 28%, #98d7ff 28% 52%, #b4e3ff 52% 76%, #d2f0ff 76% 100%);
+}
+
+.world[data-env="Eau"] .sun {
+  background: radial-gradient(circle at 78% 34%, #fff9d6 0 40px, rgba(255, 249, 214, 0.45) 41px 62px, transparent 63px);
+}
+
+.world[data-env="Eau"] .far {
+  height: 6%;
+  /* Îlots au loin */
+  background:
+    radial-gradient(ellipse 9% 100% at 16% 100%, #3d8f6a 99%, transparent 100%),
+    radial-gradient(ellipse 5% 60% at 24% 100%, #4ba07a 99%, transparent 100%),
+    radial-gradient(ellipse 12% 80% at 70% 100%, #3d8f6a 99%, transparent 100%);
+}
+
+.world[data-env="Eau"] .ground {
+  background:
+    radial-gradient(ellipse 18px 3px, rgba(255, 255, 255, 0.5) 98%, transparent) 0 0 / 110px 44px,
+    radial-gradient(ellipse 12px 2px, rgba(255, 255, 255, 0.35) 98%, transparent) 55px 22px / 110px 44px,
+    linear-gradient(to bottom, #59b2ea 0 8%, #46a0de 8% 30%, #368ccd 30% 60%, #2878b8 60% 100%);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.5);
+  animation: waves 9s linear infinite;
+}
+
+@keyframes waves {
+  from { background-position: 0 0, 55px 22px, 0 0; }
+  to { background-position: 110px 0, -55px 22px, 0 0; }
+}

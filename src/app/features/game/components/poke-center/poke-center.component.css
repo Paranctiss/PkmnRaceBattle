@@ -1,83 +1,81 @@
-.container{
-  background-image: url('https://media.sketchfab.com/models/c497ebb33ca343a6a4cc4ab685b9235c/thumbnails/c162e2d47ab1404ea780c4c10d38c855/bd2319e29f174c789f43e0cedf775948.jpeg');
-  background-size: cover;
-  height: 70vh;
-  width: 50vw;
-  text-align: center;
-  margin-left: 15%;
-  padding-top: 1%;
-}
-p{
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-bottom: 10px;
-  padding-top: 0;
+:host {
+  display: block;
+  width: min(820px, 100%);
 }
 
-.text{
-  padding: 20px;
-  margin-left: 5%;
-  margin-right: 5%;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.8);
-  border-radius: 10px;
-}
-
-.pokeContainer{
+.center {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 28px 28px;
+}
+
+/* Enseigne au-dessus du comptoir */
+.center__sign {
+  display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  padding: 14px;
+  font-family: var(--font-pixel);
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 3px 0 var(--center-dark);
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 22px, transparent 22px 44px),
+    var(--center);
+  border: var(--edge) solid var(--ink);
+  border-radius: 12px;
+  box-shadow: inset 0 -6px 0 var(--center-dark);
 }
 
-.pkmnCard{
-  border: black solid 1px;
-  margin: 20px;
-  padding: 20px;
-  width: 25%;
-  box-sizing: border-box;
+.center__sign app-pixel-icon {
+  padding: 4px;
+  background: #fff;
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
 }
 
-.pokeName{
-  color: white;
-  background-color: rgba(0, 0, 0, 0.8);
+.center__dialog {
+  padding: 14px 18px;
+  font-family: var(--font-pixel);
+  font-size: 20px;
+  background: #fff;
+  border: var(--edge) solid var(--ink);
   border-radius: 10px;
 }
 
-.ailments{
+.center__team {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 18px 16px 16px;
+  /* Carrelage rose et blanc du centre */
+  background:
+    conic-gradient(rgba(240, 108, 143, 0.14) 25%, transparent 0 50%, rgba(240, 108, 143, 0.14) 0 75%, transparent 0) 0 0 / 40px 40px,
+    var(--paper-2);
+  border: var(--edge) solid var(--ink);
+  border-radius: 12px;
+}
+
+/* Petit éclat sur l'équipe une fois soignée */
+.center__team.is-healed app-pokemon-slot {
+  animation: heal-flash 0.9s steps(4, end);
+}
+
+.center__team.is-healed app-pokemon-slot:nth-child(2) { animation-delay: 0.08s; }
+.center__team.is-healed app-pokemon-slot:nth-child(3) { animation-delay: 0.16s; }
+.center__team.is-healed app-pokemon-slot:nth-child(4) { animation-delay: 0.24s; }
+.center__team.is-healed app-pokemon-slot:nth-child(5) { animation-delay: 0.32s; }
+.center__team.is-healed app-pokemon-slot:nth-child(6) { animation-delay: 0.4s; }
+
+@keyframes heal-flash {
+  0%, 50% { filter: brightness(1.5) drop-shadow(0 0 8px var(--center)); }
+  25%, 100% { filter: none; }
+}
+
+.center__actions {
   display: flex;
-  flex-direction: row;
-}
-
-.ailmentCard{
-  padding: 0;
-  color: white;
-  width: 40px;
-  text-align: center;
-  margin: 0 5px 0 0;
-}
-
-.fakeAilment{
-  height: 8px;
-}
-
-.brulure {
-  background: firebrick;
-}
-
-.paralysie{
-  background: darkgoldenrod;
-}
-
-.poison{
-  background: indigo;
-}
-
-.gel{
-  background: #04b0ff;
-}
-
-.sleep{
-  background: darkslategray;
+  justify-content: center;
 }

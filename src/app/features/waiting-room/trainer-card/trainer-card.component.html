@@ -1,12 +1,16 @@
-<div class="trainerCard"
-     (mouseover)="hovered = true"
-     (mouseout)="hovered = false"
-     [ngStyle]="hovered ? {'background-color': this.cardColor}:null">
-  <div class="trainer">
-    <img src="/assets/trainers-sprites/{{Player.sprite}}.png">
+<article class="tcard" [class.is-me]="isMe">
+  <div class="tcard__trainer">
+    <img class="pixel" src="/assets/trainers-sprites/{{ Player.sprite }}.png" [alt]="Player.name">
   </div>
-  <div class="pokemon" style="text-align: center">
-    <h1>{{Player.name}}</h1>
-    <img [src]="Player.team[0].frontSprite">
+  <div class="tcard__info">
+    <span class="tcard__name">{{ Player.name }}</span>
+    <div class="tcard__tags">
+      <span class="tag tag--host" *ngIf="Player.isHost">Hôte</span>
+      <span class="tag" *ngIf="isMe">Toi</span>
+    </div>
+    <span class="tcard__partner-name" *ngIf="Player.team[0]">avec {{ Player.team[0].nameFr }}</span>
   </div>
-</div>
+  <div class="tcard__partner" *ngIf="Player.team[0]">
+    <img class="pixel" [src]="Player.team[0].frontSprite" [alt]="Player.team[0].nameFr">
+  </div>
+</article>

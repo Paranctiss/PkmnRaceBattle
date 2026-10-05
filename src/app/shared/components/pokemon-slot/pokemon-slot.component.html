@@ -1,0 +1,23 @@
+<div class="slot"
+     [class.slot--lead]="lead"
+     [class.slot--compact]="compact"
+     [class.slot--dimmed]="dimmed"
+     [class.slot--fainted]="fainted">
+  <div class="slot__sprite">
+    <img class="pixel" [src]="pokemon.frontSprite" [alt]="pokemon.nameFr">
+  </div>
+  <div class="slot__info">
+    <div class="slot__head">
+      <span class="slot__name">{{ pokemon.nameFr }}</span>
+      <span class="slot__level">N.{{ pokemon.level }}</span>
+    </div>
+    <div class="slot__tags">
+      <span *ngIf="fainted" class="status status--ko">K.O.</span>
+      <app-ailment-badges *ngIf="!fainted" [pokemon]="pokemon"/>
+      <ng-container *ngIf="showTypes">
+        <app-type-card *ngFor="let type of pokemon.types" [Type]="type" [Size]="'50px'"/>
+      </ng-container>
+    </div>
+    <app-hp-bar [BaseHP]="pokemon.baseHp" [CurrHP]="pokemon.currHp" [ShowValue]="!compact"/>
+  </div>
+</div>

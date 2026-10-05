@@ -1,0 +1,46 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px 24px;
+  /* Trame façon écran rétro */
+  background-color: rgba(18, 22, 40, 0.62);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1.5px);
+  background-size: 4px 4px;
+  animation: fade-in 0.15s ease-out;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100vh - 80px);
+  animation: pop-in 0.18s cubic-bezier(0.3, 1.4, 0.6, 1);
+}
+
+.modal--sm { max-width: 460px; }
+.modal--md { max-width: 760px; }
+.modal--lg { max-width: 1120px; }
+
+.modal__body {
+  padding: 34px 28px 26px;
+  overflow: auto;
+}
+
+.modal__close {
+  position: absolute;
+  top: -20px;
+  right: -16px;
+  z-index: 3;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+}

@@ -1,37 +1,138 @@
-:host{
-  display: inherit;
-  height: 100vh;
+:host {
+  display: block;
 }
 
-.ModeSelection{
-  height: 100%;
+.title-screen {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 48px;
+  padding: 48px 20px;
+}
+
+/* ----- Logo ----- */
+
+.logo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.btnSelection{
-  margin-top: 30px;
-  display: flex;
-  justify-content: center;
+.logo__ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  height: 360px;
+  margin: -180px 0 0 -180px;
+  border-radius: 50%;
+  border: 10px solid rgba(255, 255, 255, 0.35);
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.35) 0 34px, transparent 35px 52px, rgba(255, 255, 255, 0.35) 53px 62px, transparent 63px),
+    linear-gradient(to bottom, transparent 0 46%, rgba(255, 255, 255, 0.35) 46% 54%, transparent 54%);
+  animation: spin 40s linear infinite;
+  z-index: -1;
 }
 
-.btnSelection button{
-  font-size: xxx-large;
-  border: #06549d 2px solid;
-  color: #06549d;
-  margin: 10px;
-  padding: 10px;
-  width: 500px;
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.logo__kicker {
+  padding: 4px 16px 6px;
+  font-family: var(--font-pixel);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  color: var(--gold);
+  background: var(--blue-dark);
+  border: var(--edge) solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 0 4px 0 var(--ink);
+  transform: rotate(-3deg);
+}
+
+.logo__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 6px;
+  font-family: var(--font-pixel);
+  font-size: clamp(64px, 11vw, 132px);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--gold);
+  /* Contour bleu épais + ombre portée, à la manière du logo de la licence */
+  text-shadow:
+    -5px -5px 0 var(--blue-dark), 0 -5px 0 var(--blue-dark), 5px -5px 0 var(--blue-dark),
+    -5px 0 0 var(--blue-dark), 5px 0 0 var(--blue-dark),
+    -5px 5px 0 var(--blue-dark), 0 5px 0 var(--blue-dark), 5px 5px 0 var(--blue-dark),
+    0 13px 0 var(--ink), 6px 12px 0 var(--ink), -6px 12px 0 var(--ink);
+}
+
+.logo__title span {
+  font-size: 0.78em;
+  color: #fff;
+}
+
+/* ----- Menu ----- */
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  width: min(480px, 100%);
+  padding: 12px;
+}
+
+.menu__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 14px 18px 14px 44px;
+  text-align: left;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-button:hover{
-  color: white !important;
-  background-color: #06549d !important;
+.menu__item + .menu__item {
+  border-top: 2px dashed var(--paper-3);
 }
 
-.btnSelection{
+.menu__item.menu-cursor::before {
+  left: 18px;
+}
 
+.menu__item:hover,
+.menu__item:focus-visible {
+  background: var(--paper-2);
+}
+
+.menu__label {
+  font-family: var(--font-pixel);
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.menu__hint {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.tagline {
+  padding: 6px 14px;
+  font-family: var(--font-pixel);
+  font-size: 17px;
+  color: var(--paper);
+  background: rgba(29, 34, 54, 0.75);
+  border-radius: 8px;
 }
