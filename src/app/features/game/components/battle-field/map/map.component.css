@@ -1,0 +1,202 @@
+:host {
+  display: block;
+}
+
+.town-map {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Fond quadrillé façon Pokématos */
+.town-map__scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  background-color: #4c9a5f;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+  background-size: 26px 26px;
+  border: var(--edge) solid var(--ink);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.15), inset 0 8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.town-map__canvas {
+  position: relative;
+}
+
+/* ----- Routes ----- */
+
+.routes {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.route-edge,
+.route {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.route-edge {
+  stroke: var(--ink);
+  stroke-width: 15;
+}
+
+.route {
+  stroke-width: 8;
+}
+
+.route--travelled {
+  stroke: var(--gold);
+}
+
+.route--upcoming {
+  stroke: #f2e6c4;
+}
+
+.route--skipped {
+  stroke: #8a8f86;
+  stroke-dasharray: 2 12;
+}
+
+/* ----- Lieux ----- */
+
+.place {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transform: translate(-50%, -30px);
+}
+
+.place__tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0 50%, transparent 50%),
+    var(--place-color);
+  border: var(--edge) solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 0 4px 0 var(--ink);
+  transition: transform 0.12s ease;
+}
+
+.place:hover .place__tile {
+  transform: translateY(-3px);
+}
+
+.place__label {
+  padding: 1px 7px 2px;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--paper);
+  background: rgba(29, 34, 54, 0.82);
+  border-radius: 5px;
+}
+
+.place__check {
+  position: absolute;
+  right: -9px;
+  bottom: -7px;
+  width: 22px;
+  height: 22px;
+  font: 700 13px/16px var(--font-ui);
+  text-align: center;
+  color: var(--ink);
+  background: var(--gold);
+  border: var(--edge) solid var(--ink);
+  border-radius: 50%;
+}
+
+.place--current .place__tile {
+  box-shadow: 0 0 0 4px var(--gold), 0 0 0 7px var(--ink), 0 4px 0 7px var(--ink);
+}
+
+.place__trainer {
+  position: absolute;
+  bottom: calc(100% - 6px);
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  animation: hop 0.6s steps(2, jump-none) infinite alternate;
+  filter: drop-shadow(0 3px 0 rgba(29, 34, 54, 0.4));
+}
+
+@keyframes hop {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
+
+.place--upcoming .place__tile {
+  filter: saturate(0.8);
+}
+
+.place--skipped {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
+.place--skipped .place__tile {
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* Bulle d'information */
+.place-tip {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  font-size: 13px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.place-tip b {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  color: var(--gold);
+}
+
+/* ----- Légende ----- */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend__dot {
+  width: 16px;
+  height: 16px;
+  border: var(--edge) solid var(--ink);
+  border-radius: 5px;
+}
+
+.legend__dot--visited { background: var(--gold); }
+.legend__dot--current { background: #fff; box-shadow: 0 0 0 3px var(--gold); }
+.legend__dot--upcoming { background: #f2e6c4; }
+.legend__dot--skipped { background: #8a8f86; border-style: dashed; }

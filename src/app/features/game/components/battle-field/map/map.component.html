@@ -1,0 +1,43 @@
+<div class="town-map">
+  <div class="town-map__scroller" #scroller>
+    <div class="town-map__canvas" [style.width.px]="width" [style.height.px]="height">
+      <svg class="routes" [attr.width]="width" [attr.height]="height" aria-hidden="true">
+        <path *ngFor="let link of links" class="route-edge" [attr.d]="linkPath(link)"/>
+        <path *ngFor="let link of links" class="route route--{{ link.state }}" [attr.d]="linkPath(link)"/>
+      </svg>
+
+      <div *ngFor="let node of nodes"
+           class="place place--{{ node.state }}"
+           [style.left.px]="node.left"
+           [style.top.px]="node.top"
+           [style.--place-color]="node.info.color"
+           (mouseenter)="hoveredNode = node"
+           (mouseleave)="hoveredNode = null">
+        <div class="place__tile">
+          <app-pixel-icon [name]="node.point.environmentName" [size]="34"/>
+          <span class="place__check" *ngIf="node.state === 'visited'">✓</span>
+        </div>
+        <span class="place__label">{{ node.info.label }}</span>
+        <img *ngIf="node.state === 'current' && TrainerSprite"
+             class="place__trainer pixel"
+             src="/assets/trainers-sprites/{{ TrainerSprite }}.png"
+             alt="Vous">
+      </div>
+
+      <div class="place-tip frame frame--dark"
+           *ngIf="hoveredNode"
+           [style.left.px]="hoveredNode.left"
+           [style.top.px]="hoveredNode.top + 58">
+        <b>{{ hoveredNode.info.label }}</b>
+        <span>{{ stateLabels[hoveredNode.state] }}</span>
+      </div>
+    </div>
+  </div>
+
+  <ul class="legend">
+    <li><span class="legend__dot legend__dot--visited"></span>Visité</li>
+    <li><span class="legend__dot legend__dot--current"></span>Position actuelle</li>
+    <li><span class="legend__dot legend__dot--upcoming"></span>À venir</li>
+    <li><span class="legend__dot legend__dot--skipped"></span>Non choisi</li>
+  </ul>
+</div>

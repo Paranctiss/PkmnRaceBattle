@@ -1,0 +1,9 @@
+<div class="backdrop" (mousedown)="onBackdrop($event)">
+  <section class="modal frame frame--{{accent}} modal--{{size}}" role="dialog" aria-modal="true" [attr.aria-label]="title">
+    <h2 class="frame-title" *ngIf="title">{{ title }}</h2>
+    <button *ngIf="closable" type="button" class="close-ball modal__close" aria-label="Fermer" (click)="closed.emit()"></button>
+    <div class="modal__body">
+      <ng-content></ng-content>
+    </div>
+  </section>
+</div>
