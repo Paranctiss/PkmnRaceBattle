@@ -20,14 +20,14 @@ describe('BracketComponent (tableau du tournoi)', () => {
     ],
   };
 
-  function render(isHost: boolean) {
+  function render(isHost: boolean, data: BracketModel = bracket) {
     const fake = new FakeSignalRService();
     TestBed.configureTestingModule({imports: [BracketComponent], providers: provideTestingDefaults(fake)});
     const hub = TestBed.inject(HubService);
     hub.gameCode = 'ABC123';
     hub.Player = makePlayer({isHost});
     const fixture = TestBed.createComponent(BracketComponent);
-    fixture.componentRef.setInput('bracket', bracket);
+    fixture.componentRef.setInput('bracket', data);
     fixture.detectChanges();
     return {fixture, fake, el: fixture.nativeElement as HTMLElement};
   }
@@ -55,5 +55,18 @@ describe('BracketComponent (tableau du tournoi)', () => {
     const {el} = render(false);
     expect(el.querySelector('.bracket__actions button')).toBeNull();
     expect(el.querySelector('.bracket__wait')).not.toBeNull();
+  });
+
+  it('tour suivant : l’hôte relance le tour', () => {
+    const {el} = render(true, {...bracket, nbTurn: 2, rounds: [{roundNumber: 2, playersInRace: ['a', 'c']}, bracket.rounds[1]]});
+    expect(el.querySelector('.bracket__actions button')?.textContent).toContain('tour suivant');
+  });
+
+  it('finale jouée : le champion est affiché et il n’y a plus rien à lancer', () => {
+    const {el} = render(true, {...bracket, nbTurn: 3, champion: 'c', rounds: [{roundNumber: 2, playersInRace: ['a', 'c']}, bracket.rounds[1]]});
+    expect(el.querySelector('.champion__name')?.textContent).toBe('Ondine');
+    expect(el.querySelector('.champion__slot')).toBeNull();
+    expect(el.querySelector('.bracket__actions')).toBeNull();
+    expect(el.querySelector('.bracket__end')?.textContent).toContain('Ondine');
   });
 });

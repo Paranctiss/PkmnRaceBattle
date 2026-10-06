@@ -3,7 +3,11 @@
 
   <div class="champion">
     <span class="champion__label">Champion</span>
-    <span class="champion__slot">?</span>
+    <span class="champion__slot" *ngIf="!isFinished">?</span>
+    <ng-container *ngIf="isFinished">
+      <img class="champion__sprite pixel" src="assets/trainers-sprites/{{ getSprite(bracket.champion!) }}.png" [alt]="getName(bracket.champion!)">
+      <span class="champion__name">{{ getName(bracket.champion!) }}</span>
+    </ng-container>
   </div>
 
   <div class="round" *ngFor="let matches of rounds">
@@ -24,8 +28,9 @@
     </div>
   </div>
 
-  <div class="bracket__actions">
-    <button type="button" class="btn btn--primary btn--lg" *ngIf="hubService.Player.isHost" (click)="startTournament()">Lancer le tournoi ▶</button>
+  <div class="bracket__actions" *ngIf="!isFinished">
+    <button type="button" class="btn btn--primary btn--lg" *ngIf="hubService.Player.isHost" (click)="startTournament()">{{ hasStarted ? 'Lancer le tour suivant ▶' : 'Lancer le tournoi ▶' }}</button>
     <p class="bracket__wait" *ngIf="!hubService.Player.isHost"><span class="ball-loader"></span> En attente du lancement par l’hôte…</p>
   </div>
+  <p class="bracket__end" *ngIf="isFinished">Tournoi terminé : {{ getName(bracket.champion!) }} est le champion !</p>
 </section>

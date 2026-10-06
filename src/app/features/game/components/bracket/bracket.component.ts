@@ -43,6 +43,15 @@ export class BracketComponent implements OnChanges {
     return this.bracket.players.find(s => s._id === userId)?.team
   }
 
+  // Le tour en cours (nbTurn) dépasse le nombre de tours une fois la finale jouée
+  get isFinished(): boolean {
+    return !!this.bracket?.champion;
+  }
+
+  get hasStarted(): boolean {
+    return (this.bracket?.nbTurn ?? 1) > 1;
+  }
+
   startTournament() {
     this.hubService.launchTournament();
   }
