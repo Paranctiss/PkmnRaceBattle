@@ -14,8 +14,8 @@ export const routeAnimations = trigger('routeAnimations', [
     ]),
     query(':enter', [style({ opacity: 0 })]),
     group([
-      query(':leave', [animate('300ms ease-out', style({ opacity: 0 }))]),
-      query(':enter', [animate('300ms ease-in', style({ opacity: 1 }))])
+      query(':leave', [animate('200ms ease-out', style({ opacity: 0 }))]),
+      query(':enter', [animate('200ms ease-in', style({ opacity: 1 }))])
     ])
   ]),
   transition('StarterSelectionPage => HomePage', [
@@ -30,8 +30,8 @@ export const routeAnimations = trigger('routeAnimations', [
     ]),
     query(':enter', [style({ opacity: 0 })]),
     group([
-      query(':leave', [animate('300ms ease-out', style({ opacity: 0 }))]),
-      query(':enter', [animate('300ms ease-in', style({ opacity: 1 }))])
+      query(':leave', [animate('200ms ease-out', style({ opacity: 0 }))]),
+      query(':enter', [animate('200ms ease-in', style({ opacity: 1 }))])
     ])
   ])
 ]);

@@ -46,11 +46,27 @@ export class WaitingRoomComponent {
 
   copyCode() {
     const code = this.myPlayer?.roomId;
-    if (!code || !navigator.clipboard) return;
-    navigator.clipboard.writeText(code).then(() => {
+    if (!code) return;
+    // navigator.clipboard n'existe qu'en contexte sécurisé (HTTPS / localhost) : repli sur execCommand sinon
+    const copy = navigator.clipboard?.writeText
+      ? navigator.clipboard.writeText(code).catch(() => this.copyWithSelection(code))
+      : Promise.resolve(this.copyWithSelection(code));
+    copy.then(() => {
       this.copied = true;
       setTimeout(() => this.copied = false, 1500);
     });
+  }
+
+  private copyWithSelection(text: string): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
   }
 
   StartGame() {

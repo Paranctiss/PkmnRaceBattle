@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {WaitingRoomComponent} from './waiting-room.component';
 import {FakeSignalRService, provideTestingDefaults} from '../../../testing/fake-signalr';
@@ -44,6 +44,57 @@ describe('WaitingRoomComponent (salle d’attente)', () => {
     expect(el().textContent).toContain('avec Bulbizarre');
     expect(el().querySelector('.frame-title')?.textContent).toContain('2');
   });
+
+  it('le code de la salle est sélectionnable et hors du bouton Copier', () => {
+    create('host');
+    fake.connection.emit('ResponsePlayersInRoom', [host, guest]);
+    fixture.detectChanges();
+    const value = el().querySelector('.room-code__value') as HTMLElement;
+    expect(value.closest('button')).toBeNull();
+    expect(getComputedStyle(value).userSelect).not.toBe('none');
+  });
+
+  it('le bouton Copier copie le code via le presse-papier', fakeAsync(() => {
+    create('host');
+    fake.connection.emit('ResponsePlayersInRoom', [host, guest]);
+    fixture.detectChanges();
+    const writeText = spyOn(navigator.clipboard, 'writeText').and.resolveTo();
+
+    (el().querySelector('.room-code__copy') as HTMLButtonElement).click();
+    flushMicrotasks();
+    fixture.detectChanges();
+
+    expect(writeText).toHaveBeenCalledWith('ABC123');
+    expect(el().querySelector('.room-code__copy')?.textContent).toContain('Copié');
+    tick(1500);
+  }));
+
+  it('sans presse-papier (page en HTTP), le bouton Copier copie quand même le code', fakeAsync(() => {
+    create('host');
+    fake.connection.emit('ResponsePlayersInRoom', [host, guest]);
+    fixture.detectChanges();
+    const clipboard = Object.getOwnPropertyDescriptor(Navigator.prototype, 'clipboard');
+    Object.defineProperty(navigator, 'clipboard', {value: undefined, configurable: true});
+    let copiedText: string | undefined;
+    spyOn(document, 'execCommand').and.callFake(() => {
+      copiedText = (document.activeElement as HTMLTextAreaElement).value;
+      return true;
+    });
+
+    try {
+      (el().querySelector('.room-code__copy') as HTMLButtonElement).click();
+      flushMicrotasks();
+      fixture.detectChanges();
+    } finally {
+      delete (navigator as any).clipboard;
+      if (clipboard) Object.defineProperty(Navigator.prototype, 'clipboard', clipboard);
+    }
+
+    expect(document.execCommand).toHaveBeenCalledWith('copy');
+    expect(copiedText).toBe('ABC123');
+    expect(el().querySelector('.room-code__copy')?.textContent).toContain('Copié');
+    tick(1500);
+  }));
 
   it('un nouveau joueur rafraîchit la liste', () => {
     create('host');

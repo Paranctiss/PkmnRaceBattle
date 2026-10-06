@@ -36,7 +36,7 @@
   border-radius: 3px;
   /* Liseré clair en haut, comme les jauges des jeux */
   box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.35);
-  transition: width 0.45s steps(12, end), background-color 0.2s ease;
+  transition: width 0.25s steps(8, end), background-color 0.2s ease;
 }
 
 .hp__fill--high { background-color: var(--hp-high); }

@@ -5,6 +5,7 @@ import {HubService} from '../../../../core/services/Hub/hub.service';
 import {ItemModel, ItemPocket} from '../../../../shared/models/item.model';
 import {PlayerModel} from '../../../../shared/models/player.model';
 import {ITEM_CATALOG, ITEM_POCKETS, getItemSprite} from '../../../../shared/utils/items';
+import {STANDALONE_MESSAGE_DELAY} from '../../../../shared/utils/timings';
 import {BagComponent} from '../bag/bag.component';
 import {GameModalComponent} from '../../../../shared/components/game-modal/game-modal.component';
 import {PixelIconComponent} from '../../../../shared/components/pixel-icon/pixel-icon.component';
@@ -87,7 +88,7 @@ export class PokeShopComponent {
       this.messageBoxSubscription.unsubscribe();
     }
 
-    this.messageBoxSubscription = timer(2000).pipe(take(1)).subscribe(() => {
+    this.messageBoxSubscription = timer(STANDALONE_MESSAGE_DELAY).pipe(take(1)).subscribe(() => {
       this.currentMessage = null;
       this.count = 0;
       this.oldItem = "";
