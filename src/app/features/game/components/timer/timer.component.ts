@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {NgClass, NgIf} from '@angular/common';
 import {HubService} from '../../../../core/services/Hub/hub.service';
 
@@ -12,6 +12,7 @@ import {HubService} from '../../../../core/services/Hub/hub.service';
   styleUrl: './timer.component.css'
 })
 export class TimerComponent {
+  private readonly destroyRef = inject(DestroyRef);
   constructor(public hubService: HubService) { }
 
   ngOnInit(): void {
@@ -23,15 +24,15 @@ export class TimerComponent {
   }
 
   setupTimerListeners(): void {
-    this.hubService.onTimerUpdate((seconds: number) => {
+    this.destroyRef.onDestroy(this.hubService.onTimerUpdate((seconds: number) => {
       // La mise à jour de remainingSeconds est déjà gérée dans le service
       // Cette fonction peut être utilisée pour des logiques supplémentaires
-    });
+    }));
 
-    this.hubService.onTimerEnded((gameCode: string) => {
+    this.destroyRef.onDestroy(this.hubService.onTimerEnded((gameCode: string) => {
       // Actions à effectuer lorsque le timer est terminé
       // Par exemple, afficher une notification ou changer l'état du jeu
-    });
+    }));
   }
 
   isWarning(): boolean {

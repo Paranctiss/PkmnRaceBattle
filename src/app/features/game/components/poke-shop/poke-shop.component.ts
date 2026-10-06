@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
 import {Subscription, take, timer} from 'rxjs';
 import {HubService} from '../../../../core/services/Hub/hub.service';
@@ -22,6 +22,7 @@ import {PixelIconComponent} from '../../../../shared/components/pixel-icon/pixel
   styleUrl: './poke-shop.component.css'
 })
 export class PokeShopComponent {
+  private readonly destroyRef = inject(DestroyRef);
   readonly pockets = ITEM_POCKETS;
   activePocket: ItemPocket = 'potion';
   hovered?: ItemModel;
@@ -37,11 +38,11 @@ export class PokeShopComponent {
   }
 
   ngOnInit() {
-    this.hubService.onBuyItemResponse((item:string, player:PlayerModel) => {
+    this.destroyRef.onDestroy(this.hubService.onBuyItemResponse((item:string, player:PlayerModel) => {
       this.displayMessage(item)
       this.hubService.Player = player;
       this.hubService.pending = false;
-    });
+    }));
   }
 
   get shelfItems(): ItemModel[] {

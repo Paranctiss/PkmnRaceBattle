@@ -1,0 +1,63 @@
+# Tests, build de prod puis déploiement du client sur le VPS à chaque push sur master (merge compris).
+#
+# Secrets (Settings → Secrets and variables → Actions → Secrets) :
+#   VPS_HOST, VPS_USER, VPS_SSH_KEY   comme pour l'API
+# Variables facultatives (onglet Variables) :
+#   API_URL             URL de l'API vue par le navigateur (défaut : http://57.129.71.128:5000)
+#   CLIENT_DEPLOY_PATH  dossier servi par nginx sur le VPS (défaut : /home/pkmn/pkmn-race-battle/browser)
+name: Déploiement client
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-client
+  cancel-in-progress: false
+
+env:
+  API_URL: ${{ vars.API_URL || 'http://57.129.71.128:5000' }}
+  DEPLOY_PATH: ${{ vars.CLIENT_DEPLOY_PATH || '/home/pkmn/pkmn-race-battle/browser' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:ci
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: URL de l'API de prod
+        # Les URL sont écrites en dur (localhost en dev) : on les remplace pour le build et on vérifie
+        run: |
+          files="src/app/core/services/SignalR/signal-r.service.ts src/app/core/services/PokemonBase/pokemon-base.service.ts"
+          sed -i "s#^\(\s*\)\(private baseUrl = \|\.withUrl(\)'http://localhost:5000#\1\2'$API_URL#" $files
+          grep -q "'$API_URL/gameHub'" src/app/core/services/SignalR/signal-r.service.ts
+          grep -q "'$API_URL/Pokemon/'" src/app/core/services/PokemonBase/pokemon-base.service.ts
+      - run: npm run build
+      - name: Clé SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+      - name: Envoi sur le VPS
+        run: >
+          rsync -az --delete --chmod=D2775,F664 -e "ssh -i ~/.ssh/id_deploy"
+          dist/pkmn-race-battle/browser/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:$DEPLOY_PATH/"

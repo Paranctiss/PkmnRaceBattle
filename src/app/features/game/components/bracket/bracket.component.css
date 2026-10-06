@@ -142,3 +142,23 @@
   font-family: var(--font-pixel);
   font-size: 18px;
 }
+
+.champion__sprite {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+}
+
+.champion__name {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.bracket__end {
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  color: var(--gold-dark);
+}

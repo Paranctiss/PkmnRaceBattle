@@ -61,7 +61,7 @@ export class BattleFieldComponent implements OnDestroy {
   pokemonWantToLearn:PokemonTeamModel[] = [];
 
   // Add this to keep track of the event names we've subscribed to
-  private signalREventNames: string[] = [];
+  private signalREventHandlers: [string, (...args: any[]) => void][] = [];
 
 
   constructor(public hubService:HubService, private typeService: PokemonTypeService) {
@@ -127,6 +127,12 @@ export class BattleFieldComponent implements OnDestroy {
     this.registerSignalREvent('pokemonLevelUp', (message, pokemon, movesToLearn) => {
       if(message.includes("|")){
         var messages = message.split("|");
+        // Peut arriver avant le premier résultat de tour (ex. Super Bonbon au premier tour)
+        if (!this.TurnContext) {
+          this.TurnContext = {actionName: '', messages: [], prioMessages: [],
+            player: {hp: [], atk: 0, atkSpe: 0, def: 0, defSpe: 0, speed: 0, index: 0},
+            opponent: {hp: [], atk: 0, atkSpe: 0, def: 0, defSpe: 0, speed: 0, index: 0}};
+        }
         this.TurnContext.messages = messages;
         this.startDisplayingMessages();
       }else{
@@ -191,14 +197,15 @@ export class BattleFieldComponent implements OnDestroy {
 
   // Helper method to register SignalR events and track them
   private registerSignalREvent(eventName: string, callback: (...args: any[]) => void): void {
-    this.signalREventNames.push(eventName);
+    this.signalREventHandlers.push([eventName, callback]);
     this.hubService.signalRService.connection.on(eventName, callback);
   }
 
   ngOnDestroy(): void {
     // Remove all SignalR event handlers when component is destroyed
-    this.signalREventNames.forEach(eventName => {
-      this.hubService.signalRService.connection.off(eventName);
+    // Seulement les écouteurs de ce composant : le parent (wild-fight) écoute aussi useMoveResult
+    this.signalREventHandlers.forEach(([eventName, callback]) => {
+      this.hubService.signalRService.connection.off(eventName, callback);
     });
   }
 

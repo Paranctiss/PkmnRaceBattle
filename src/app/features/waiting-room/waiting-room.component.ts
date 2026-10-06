@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {HubService} from '../../core/services/Hub/hub.service';
 import {PlayerModel} from '../../shared/models/player.model';
 import {NgForOf, NgIf} from '@angular/common';
@@ -18,6 +18,7 @@ import {FormsModule} from '@angular/forms';
   styleUrl: './waiting-room.component.css'
 })
 export class WaitingRoomComponent {
+  private readonly destroyRef = inject(DestroyRef);
   constructor(
     private hubService: HubService,
     private router: Router) {
@@ -30,16 +31,16 @@ export class WaitingRoomComponent {
   copied: boolean = false;
 
     ngOnInit() {
-      this.hubService.onResponsePlayersInRoom((players) => {
+      this.destroyRef.onDestroy(this.hubService.onResponsePlayersInRoom((players) => {
         this.players = players;
         this.myPlayer = players.find(x => x._id === this.hubService.userId)
-      })
-      this.hubService.onUserJoined((username: string) => {
+      }))
+      this.destroyRef.onDestroy(this.hubService.onUserJoined((username: string) => {
         this.hubService.getAllUsersByRoomID(this.hubService.gameCode)
-      })
-      this.hubService.onStartedGame((gameCode:string) => {
+      }))
+      this.destroyRef.onDestroy(this.hubService.onStartedGame((gameCode:string) => {
         this.router.navigate(["/game"]);
-      })
+      }))
       this.hubService.getAllUsersByRoomID(this.hubService.gameCode)
     }
 

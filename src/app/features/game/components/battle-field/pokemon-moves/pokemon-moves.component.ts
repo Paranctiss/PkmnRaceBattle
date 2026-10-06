@@ -34,7 +34,9 @@ export class PokemonMovesComponent {
   constructor(private typeService: PokemonTypeService) {}
 
   isDisabled(move: PokemonTeamMoveModel): boolean {
-    return this.DisabledMoves?.includes(move.nameFr) ?? false;
+    if (this.DisabledMoves?.includes(move.nameFr)) return true;
+    // Sans PP la capacité est bloquée, sauf si plus aucune n'en a : le serveur utilise alors Lutte
+    return move.pp <= 0 && (this.PokemonMoves ?? []).some(m => m.pp > 0);
   }
 
   typeColor(move: PokemonTeamMoveModel): string {

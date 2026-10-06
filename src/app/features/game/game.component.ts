@@ -1,4 +1,4 @@
-import {Component, isDevMode} from '@angular/core';
+import {Component, isDevMode, DestroyRef, inject} from '@angular/core';
 import {HubService} from '../../core/services/Hub/hub.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {WildFightComponent} from './components/wild-fight/wild-fight.component';
@@ -39,6 +39,7 @@ const WILD_FIGHTS_PER_MAP = 5;
   styleUrl: './game.component.css'
 })
 export class GameComponent {
+  private readonly destroyRef = inject(DestroyRef);
   TrainerContinue: boolean = false;
 
   constructor(public hubService:HubService, public environmentService:EnvironmentService) {
@@ -55,20 +56,21 @@ export class GameComponent {
   readonly wildPips = Array.from({length: WILD_FIGHTS_PER_MAP}, (_, i) => i);
 
   ngOnInit() {
-    this.hubService.onTurnFinished((updatedPlayer:PlayerModel, updatedOpponent:PlayerModel) => {
-    })
-    this.hubService.onGetPlayerResponse((response:PlayerModel) => {
+    this.destroyRef.onDestroy(this.hubService.onTurnFinished((updatedPlayer:PlayerModel, updatedOpponent:PlayerModel) => {
+    }))
+    this.destroyRef.onDestroy(this.hubService.onGetPlayerResponse((response:PlayerModel) => {
       this.hubService.Player = response;
-    })
+    }))
     this.hubService.getCurrentUser()
-    this.hubService.responseWildFight((wildOpponent, responsePlayer) => {
-      if(this.turnType !== "") this.hubService.Player = responsePlayer;
+    this.destroyRef.onDestroy(this.hubService.responseWildFight((wildOpponent, responsePlayer) => {
+      // Le serveur renvoie le joueur à jour (position sur la carte), y compris au premier combat
+      this.hubService.Player = responsePlayer;
       this.turnType = "WildFight";
       this.opponent = wildOpponent;
       this.CheckEnvironment();
       this.hubService.pending = false;
-    });
-    this.hubService.responseTrainerFight((trainerOpponent) => {
+    }));
+    this.destroyRef.onDestroy(this.hubService.responseTrainerFight((trainerOpponent) => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.TrainerContinue = false;
       this.turnType = "TrainerFight";
@@ -76,38 +78,38 @@ export class GameComponent {
       this.TrainerContinue = false;
       this.CheckEnvironment();
       this.hubService.pending = false;
-    });
-    this.hubService.responsePokeCenter((player) => {
+    }));
+    this.destroyRef.onDestroy(this.hubService.responsePokeCenter((player) => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.turnType = "PokeCenter";
       this.hubService.pending = false;
-    });
-    this.hubService.responsePokeShop(() => {
+    }));
+    this.destroyRef.onDestroy(this.hubService.responsePokeShop(() => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.turnType = "PokeShop";
       this.hubService.pending = false;
-    });
-    this.hubService.onChooseNextPath((options) => {
+    }));
+    this.destroyRef.onDestroy(this.hubService.onChooseNextPath((options) => {
       this.pathOptions = options;
       this.hubService.pending = true;
-    });
-    this.hubService.onTimerEnded((gameCode: string) => {
+    }));
+    this.destroyRef.onDestroy(this.hubService.onTimerEnded((gameCode: string) => {
       this.pathOptions = [];
       this.turnType = "Finito";
-    });
-    this.hubService.responsePvpFight((opponent) => {
+    }));
+    this.destroyRef.onDestroy(this.hubService.responsePvpFight((opponent) => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.turnType = "PvpFight";
       this.opponent = opponent;
       this.hubService.pending = false;
-    });
-    this.hubService.onBracketCreated((bracket) => {
+    }));
+    this.destroyRef.onDestroy(this.hubService.onBracketCreated((bracket) => {
       this.turnType = "Bracket";
       this.bracket = bracket;
-    })
-    this.hubService.onTriggerTournament(() => {
+    }))
+    this.destroyRef.onDestroy(this.hubService.onTriggerTournament(() => {
       this.hubService.getPvpFight();
-    })
+    }))
     this.hubService.getWildFight();
   }
 

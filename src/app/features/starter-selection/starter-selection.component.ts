@@ -1,4 +1,4 @@
-import {Component, signal, WritableSignal} from '@angular/core';
+import {Component, signal, WritableSignal, DestroyRef, inject} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {PokemonBaseService} from '../../core/services/PokemonBase/pokemon-base.service';
@@ -20,6 +20,7 @@ import {FormsModule} from '@angular/forms';
   styleUrl: './starter-selection.component.css'
 })
 export class StarterSelectionComponent {
+  private readonly destroyRef = inject(DestroyRef);
   constructor(
     private pokemonBaseService:PokemonBaseService,
     private hubService: HubService,
@@ -45,16 +46,16 @@ export class StarterSelectionComponent {
     this.loadPokemon(7)
     this.Host = this.route.snapshot.queryParams['host'] === 'true';
     this.changeTrainerSprite()
-    this.hubService.onGameCreated((gameCode, userId) => {
+    this.destroyRef.onDestroy(this.hubService.onGameCreated((gameCode, userId) => {
       this.hubService.userId = userId;
       this.hubService.gameCode = gameCode;
       this.router.navigate(['/room']);
-    })
-    this.hubService.onJoinSuccess((gameCode, userId) => {
+    }))
+    this.destroyRef.onDestroy(this.hubService.onJoinSuccess((gameCode, userId) => {
       this.hubService.userId = userId;
       this.hubService.gameCode = gameCode;
       this.router.navigate(['/room']);
-    })
+    }))
 
   }
 

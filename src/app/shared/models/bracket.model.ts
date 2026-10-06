@@ -5,6 +5,7 @@ export interface BracketModel {
   nbTurn: number;
   rounds:RoundModel[];
   players:PlayerModel[];
+  champion?: string | null;
 }
 
 export interface RoundModel {
