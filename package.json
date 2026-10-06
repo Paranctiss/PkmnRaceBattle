@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadless",
+    "test:ci:report": "ng test --watch=false --browsers=ChromeHeadless --reporters=progress --reporters=junit",
     "e2e": "playwright test",
     "e2e:report": "playwright show-report e2e-report"
   },
@@ -38,6 +39,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "karma-junit-reporter": "^2.0.1",
     "mongodb": "^6.21.0",
     "typescript": "~5.7.2"
   }
