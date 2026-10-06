@@ -1,6 +1,7 @@
 import {Component, Input, OnChanges} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
 import {BracketModel} from '../../../../shared/models/bracket.model';
+import {Router} from '@angular/router';
 import {HubService} from '../../../../core/services/Hub/hub.service';
 
 @Component({
@@ -13,7 +14,7 @@ import {HubService} from '../../../../core/services/Hub/hub.service';
   styleUrl: './bracket.component.css'
 })
 export class BracketComponent implements OnChanges {
-  constructor(public hubService:HubService) {}
+  constructor(public hubService:HubService, private router: Router) {}
 
   @Input() bracket!: BracketModel;
 
@@ -54,5 +55,12 @@ export class BracketComponent implements OnChanges {
 
   startTournament() {
     this.hubService.launchTournament();
+  }
+
+  // Retour dans la même salle : le joueur rechoisit son starter (nom, sprite et code pré-remplis)
+  replay() {
+    const room = this.hubService.gameCode;
+    this.hubService.replayGame().then(() =>
+      this.router.navigate(['/starter'], {queryParams: {host: false, room}}));
   }
 }

@@ -1,6 +1,5 @@
 <button type="button" class="starter" role="radio" [attr.aria-checked]="selected" [class.is-selected]="selected">
   <span class="starter__dex">N°{{ Pokemon.id | number:'3.0-0' }}</span>
-  <span class="starter__ribbon" *ngIf="selected">Choisi !</span>
   <div class="starter__stage">
     <span class="starter__platform"></span>
     <img class="pixel" [src]="Pokemon.sprites.frontDefault" [alt]="Pokemon.nameFr">

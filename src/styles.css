@@ -41,7 +41,7 @@
   --st-frz: #55b9e6;
   --st-slp: #7d8597;
 
-  --font-pixel: 'Pixelify Sans', 'Courier New', monospace;
+  --font-pixel: 'DotGothic16', 'Courier New', monospace;
   --font-ui: 'M PLUS Rounded 1c', 'Segoe UI', system-ui, sans-serif;
 
   --radius: 12px;
@@ -77,6 +77,8 @@ body {
   font-size: 16px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  /* La police pixel n'a qu'une graisse : pas de faux gras flou */
+  font-synthesis-weight: none;
   overflow-x: hidden;
 }
 

@@ -6,7 +6,7 @@
             class="bag__tab"
             [class.is-active]="pocket.key === activePocket"
             [attr.aria-selected]="pocket.key === activePocket"
-            (click)="activePocket = pocket.key; hovered = undefined">
+            (click)="selectPocket(pocket.key)">
       {{ pocket.label }}
       <span class="bag__tab-count">{{ countIn(pocket.key) }}</span>
     </button>

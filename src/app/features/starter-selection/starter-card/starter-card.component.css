@@ -43,21 +43,6 @@
   opacity: 0.7;
 }
 
-.starter__ribbon {
-  position: absolute;
-  top: -14px;
-  right: -10px;
-  padding: 3px 10px 4px;
-  font-family: var(--font-pixel);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--ink);
-  background: var(--gold);
-  border: var(--edge) solid var(--ink);
-  border-radius: 8px;
-  transform: rotate(6deg);
-}
-
 .starter__stage {
   position: relative;
   display: grid;

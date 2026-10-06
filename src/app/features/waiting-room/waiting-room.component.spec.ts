@@ -138,6 +138,25 @@ describe('WaitingRoomComponent (salle d’attente)', () => {
     expect(fake.connection.lastInvocation('StartGame')?.args[1]).toBeFalse();
   });
 
+  it('le bouton Menu principal quitte la salle et revient à l’accueil', () => {
+    create('guest');
+    hub.userId = 'guest';
+    fake.connection.emit('ResponsePlayersInRoom', [host, guest]);
+    fixture.detectChanges();
+
+    (Array.from(el().querySelectorAll('button')).find(b => b.textContent?.includes('Menu principal')) as HTMLButtonElement).click();
+
+    expect(fake.connection.lastInvocation('LeaveGame')?.args).toEqual(['ABC123', 'guest']);
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(hub.gameCode).toBe('');
+  });
+
+  it('le départ d’un joueur rafraîchit la liste', () => {
+    create('host');
+    fake.connection.emit('UserLeft', 'guest');
+    expect(fake.connection.invoked('GetPlayersInRoom').length).toBe(2);
+  });
+
   it('partie lancée : tout le monde passe à l’écran de jeu', () => {
     create('guest');
     fake.connection.emit('GameStarted', 'ABC123');

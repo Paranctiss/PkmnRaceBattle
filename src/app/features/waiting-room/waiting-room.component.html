@@ -1,4 +1,7 @@
 <main class="page" *ngIf="players.length > 0; else loading">
+  <div class="page__bar">
+    <button type="button" class="btn btn--sm" (click)="backToMenu()">◀ Menu principal</button>
+  </div>
   <header class="room-head">
     <h1 class="page-title">Salle d’attente</h1>
     <div class="room-code">
@@ -48,6 +51,7 @@
 
 <ng-template #loading>
   <div class="loading">
+    <button type="button" class="btn btn--sm" (click)="backToMenu()">◀ Menu principal</button>
     <span class="ball-loader"></span>
     <span>Connexion à la salle…</span>
   </div>
