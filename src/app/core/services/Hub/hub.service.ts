@@ -114,10 +114,6 @@ export class HubService {
     this.signalRService.connection.invoke('GetNewTurn', this.userId).catch(err => console.error(err));
   }
 
-  onNewTurn(callback:(turnType:string) => void) {
-    this.signalRService.connection.on('NewTurn', callback);
-  }
-
   onChooseNextPath(callback:(options:PathPoint[]) => void) {
     this.signalRService.connection.on('chooseNextPath', callback);
   }
@@ -224,10 +220,6 @@ export class HubService {
 
   addPokemonToTeam(opponentId:string, index:number = 0){
     this.signalRService.connection.invoke('AddPokemonToTeam', this.userId, opponentId, index).catch(err => console.error(err));
-  }
-
-  finishFight(wildPokemonId:string){
-    this.signalRService.connection.invoke('FinishFight', this.userId, wildPokemonId).catch(err => console.error(err));
   }
 
   onPlayerPokemonDeath(callback:(message:string) => void) {
