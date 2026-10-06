@@ -13,13 +13,16 @@ import {BagItemComponent} from '../battle-field/bag-item/bag-item.component';
   styleUrl: './bag.component.css'
 })
 export class BagComponent {
+  // Dernière poche consultée : le sac se rouvre dessus (le composant est recréé à chaque ouverture)
+  static lastPocket: ItemPocket = 'potion';
+
   @Input() items: BagItemModel[] = [];
   // false : consultation seule (ex. depuis la boutique)
   @Input() selectable: boolean = true;
   @Output() itemSelected = new EventEmitter<BagItemModel>();
 
   readonly pockets = ITEM_POCKETS;
-  activePocket: ItemPocket = 'potion';
+  activePocket: ItemPocket = BagComponent.lastPocket;
   hovered?: BagItemModel;
 
   get pocketItems(): BagItemModel[] {
@@ -30,6 +33,11 @@ export class BagComponent {
     return this.items
       .filter(item => item.type === pocket)
       .reduce((total, item) => total + Math.max(0, item.number), 0);
+  }
+
+  selectPocket(pocket: ItemPocket) {
+    this.activePocket = BagComponent.lastPocket = pocket;
+    this.hovered = undefined;
   }
 
   description(item: BagItemModel): string {

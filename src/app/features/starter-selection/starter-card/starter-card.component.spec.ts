@@ -23,12 +23,13 @@ describe('StarterCardComponent', () => {
   it('indique la sélection', () => {
     const el: HTMLElement = render(4).nativeElement;
     expect(el.querySelector('.starter')?.getAttribute('aria-checked')).toBe('true');
-    expect(el.querySelector('.starter__ribbon')).not.toBeNull();
+    expect(el.querySelector('.starter')?.classList).toContain('is-selected');
+    expect(el.textContent).not.toContain('Choisi');
   });
 
   it('non sélectionné', () => {
     const el: HTMLElement = render(1).nativeElement;
-    expect(el.querySelector('.starter__ribbon')).toBeNull();
+    expect(el.querySelector('.starter')?.getAttribute('aria-checked')).toBe('false');
   });
 
   it('prend la couleur de son type', () => {

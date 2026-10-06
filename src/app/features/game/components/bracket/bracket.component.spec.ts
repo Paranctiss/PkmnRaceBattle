@@ -1,4 +1,5 @@
-import {TestBed} from '@angular/core/testing';
+import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {Router} from '@angular/router';
 import {BracketComponent} from './bracket.component';
 import {FakeSignalRService, provideTestingDefaults} from '../../../../../testing/fake-signalr';
 import {HubService} from '../../../../core/services/Hub/hub.service';
@@ -62,11 +63,37 @@ describe('BracketComponent (tableau du tournoi)', () => {
     expect(el.querySelector('.bracket__actions button')?.textContent).toContain('tour suivant');
   });
 
-  it('finale jouée : le champion est affiché et il n’y a plus rien à lancer', () => {
-    const {el} = render(true, {...bracket, nbTurn: 3, champion: 'c', rounds: [{roundNumber: 2, playersInRace: ['a', 'c']}, bracket.rounds[1]]});
+  const finished: BracketModel = {...bracket, nbTurn: 3, champion: 'c', rounds: [{roundNumber: 2, playersInRace: ['a', 'c']}, bracket.rounds[1]]};
+
+  it('finale jouée : le champion est affiché et il n’y a plus de tour à lancer', () => {
+    const {el, fake} = render(true, finished);
     expect(el.querySelector('.champion__name')?.textContent).toBe('Ondine');
     expect(el.querySelector('.champion__slot')).toBeNull();
-    expect(el.querySelector('.bracket__actions')).toBeNull();
+    expect(el.textContent).not.toContain('Lancer');
     expect(el.querySelector('.bracket__end')?.textContent).toContain('Ondine');
+    expect(fake.connection.invoked('LaunchTournament').length).toBe(0);
+  });
+
+  it('pas de bouton Rejouer tant que le tournoi n’est pas fini', () => {
+    const {el} = render(true);
+    expect(el.textContent).not.toContain('Rejouer');
+  });
+
+  [true, false].forEach(isHost => {
+    it(`Rejouer (${isHost ? 'hôte' : 'invité'}) : remet la salle à zéro puis renvoie au choix du starter dans la même salle`, fakeAsync(() => {
+      const {el, fake} = render(isHost, finished);
+      const router = TestBed.inject(Router);
+      spyOn(router, 'navigate').and.resolveTo(true);
+      const hub = TestBed.inject(HubService);
+      hub.userId = 'me';
+      hub.pending = true;
+
+      (Array.from(el.querySelectorAll('button')).find(b => b.textContent?.includes('Rejouer')) as HTMLButtonElement).click();
+      flushMicrotasks();
+
+      expect(fake.connection.lastInvocation('ReplayGame')?.args).toEqual(['ABC123', 'me']);
+      expect(hub.pending).toBeFalse();
+      expect(router.navigate).toHaveBeenCalledWith(['/starter'], {queryParams: {host: false, room: 'ABC123'}});
+    }));
   });
 });

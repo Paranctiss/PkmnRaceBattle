@@ -33,4 +33,7 @@
     <p class="bracket__wait" *ngIf="!hubService.Player.isHost"><span class="ball-loader"></span> En attente du lancement par l’hôte…</p>
   </div>
   <p class="bracket__end" *ngIf="isFinished">Tournoi terminé : {{ getName(bracket.champion!) }} est le champion !</p>
+  <div class="bracket__actions" *ngIf="isFinished">
+    <button type="button" class="btn btn--primary btn--lg" (click)="replay()">Rejouer ↻</button>
+  </div>
 </section>

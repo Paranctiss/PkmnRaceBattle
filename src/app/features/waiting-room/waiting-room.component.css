@@ -12,6 +12,11 @@
   padding: 36px 20px 48px;
 }
 
+.page__bar {
+  display: flex;
+  margin-bottom: -18px;
+}
+
 .room-head {
   display: flex;
   flex-wrap: wrap;
@@ -140,4 +145,11 @@
   .room-body {
     grid-template-columns: 1fr;
   }
+}
+
+/* Retour au menu pendant la connexion à la salle */
+.loading .btn {
+  position: absolute;
+  top: 36px;
+  left: 20px;
 }
