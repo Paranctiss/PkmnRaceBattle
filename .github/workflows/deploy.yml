@@ -1,4 +1,6 @@
 # Tests, build de prod puis déploiement du client sur le VPS à chaque push sur master (merge compris).
+# Sur une PR vers master : tests seulement. Détail de chaque test : onglet Checks de la PR
+# ou résumé de l'exécution dans Actions (« Tests client »).
 #
 # Secrets (Settings → Secrets and variables → Actions → Secrets) :
 #   VPS_HOST, VPS_USER, VPS_SSH_KEY   comme pour l'API
@@ -10,11 +12,13 @@ name: Déploiement client
 on:
   push:
     branches: [master]
+  # Sur une PR vers master : tests seulement (pas de déploiement), résultat affiché dans la PR
+  pull_request:
+    branches: [master]
   workflow_dispatch:
 
-concurrency:
-  group: deploy-client
-  cancel-in-progress: false
+permissions:
+  contents: read
 
 env:
   API_URL: ${{ vars.API_URL || 'http://57.129.71.128:5000' }}
@@ -23,6 +27,9 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,12 +37,23 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run test:ci
+      - run: npm run test:ci:report
+      - name: Rapport de tests
+        if: ${{ !cancelled() }}
+        uses: dorny/test-reporter@v3
+        with:
+          name: Tests client
+          path: coverage/junit/karma.xml
+          reporter: java-junit
 
   deploy:
     needs: test
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment: production
+    concurrency:
+      group: deploy-client
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
