@@ -1,7 +1,7 @@
 import {Component, HostBinding, Input, OnInit} from '@angular/core';
 import {PokemonBaseModel} from '../../../shared/models/pokemon-base.model';
 import {PokemonTypeService} from '../../../core/services/PokemonType/pokemon-type.service';
-import {DecimalPipe, NgForOf, NgIf} from '@angular/common';
+import {DecimalPipe, NgForOf} from '@angular/common';
 import {TypeCardComponent} from '../../../shared/components/type-card/type-card.component';
 
 @Component({
@@ -9,7 +9,6 @@ import {TypeCardComponent} from '../../../shared/components/type-card/type-card.
   imports: [
     TypeCardComponent,
     NgForOf,
-    NgIf,
     DecimalPipe
   ],
   templateUrl: './starter-card.component.html',

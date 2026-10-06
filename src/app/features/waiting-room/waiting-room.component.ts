@@ -38,6 +38,10 @@ export class WaitingRoomComponent {
       this.destroyRef.onDestroy(this.hubService.onUserJoined((username: string) => {
         this.hubService.getAllUsersByRoomID(this.hubService.gameCode)
       }))
+      // Départ d'un joueur (et éventuel nouvel hôte)
+      this.destroyRef.onDestroy(this.hubService.onUserLeft(() => {
+        this.hubService.getAllUsersByRoomID(this.hubService.gameCode)
+      }))
       this.destroyRef.onDestroy(this.hubService.onStartedGame((gameCode:string) => {
         this.router.navigate(["/game"]);
       }))
@@ -67,6 +71,15 @@ export class WaitingRoomComponent {
     textarea.select();
     document.execCommand('copy');
     document.body.removeChild(textarea);
+  }
+
+  backToMenu() {
+    if (this.hubService.gameCode && this.hubService.userId) {
+      this.hubService.leaveGame(this.hubService.gameCode, this.hubService.userId);
+    }
+    this.hubService.gameCode = '';
+    this.hubService.userId = '';
+    this.router.navigate(['/']);
   }
 
   StartGame() {

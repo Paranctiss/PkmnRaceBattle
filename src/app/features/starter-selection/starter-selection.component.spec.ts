@@ -13,15 +13,16 @@ describe('StarterSelectionComponent (choix du starter)', () => {
   let http: HttpTestingController;
   let router: Router;
 
-  function create(host: boolean) {
+  function create(host: boolean, room?: string, player?: {name: string, sprite: string}) {
     fake = new FakeSignalRService();
     TestBed.configureTestingModule({
       imports: [StarterSelectionComponent],
       providers: [
         ...provideTestingDefaults(fake),
-        {provide: ActivatedRoute, useValue: {snapshot: {queryParams: {host: String(host)}}}},
+        {provide: ActivatedRoute, useValue: {snapshot: {queryParams: room ? {host: String(host), room} : {host: String(host)}}}},
       ],
     });
+    if (player) Object.assign(TestBed.inject(HubService).Player, player);
     http = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
     spyOn(router, 'navigate').and.resolveTo(true);
@@ -52,6 +53,14 @@ describe('StarterSelectionComponent (choix du starter)', () => {
   it('affiche les trois starters triés par numéro', () => {
     create(true);
     expect(cards().map(c => c.querySelector('.starter__name')?.textContent?.trim())).toEqual(['Bulbizarre', 'Salamèche', 'Carapuce']);
+  });
+
+  it('Rejouer : nom, apparence et code de la salle sont pré-remplis', () => {
+    create(false, 'ABC123', {name: 'Sacha', sprite: 'red'});
+    expect(component.roomCode).toBe('ABC123');
+    expect(component.username).toBe('Sacha');
+    expect(component.trainerSprite).toBe('red');
+    expect(component.missingHint).toBe('Choisis un Pokémon de départ.');
   });
 
   it('mode hôte : pas de champ de code de salle', () => {

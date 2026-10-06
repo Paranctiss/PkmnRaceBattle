@@ -46,6 +46,13 @@ export class StarterSelectionComponent {
     this.loadPokemon(7)
     this.Host = this.route.snapshot.queryParams['host'] === 'true';
     this.changeTrainerSprite()
+    // « Rejouer » : retour dans la même salle avec le même dresseur
+    const replayRoom = this.route.snapshot.queryParams['room'];
+    if (replayRoom) {
+      this.roomCode = replayRoom;
+      this.username = this.hubService.Player.name;
+      if (this.hubService.Player.sprite) this.trainerSprite = this.hubService.Player.sprite;
+    }
     this.destroyRef.onDestroy(this.hubService.onGameCreated((gameCode, userId) => {
       this.hubService.userId = userId;
       this.hubService.gameCode = gameCode;

@@ -141,6 +141,14 @@ export class HubService {
     this.signalRService.connection.invoke('BuildTournament', this.gameCode).catch(err => console.error(err));
   }
 
+  // Fin du tournoi : remet la salle à zéro côté serveur ; le joueur la rejoint ensuite avec un nouveau starter
+  replayGame(): Promise<void> {
+    this.pending = false;
+    this.timerActive = false;
+    this.remainingSeconds = 0;
+    return this.signalRService.connection.invoke('ReplayGame', this.gameCode, this.userId).catch(err => console.error(err));
+  }
+
   launchTournament() {
     this.signalRService.connection.invoke('LaunchTournament', this.gameCode).catch(err => console.error(err));
   }
