@@ -49,6 +49,9 @@ export class GameComponent {
   opponent!:PlayerModel;
   bracket!:BracketModel;
   pathOptions:PathPoint[] = [];
+  // Minuteur écoulé : les réponses de tour arrivées après (combat commencé avant la fin) sont ignorées,
+  // seuls le tableau et les combats du tournoi peuvent encore changer l'écran
+  raceOver = false;
 
   readonly devMode = isDevMode();
   readonly environments = ENVIRONMENTS;
@@ -63,6 +66,7 @@ export class GameComponent {
     }))
     this.hubService.getCurrentUser()
     this.destroyRef.onDestroy(this.hubService.responseWildFight((wildOpponent, responsePlayer) => {
+      if (this.raceOver) return;
       // Le serveur renvoie le joueur à jour (position sur la carte), y compris au premier combat
       this.hubService.Player = responsePlayer;
       this.turnType = "WildFight";
@@ -71,6 +75,7 @@ export class GameComponent {
       this.hubService.pending = false;
     }));
     this.destroyRef.onDestroy(this.hubService.responseTrainerFight((trainerOpponent) => {
+      if (this.raceOver) return;
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.TrainerContinue = false;
       this.turnType = "TrainerFight";
@@ -80,20 +85,27 @@ export class GameComponent {
       this.hubService.pending = false;
     }));
     this.destroyRef.onDestroy(this.hubService.responsePokeCenter((player) => {
+      if (this.raceOver) return;
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.turnType = "PokeCenter";
       this.hubService.pending = false;
     }));
     this.destroyRef.onDestroy(this.hubService.responsePokeShop(() => {
+      if (this.raceOver) return;
       if(this.turnType !== "") this.hubService.getCurrentUser()
       this.turnType = "PokeShop";
       this.hubService.pending = false;
     }));
     this.destroyRef.onDestroy(this.hubService.onChooseNextPath((options) => {
+      if (this.raceOver) return;
       this.pathOptions = options;
       this.hubService.pending = true;
     }));
     this.destroyRef.onDestroy(this.hubService.onTimerEnded((gameCode: string) => {
+      // Renvoyé aussi par le serveur quand un combat commencé avant la fin se termine :
+      // on ne revient pas sur l'écran de fin si le tournoi a déjà commencé
+      if (this.raceOver) return;
+      this.raceOver = true;
       this.pathOptions = [];
       this.turnType = "Finito";
     }));
@@ -138,7 +150,8 @@ export class GameComponent {
     return !!this.hubService.Player._id
       && this.routeEnvironment !== 'Default'
       && this.turnType !== 'Finito'
-      && this.turnType !== 'Bracket';
+      && this.turnType !== 'Bracket'
+      && this.turnType !== 'PvpFight';
   }
 
   // Progression sur la map courante (miroir de PlayerPathHelper côté serveur)

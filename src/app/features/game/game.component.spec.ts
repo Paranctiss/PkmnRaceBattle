@@ -149,6 +149,16 @@ describe('GameComponent (écran de jeu)', () => {
       expect(el().querySelector('.route-plate')).toBeNull();
     });
 
+    it('pas de bandeau de progression pendant un combat PvP du tournoi', () => {
+      fake.connection.emit('GetPlayerResponse', playerOn('Plaine', 1, 2));
+      fake.connection.emit('TimerEnded', 'ABC123');
+      fake.connection.emit('bracketCreated', {_id: 'b', nbTurn: 1, rounds: [{roundNumber: 1, playersInRace: ['player-1', 'p2']}], players: [makePlayer(), makePlayer({_id: 'p2'})]});
+      fake.connection.emit('responsePvpFight', makePlayer({_id: 'p2', name: 'Blue'}));
+      fixture.detectChanges();
+      expect(component.turnType).toBe('PvpFight');
+      expect(el().querySelector('.route-plate')).toBeNull();
+    });
+
     it('affiche l’argent du joueur', () => {
       fake.connection.emit('GetPlayerResponse', makePlayer({credits: 4321}));
       fixture.detectChanges();
@@ -163,6 +173,34 @@ describe('GameComponent (écran de jeu)', () => {
       fixture.detectChanges();
       expect(el().querySelector('.ending')).not.toBeNull();
       expect(el().querySelectorAll('.ending__pokemon').length).toBe(1);
+    });
+
+    it('fin du minuteur pendant un combat : le combat qui se termine ne relance pas de tour', () => {
+      fake.connection.emit('GetPlayerResponse', playerOn('Plaine', 1, 2));
+      fake.connection.emit('responseWildFight', makeWildOpponent(), playerOn('Plaine', 1, 2));
+      fake.connection.emit('TimerEnded', 'ABC123');
+
+      // Réponses du serveur au combat commencé avant la fin du minuteur
+      fake.connection.emit('responseWildFight', makeWildOpponent(), playerOn('Plaine', 1, 3));
+      fake.connection.emit('responseTrainerFight', makeTrainer());
+      fake.connection.emit('responsePokeCenter', playerOn('Centre', 4));
+      fake.connection.emit('responsePokeShop');
+      fake.connection.emit('chooseNextPath', [{x: 3, y: 1, environmentName: 'Volcan'}, {x: 3, y: 2, environmentName: 'Eau'}]);
+      fixture.detectChanges();
+
+      expect(component.turnType).toBe('Finito');
+      expect(el().querySelector('.ending')).not.toBeNull();
+      expect(el().querySelector('app-wild-fight')).toBeNull();
+      expect(el().querySelector('app-path-choice')).toBeNull();
+    });
+
+    it('fin du minuteur renvoyée pendant le tournoi : le combat PvP reste affiché', () => {
+      fake.connection.emit('GetPlayerResponse', makePlayer());
+      fake.connection.emit('TimerEnded', 'ABC123');
+      fake.connection.emit('bracketCreated', {_id: 'b', nbTurn: 1, rounds: [{roundNumber: 1, playersInRace: ['player-1', 'p2']}], players: [makePlayer(), makePlayer({_id: 'p2'})]});
+      fake.connection.emit('responsePvpFight', makePlayer({_id: 'p2', name: 'Blue'}));
+      fake.connection.emit('TimerEnded', 'ABC123');
+      expect(component.turnType).toBe('PvpFight');
     });
 
     it('l’hôte crée le tournoi', () => {
