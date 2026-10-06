@@ -61,7 +61,7 @@ export class BattleFieldComponent implements OnDestroy {
   pokemonWantToLearn:PokemonTeamModel[] = [];
 
   // Add this to keep track of the event names we've subscribed to
-  private signalREventNames: string[] = [];
+  private signalREventHandlers: [string, (...args: any[]) => void][] = [];
 
 
   constructor(public hubService:HubService, private typeService: PokemonTypeService) {
@@ -197,14 +197,15 @@ export class BattleFieldComponent implements OnDestroy {
 
   // Helper method to register SignalR events and track them
   private registerSignalREvent(eventName: string, callback: (...args: any[]) => void): void {
-    this.signalREventNames.push(eventName);
+    this.signalREventHandlers.push([eventName, callback]);
     this.hubService.signalRService.connection.on(eventName, callback);
   }
 
   ngOnDestroy(): void {
     // Remove all SignalR event handlers when component is destroyed
-    this.signalREventNames.forEach(eventName => {
-      this.hubService.signalRService.connection.off(eventName);
+    // Seulement les écouteurs de ce composant : le parent (wild-fight) écoute aussi useMoveResult
+    this.signalREventHandlers.forEach(([eventName, callback]) => {
+      this.hubService.signalRService.connection.off(eventName, callback);
     });
   }
 

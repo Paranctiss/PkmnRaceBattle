@@ -37,6 +37,13 @@ export class HubService {
     console.log('HubService instance created', Math.random());
   }
 
+  // Enregistre un écouteur SignalR et renvoie la fonction qui le retire : un composant détruit
+  // doit l'appeler (DestroyRef.onDestroy), sinon il continue de réagir aux événements du serveur
+  private listen(eventName: string, handler: (...args: any[]) => any): () => void {
+    this.signalRService.connection.on(eventName, handler);
+    return () => this.signalRService.connection.off(eventName, handler);
+  }
+
   joinGame(userName: string, starterId:number, trainerSprite:string, roomCode: string) {
     this.signalRService.connection.invoke('JoinGame', userName, starterId, trainerSprite, roomCode).catch(err => console.error(err));
   }
@@ -46,7 +53,7 @@ export class HubService {
   }
 
   onGameCreated(callback: (gameCode: string, userId:string) => void) {
-    this.signalRService.connection.on('GameCreated', callback);
+    return this.listen('GameCreated', callback);
   }
 
   leaveGame(groupName: string, userName: string) {
@@ -54,15 +61,15 @@ export class HubService {
   }
 
   onUserJoined(callback: (userName: string) => void) {
-    this.signalRService.connection.on('UserJoined', callback);
+    return this.listen('UserJoined', callback);
   }
 
   onJoinSuccess(callback: (gameCode: string, userId:string) => void) {
-    this.signalRService.connection.on('JoinSuccess', callback);
+    return this.listen('JoinSuccess', callback);
   }
 
   onUserLeft(callback: (userName: string) => void) {
-    this.signalRService.connection.on('UserLeft', callback);
+    return this.listen('UserLeft', callback);
   }
 
   getAllUsersByRoomID(roomId: string) {
@@ -73,21 +80,21 @@ export class HubService {
   }
 
   onGetPlayerResponse(callback: (response:PlayerModel) => void) {
-    this.signalRService.connection.on('GetPlayerResponse', callback);
+    return this.listen('GetPlayerResponse', callback);
   }
   onResponsePlayersInRoom(callback: (responsePlayers: PlayerModel[]) => void) {
-    this.signalRService.connection.on('ResponsePlayersInRoom', callback);
+    return this.listen('ResponsePlayersInRoom', callback);
   }
 
   startGame(gameCode: string, checkedTimer:boolean, timerTime:number) {
     this.signalRService.connection.invoke('StartGame', gameCode, checkedTimer, timerTime).catch(err => console.error(err));
   }
   onStartedGame(callback:(gameCode:string) => void) {
-    this.signalRService.connection.on('GameStarted', callback);
+    return this.listen('GameStarted', callback);
   }
 
   onTimerUpdate(callback: (remainingSeconds: number) => void) {
-    this.signalRService.connection.on('TimerUpdate', (seconds: number) => {
+    return this.listen('TimerUpdate', (seconds: number) => {
       this.remainingSeconds = seconds;
       this.timerActive = true;
       callback(seconds);
@@ -96,7 +103,7 @@ export class HubService {
 
   // Écouter la fin du timer
   onTimerEnded(callback: (gameCode: string) => void) {
-    this.signalRService.connection.on('TimerEnded', (gameCode: string) => {
+    return this.listen('TimerEnded', (gameCode: string) => {
       this.timerActive = false;
       this.remainingSeconds = 0;
       callback(gameCode);
@@ -115,7 +122,7 @@ export class HubService {
   }
 
   onChooseNextPath(callback:(options:PathPoint[]) => void) {
-    this.signalRService.connection.on('chooseNextPath', callback);
+    return this.listen('chooseNextPath', callback);
   }
 
   chooseNextPath(x:number, y:number) {
@@ -139,39 +146,39 @@ export class HubService {
   }
 
   onTriggerTournament(callback:() => void) {
-    this.signalRService.connection.on('triggerTournament', callback);
+    return this.listen('triggerTournament', callback);
   }
 
   onBracketCreated(callback:(bracket:BracketModel)=> void){
-    this.signalRService.connection.on('bracketCreated', callback);
+    return this.listen('bracketCreated', callback);
   }
 
   onTrainerSwitchPokemon(callback:(responseTrainer:PlayerModel) => void) {
-    this.signalRService.connection.on('onTrainerSwitchPokemon', callback);
+    return this.listen('onTrainerSwitchPokemon', callback);
   }
 
   responseWildFight(callback:(responsePokemon:PlayerModel, responsePlayer:PlayerModel) => void) {
-    this.signalRService.connection.on('responseWildFight', callback);
+    return this.listen('responseWildFight', callback);
   }
 
   responseTrainerFight(callback:(responsePokemon:PlayerModel) => void) {
-    this.signalRService.connection.on('responseTrainerFight', callback);
+    return this.listen('responseTrainerFight', callback);
   }
 
   responsePvpFight(callback:(responsePokemon:PlayerModel) => void) {
-    this.signalRService.connection.on('responsePvpFight', callback);
+    return this.listen('responsePvpFight', callback);
   }
 
   responsePokeCenter(callback:(responsePokemon:PlayerModel) => void) {
-    this.signalRService.connection.on('responsePokeCenter', callback);
+    return this.listen('responsePokeCenter', callback);
   }
 
   responsePokeShop(callback:() => void) {
-    this.signalRService.connection.on('responsePokeShop', callback);
+    return this.listen('responsePokeShop', callback);
   }
 
   healedPokeCenter(callback:(responsePokemon:PlayerModel) => void) {
-    this.signalRService.connection.on('healedPokeCenter', callback);
+    return this.listen('healedPokeCenter', callback);
   }
 
   usePokeCenter(){
@@ -183,7 +190,7 @@ export class HubService {
   }
 
   onBuyItemResponse(callback:(message:string, player:PlayerModel) => void) {
-    this.signalRService.connection.on('onBuyItemResponse', callback);
+    return this.listen('onBuyItemResponse', callback);
   }
 
   useMove(playerPokemonId:string, usedMoveName:string, wildOpponentId:string, wildPokemonId:string, isAttacking:boolean, isPvp:boolean,  index:number = 0, skipTurn=false) {
@@ -191,31 +198,31 @@ export class HubService {
   }
 
   onWaitingOpponent(callback:() => void) {
-    this.signalRService.connection.on('waitingOpponent', callback);
+    return this.listen('waitingOpponent', callback);
   }
 
   onUseMoveResponse(callback:(turnContext:TurnContextModel) => void) {
-    this.signalRService.connection.on('useMoveResult', callback);
+    return this.listen('useMoveResult', callback);
   }
   onUseItemResponse(callback: (turnContext: TurnContextModel, index:number) => void) {
-    this.signalRService.connection.on('useItemResult', callback);
+    return this.listen('useItemResult', callback);
   }
 
   onTurnFinished(callback: (updatedPlayer:PlayerModel, wildOpponent:PlayerModel) => void) {
     console.log("onTurnFinished");
-    this.signalRService.connection.on('turnFinished', callback);
+    return this.listen('turnFinished', callback);
   }
 
   onLaunchBall(callback:(pokeballName:string, turnContext:TurnContextModel) => void) {
-    this.signalRService.connection.on('launchBall', callback);
+    return this.listen('launchBall', callback);
   }
 
   onCatchResult(callback:(catchValue:number) => void) {
-    this.signalRService.connection.on('catchResult', callback);
+    return this.listen('catchResult', callback);
   }
 
   onCaughtPokemon(callback:(opponent:PlayerModel) => void) {
-    this.signalRService.connection.on('caughtPokemon', callback);
+    return this.listen('caughtPokemon', callback);
   }
 
   addPokemonToTeam(opponentId:string, index:number = 0){
@@ -223,15 +230,15 @@ export class HubService {
   }
 
   onPlayerPokemonDeath(callback:(message:string) => void) {
-    this.signalRService.connection.on('playerPokemonDeath', callback)
+    return this.listen('playerPokemonDeath', callback)
   }
 
   onPlayerLooseFight(callback:(message:string)=>void){
-    this.signalRService.connection.on('playerLooseFight', callback)
+    return this.listen('playerLooseFight', callback)
   }
 
   onPokemonLevelUp(callback:(message:string, pokemon:PokemonTeamModel, movesToLearn:PokemonMoveBaseModel[]) => void) {
-    this.signalRService.connection.on('pokemonLevelUp', callback);
+    return this.listen('pokemonLevelUp', callback);
   }
 
   replacePokemon(pokemonId:string, wildOpponentId:string, pvp:boolean){
@@ -239,7 +246,7 @@ export class HubService {
   }
 
   onReplacePokemon(callback:(pokemon:PokemonTeamModel, message:string) => void) {
-    this.signalRService.connection.on('swapPokemon', callback);
+    return this.listen('swapPokemon', callback);
   }
 
   learnMove(oldMoveId:number, newMoveId:number, pokemonId:string){
@@ -247,7 +254,7 @@ export class HubService {
   }
 
   onLearnedMove(callback:(player:PlayerModel) => void){
-    this.signalRService.connection.on('moveLearned', callback);
+    return this.listen('moveLearned', callback);
   }
 
   deleteMove(moveId:number){

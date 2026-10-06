@@ -21,8 +21,13 @@ export class FakeHubConnection {
     this.handlers.set(eventName, list);
   }
 
-  off(eventName: string): void {
-    this.handlers.delete(eventName);
+  // Comme HubConnection.off : sans callback, retire tous les écouteurs de l'événement
+  off(eventName: string, callback?: (...args: any[]) => void): void {
+    if (!callback) {
+      this.handlers.delete(eventName);
+      return;
+    }
+    this.handlers.set(eventName, (this.handlers.get(eventName) ?? []).filter(h => h !== callback));
   }
 
   invoke(method: string, ...args: any[]): Promise<any> {

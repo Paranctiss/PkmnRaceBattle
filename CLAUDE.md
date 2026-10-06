@@ -12,7 +12,7 @@ Angular 19 client (standalone components) of PkmnRaceBattle. The server lives in
 npm start                                   # ng serve on http://localhost:4200
 npm run build
 npm test                                    # Karma + Jasmine (watch)
-npm run test:ci                             # single headless run (~240 specs, Chrome)
+npm run test:ci                             # single headless run (~240 specs, Chrome; in a cloud session CHROME_BIN is set by the SessionStart hook)
 npx ng test --watch=false --browsers=ChromeHeadless --include src/app/features/home/home.component.spec.ts   # single spec
 npm run e2e                                 # Playwright end-to-end (see e2e/README.md) — port 5000 must be free
 ```
@@ -21,7 +21,7 @@ npm run e2e                                 # Playwright end-to-end (see e2e/REA
 
 - **Unit/component specs** (`*.spec.ts`, Jasmine/Karma): use `provideTestingDefaults(fake)` from `src/testing/fake-signalr.ts`. `FakeSignalRService.connection` records every `invoke` (`invoked('HandleMove')`, `lastInvocation(...)`) and simulates server events with `emit('useMoveResult', ctx)`. The real `HubService` is used on top of it, so specs also check the client → server contract. Data builders (`makePlayer`, `makePokemon`, `makeTurnContext`, `changes`, `makeWildOpponent`, `makeTrainer`…) are in `src/testing/test-data.ts`. Battle animations are timer based: use `fakeAsync` + `tick(1000)` per message / `tick(500)` per HP change (call `tick()` once after setting `TurnContext` to flush the promise chain).
 - A spec that renders the same component several times must call `TestBed.resetTestingModule()` before each `configureTestingModule`.
-- 1 spec fails on purpose today (real bug): `HubService.on*` registers SignalR listeners that are never removed, so a destroyed component (e.g. a previous fight) keeps reacting to server events.
+- `HubService.on*` / `response*` return an unsubscribe function: components must pass it to `DestroyRef.onDestroy(...)`, otherwise a destroyed component (e.g. a previous fight) keeps reacting to server events.
 - All 12 E2E scenarios pass (06/10/2026).
 - **E2E** (`e2e/`, Playwright with the installed Chrome): starts the API on port 5000 against the local MongoDB database `PkmnRaceBattle_Test` (re-created from `../PkmnRaceBattle.API/PkmnRaceBattle.Tests/Fixtures` on every run) and reuses/starts `ng serve` on 4200. A guard aborts if the API is not reading that database.
 
