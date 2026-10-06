@@ -1,11 +1,11 @@
 <main class="page" *ngIf="players.length > 0; else loading">
   <header class="room-head">
     <h1 class="page-title">Salle d’attente</h1>
-    <button type="button" class="room-code" (click)="copyCode()" title="Copier le code de la salle">
+    <div class="room-code">
       <span class="room-code__label">Code de la salle</span>
       <span class="room-code__value">{{ myPlayer?.roomId }}</span>
-      <span class="room-code__copy">{{ copied ? 'Copié !' : 'Copier' }}</span>
-    </button>
+      <button type="button" class="room-code__copy" (click)="copyCode()" title="Copier le code de la salle">{{ copied ? 'Copié !' : 'Copier' }}</button>
+    </div>
   </header>
 
   <div class="room-body">

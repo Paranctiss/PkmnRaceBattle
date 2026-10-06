@@ -18,6 +18,12 @@ import {PokemonSlotComponent} from '../../../../shared/components/pokemon-slot/p
 import {PokemonTypeService} from '../../../../core/services/PokemonType/pokemon-type.service';
 import {GroundedSpriteDirective} from '../../../../shared/directives/grounded-sprite.directive';
 import {BattleHudComponent} from './battle-hud/battle-hud.component';
+import {
+  BALL_SHAKE_DELAY,
+  HP_CHANGE_DELAY,
+  MESSAGE_DELAY,
+  STANDALONE_MESSAGE_DELAY
+} from '../../../../shared/utils/timings';
 
 @Component({
   selector: 'app-battle-field',
@@ -164,7 +170,7 @@ export class BattleFieldComponent implements OnDestroy {
     this.registerSignalREvent('playerPokemonDeath', message => {
       this.hubService.pending = true;
       this.displayMessage(message)
-      timer(1000).pipe(take(1)).subscribe(() => {
+      timer(MESSAGE_DELAY).pipe(take(1)).subscribe(() => {
         this.openReplacePokemon = true;
       });
     });
@@ -227,7 +233,7 @@ export class BattleFieldComponent implements OnDestroy {
         if (this.TurnContext.prioMessages.length > 0) {
           this.currentMessage = this.TurnContext.prioMessages.shift()!;
           this.logs.unshift(this.currentMessage)
-          timer(1000).pipe(take(1)).subscribe(() => {
+          timer(MESSAGE_DELAY).pipe(take(1)).subscribe(() => {
             this.currentMessage = null;
             displayNextPrioMessage();
           });
@@ -246,7 +252,7 @@ export class BattleFieldComponent implements OnDestroy {
         if (this.TurnContext.messages.length > 0) {
           this.currentMessage = this.TurnContext.messages.shift()!;
           this.logs.unshift(this.currentMessage)
-          timer(1000).pipe(take(1)).subscribe(() => {
+          timer(MESSAGE_DELAY).pipe(take(1)).subscribe(() => {
             this.currentMessage = null;
             displayNextMessage();
           });
@@ -280,7 +286,7 @@ export class BattleFieldComponent implements OnDestroy {
               this.OppositePokemon.currHp -= hpChanges.shift()!;
             }
           }
-          timer(500).pipe(take(1)).subscribe(() => {
+          timer(HP_CHANGE_DELAY).pipe(take(1)).subscribe(() => {
             displayNextPvChanges();
           });
         } else {
@@ -328,7 +334,7 @@ export class BattleFieldComponent implements OnDestroy {
       nbTilt = 3;
     }
     this.isAnimating = true;
-    const delayBetweenShakes = 1000;
+    const delayBetweenShakes = BALL_SHAKE_DELAY;
     for (let i = 0; i < nbTilt; i++) {
       setTimeout(() => {
         this.applyTiltAnimation(i % 2 === 0 ? 'left' : 'right');
@@ -352,7 +358,7 @@ export class BattleFieldComponent implements OnDestroy {
   displayMessage(message:string){
     this.currentMessage = message;
     this.logs.unshift(this.currentMessage)
-    timer(2000).pipe(take(1)).subscribe(() => {
+    timer(STANDALONE_MESSAGE_DELAY).pipe(take(1)).subscribe(() => {
       this.currentMessage = null;
     });
   }

@@ -125,14 +125,14 @@
   bottom: calc(var(--foe-feet) - var(--ground-gap, 0.12) * var(--foe-size));
   width: var(--foe-size);
   height: var(--foe-size);
-  animation: slide-from-right 0.4s ease-out both, idle 1.6s steps(2, jump-none) 0.4s infinite;
+  animation: slide-from-right 0.3s ease-out both, idle 1.6s steps(2, jump-none) 0.3s infinite;
 }
 
 .sprite--ally {
   bottom: calc(var(--ally-feet) - var(--ground-gap, 0.04) * var(--ally-size));
   width: var(--ally-size);
   height: var(--ally-size);
-  animation: slide-from-left 0.4s ease-out both, idle 1.4s steps(2, jump-none) 0.4s infinite;
+  animation: slide-from-left 0.3s ease-out both, idle 1.4s steps(2, jump-none) 0.3s infinite;
 }
 
 .foe-trainer {
@@ -159,12 +159,12 @@
 
 .pokeball-tilt-left {
   --tilt: -15deg;
-  animation: tilt 0.5s ease-in-out;
+  animation: tilt 0.4s ease-in-out;
 }
 
 .pokeball-tilt-right {
   --tilt: 15deg;
-  animation: tilt 0.5s ease-in-out;
+  animation: tilt 0.4s ease-in-out;
 }
 
 /* ==========================================================================
@@ -195,7 +195,7 @@
 }
 
 .dialog__text.is-message {
-  animation: type-in 0.35s steps(18, end);
+  animation: type-in 0.25s steps(14, end);
 }
 
 @keyframes type-in {

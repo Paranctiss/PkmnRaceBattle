@@ -14,12 +14,12 @@
 
 .hud--foe {
   border-radius: 14px 14px 4px 14px;
-  animation: slide-from-left 0.35s ease-out both;
+  animation: slide-from-left 0.25s ease-out both;
 }
 
 .hud--ally {
   border-radius: 14px 14px 14px 4px;
-  animation: slide-from-right 0.35s ease-out both;
+  animation: slide-from-right 0.25s ease-out both;
 }
 
 .hud__head {
