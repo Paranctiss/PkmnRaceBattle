@@ -22,6 +22,8 @@ export interface PokemonMoveBaseModel{
   type:string;
   learnedAtLvl:number;
   learnMethod:string;
+  damageType?:string;
+  flavorText?:string;
   statChanges:PokemonStatChangesModel[];
 }
 

@@ -80,6 +80,14 @@
   font-weight: 700;
 }
 
+/* Palier de niveaux de la map */
+.route-card__levels {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
 .route-card__flavor {
   min-height: 40px;
   padding: 0 16px;

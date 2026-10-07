@@ -12,6 +12,7 @@
       </span>
       <span class="route-card__name">{{ info(option).label }}</span>
       <span class="route-card__flavor">{{ info(option).flavor }}</span>
+      <span class="route-card__levels" *ngIf="levels(option)">{{ levels(option) }}</span>
       <span class="route-card__cta">Prendre ce chemin</span>
     </button>
   </div>

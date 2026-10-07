@@ -1,0 +1,46 @@
+<app-game-modal *ngIf="current && newMove" title="Nouvelle capacité" accent="gold" size="md" [closable]="false">
+  <p class="modal-lead">
+    <b>{{ current.pokemon.nameFr }}</b> veut apprendre <b>{{ newMove.nameFr }}</b>,
+    mais il connaît déjà quatre capacités. Laquelle doit-il oublier ?
+  </p>
+
+  <div class="learn">
+    <div class="learn__moves">
+      <button type="button"
+              *ngFor="let move of current.pokemon.moves"
+              class="learn-move"
+              [class.is-inspected]="inspected === move"
+              [style.--move-color]="typeColor(move)"
+              [style.--move-text]="typeText(move)"
+              (mouseenter)="inspect(move)"
+              (focus)="inspect(move)"
+              (mouseleave)="inspect(null)"
+              (blur)="inspect(null)"
+              (click)="forget(move)">
+        <span class="learn-move__name">{{ move.nameFr }}</span>
+        <span class="learn-move__meta">
+          <span class="learn-move__type">{{ typeLabel(move) }}</span>
+          <span>PP {{ pp(move) }}</span>
+        </span>
+      </button>
+    </div>
+
+    <div class="move-card frame frame--dark" *ngIf="shownMove as move">
+      <span class="move-card__badge">{{ move === newMove ? 'Nouvelle capacité' : 'Capacité à oublier ?' }}</span>
+      <h4 class="move-card__title">{{ move.nameFr }}</h4>
+      <span class="move-card__type" [style.--move-color]="typeColor(move)" [style.--move-text]="typeText(move)">{{ typeLabel(move) }}</span>
+      <p class="move-card__text">{{ move.flavorText || 'Pas de description.' }}</p>
+      <dl class="move-card__stats">
+        <div><dt>Catégorie</dt><dd>{{ damageTypeLabel(move) }}</dd></div>
+        <div><dt>Puissance</dt><dd>{{ move.power || '—' }}</dd></div>
+        <div><dt>Précision</dt><dd>{{ move.accuracy ? move.accuracy + ' %' : '—' }}</dd></div>
+        <div><dt>PP</dt><dd>{{ pp(move) }}</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <p class="learn__hint">Survole une capacité pour voir sa fiche, clique dessus pour l’oublier.</p>
+  <button type="button" class="btn btn--sm btn--dark btn--block" (click)="next()">
+    Ne pas apprendre {{ newMove.nameFr }}
+  </button>
+</app-game-modal>

@@ -3,6 +3,7 @@ import {PokemonTeamMoveModel} from '../../../../../shared/models/player.model';
 import {NgForOf, NgIf} from '@angular/common';
 import {PokemonTypeService} from '../../../../../core/services/PokemonType/pokemon-type.service';
 import {PixelIconComponent} from '../../../../../shared/components/pixel-icon/pixel-icon.component';
+import {ppLabel} from '../../../../../shared/utils/pp';
 
 const DAMAGE_TYPE_LABELS: Record<string, string> = {
   physical: 'Physique',
@@ -49,6 +50,10 @@ export class PokemonMovesComponent {
 
   typeLabel(move: PokemonTeamMoveModel): string {
     return this.typeService.getLabelByType(move.type);
+  }
+
+  pp(move: PokemonTeamMoveModel): string {
+    return ppLabel(move);
   }
 
   damageTypeLabel(move: PokemonTeamMoveModel): string {

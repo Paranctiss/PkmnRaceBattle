@@ -302,6 +302,31 @@ describe('BattleFieldComponent (écran de combat)', () => {
       flush();
     }));
 
+    it('changement forcé (K.O. ou Cyclone) : fenêtre non fermable, le Pokémon au combat est refusé', fakeAsync(() => {
+      const other = makePokemon({id: 'OTHER', nameFr: 'Carapuce', currHp: 20});
+      create(undefined, [other]);
+      fake.connection.emit('playerPokemonDeath', 'Changez de Pokémon');
+      tick(1000);
+      fixture.detectChanges();
+      expect(component.openReplacePokemon).toBeTrue();
+
+      document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+      fixture.detectChanges();
+      expect(component.openReplacePokemon).toBeTrue();
+
+      (el().querySelectorAll('.party-pick')[0] as HTMLButtonElement).click();
+      fixture.detectChanges();
+      expect(component.openReplacePokemon).toBeTrue();
+      expect(fake.connection.invoked('ReplacePokemon').length).toBe(0);
+      expect(dialog()).toBe('Salamèche est déjà au combat');
+
+      (el().querySelectorAll('.party-pick')[1] as HTMLButtonElement).click();
+      fixture.detectChanges();
+      expect(fake.connection.lastInvocation('ReplacePokemon')?.args).toEqual(['player-1', 'OTHER', 'wild-1', false]);
+      expect(component.openReplacePokemon).toBeFalse();
+      flush();
+    }));
+
     it('défaite : message et plus aucune action', fakeAsync(() => {
       create();
       fake.connection.emit('playerLooseFight', 'Vous n\'avez plus de pokémon en forme');
@@ -360,6 +385,24 @@ describe('BattleFieldComponent (écran de combat)', () => {
       expect(fake.connection.lastInvocation('AddPokemonToTeam')?.args).toEqual(['player-1', 'wild-1', 3]);
       flush();
     }));
+
+    it('équipe pleine : la fenêtre ne se ferme pas sans choix, le joueur peut relâcher le Pokémon', fakeAsync(() => {
+      create(undefined, [makePokemon(), makePokemon(), makePokemon(), makePokemon(), makePokemon()]);
+      fake.connection.emit('caughtPokemon', foe);
+      fixture.detectChanges();
+
+      document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+      fixture.detectChanges();
+      expect(component.openReplacePokemon).toBeTrue();
+      expect(fake.connection.invoked('AddPokemonToTeam').length).toBe(0);
+
+      (Array.from(el().querySelectorAll('app-game-modal button')).find(b => b.textContent?.includes('Relâcher')) as HTMLButtonElement).click();
+      fixture.detectChanges();
+      expect(fake.connection.lastInvocation('AddPokemonToTeam')?.args).toEqual(['player-1', 'wild-1', -1]);
+      expect(component.openReplacePokemon).toBeFalse();
+      expect(component.currentMessage).toContain('a été relâché');
+      flush();
+    }));
   });
 
   describe('montée de niveau', () => {
@@ -371,34 +414,6 @@ describe('BattleFieldComponent (écran de combat)', () => {
       tick(1000);
       fixture.detectChanges();
       expect(dialog()).toBe('Salamèche a évolué en Reptincel');
-      flush();
-    }));
-
-    it('nouvelle capacité avec 4 capacités connues : choix de celle à oublier', fakeAsync(() => {
-      create();
-      const four = makePokemon({id: 'MINE', moves: [makeMove({id: 1}), makeMove({id: 2}), makeMove({id: 3}), makeMove({id: 4})]});
-      fake.connection.emit('pokemonLevelUp', 'Salamèche monte niveau 9', four, [{id: 52, nameFr: 'Flammèche'}]);
-      fixture.detectChanges();
-      expect(el().querySelector('app-game-modal')?.textContent).toContain('veut apprendre Flammèche');
-      expect(hub.pending).toBeTrue();
-
-      (el().querySelectorAll('.learn-list__move')[2] as HTMLButtonElement).click();
-      expect(fake.connection.lastInvocation('LearnMove')?.args).toEqual([3, 52, 'MINE', 'player-1']);
-
-      fake.connection.emit('moveLearned', hub.Player);
-      fixture.detectChanges();
-      expect(component.openLearnMove).toBeFalse();
-      expect(hub.pending).toBeFalse();
-      flush();
-    }));
-
-    it('le joueur peut refuser la nouvelle capacité', fakeAsync(() => {
-      create();
-      fake.connection.emit('pokemonLevelUp', 'Salamèche monte niveau 9', mine, [{id: 52, nameFr: 'Flammèche'}]);
-      fixture.detectChanges();
-      component.DismissLearn();
-      expect(component.openLearnMove).toBeFalse();
-      expect(fake.connection.invoked('LearnMove').length).toBe(0);
       flush();
     }));
   });

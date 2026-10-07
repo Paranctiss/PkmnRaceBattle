@@ -15,6 +15,8 @@ export class HubService {
   public gameCode: string = "";
   public userId: string = "";
   public pending:boolean = false;
+  // Choix d'une capacité à oublier en attente (LearnMoveComponent) : le joueur ne peut pas agir
+  public learningMove:boolean = false;
   public Player:PlayerModel = {
     _id: "",
     team: [],
@@ -86,8 +88,9 @@ export class HubService {
     return this.listen('ResponsePlayersInRoom', callback);
   }
 
-  startGame(gameCode: string, checkedTimer:boolean, timerTime:number) {
-    this.signalRService.connection.invoke('StartGame', gameCode, checkedTimer, timerTime).catch(err => console.error(err));
+  // multiXp / xpMultiplier : réglages d'XP de la partie (Multi Exp, XP normale / x2 / x5)
+  startGame(gameCode: string, checkedTimer:boolean, timerTime:number, multiXp:boolean = true, xpMultiplier:number = 1) {
+    this.signalRService.connection.invoke('StartGame', gameCode, checkedTimer, timerTime, multiXp, xpMultiplier).catch(err => console.error(err));
   }
   onStartedGame(callback:(gameCode:string) => void) {
     return this.listen('GameStarted', callback);

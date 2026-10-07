@@ -12,6 +12,8 @@ export interface PlayerModel {
   currentPath:PathPoint;
   playerPath:PlayerPath;
   mapFightCount:number;
+  // Tours supplémentaires de la dernière map une fois le chemin terminé
+  pathLoopCount?:number;
 }
 
 export interface PokemonTeamModel{
@@ -68,6 +70,8 @@ export interface PokemonTeamMoveModel {
   nameFr:string;
   accuracy:number;
   pp:number;
+  // PP max (absent ou 0 pour une capacité enregistrée avant l'ajout du champ côté serveur)
+  maxPp?:number;
   power:number;
   priority:number;
   target:string;
@@ -105,4 +109,7 @@ export interface PathPoint {
   y:number;
   environmentName:string;
   isSkipped?:boolean;
+  // Map de combat : niveau du premier sauvage et du Pokémon le plus fort du dresseur
+  minLevel?:number|null;
+  maxLevel?:number|null;
 }
