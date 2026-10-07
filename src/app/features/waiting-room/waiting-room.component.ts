@@ -28,6 +28,14 @@ export class WaitingRoomComponent {
   checkedTimer: boolean=true;
   timerTime: number=5;
   readonly timerChoices = [5, 10, 15];
+  // Réglages d'XP : Multi Exp (le reste de l'équipe reçoit la moitié de l'XP) et vitesse de l'XP
+  multiXp: boolean = true;
+  xpMultiplier: number = 1;
+  readonly xpChoices = [
+    {value: 1, label: 'Normale'},
+    {value: 2, label: '× 2'},
+    {value: 5, label: '× 5'},
+  ];
   copied: boolean = false;
 
     ngOnInit() {
@@ -83,6 +91,6 @@ export class WaitingRoomComponent {
   }
 
   StartGame() {
-    this.hubService.startGame(this.hubService.gameCode, this.checkedTimer, this.timerTime);
+    this.hubService.startGame(this.hubService.gameCode, this.checkedTimer, this.timerTime, this.multiXp, this.xpMultiplier);
   }
 }

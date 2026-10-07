@@ -116,13 +116,40 @@ describe('WaitingRoomComponent (salle d’attente)', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    const radios = el().querySelectorAll('input[type=radio]') as NodeListOf<HTMLInputElement>;
+    const radios = el().querySelectorAll('input[name=timerTime]') as NodeListOf<HTMLInputElement>;
     expect(radios.length).toBe(3);
     radios[2].click();
     fixture.detectChanges();
     (Array.from(el().querySelectorAll('button')).find(b => b.textContent?.includes('Lancer la partie')) as HTMLButtonElement).click();
 
-    expect(fake.connection.lastInvocation('StartGame')?.args).toEqual(['ABC123', true, 15]);
+    expect(fake.connection.lastInvocation('StartGame')?.args).toEqual(['ABC123', true, 15, true, 1]);
+  });
+
+  it('par défaut : Multi Exp activé et XP normale', async () => {
+    create('host');
+    fake.connection.emit('ResponsePlayersInRoom', [host]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(el().textContent).toContain('Multi Exp');
+    expect(el().textContent).toContain('la moitié pour les Pokémon qui n’ont pas combattu');
+    const xpRadios = el().querySelectorAll('input[name=xpMultiplier]') as NodeListOf<HTMLInputElement>;
+    expect(Array.from(xpRadios).map(r => r.checked)).toEqual([true, false, false]);
+  });
+
+  it('l’hôte peut désactiver le Multi Exp et accélérer l’XP', async () => {
+    create('host');
+    fake.connection.emit('ResponsePlayersInRoom', [host]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const checkboxes = el().querySelectorAll('input[type=checkbox]') as NodeListOf<HTMLInputElement>;
+    checkboxes[1].click();
+    (el().querySelectorAll('input[name=xpMultiplier]')[2] as HTMLInputElement).click();
+    fixture.detectChanges();
+    expect(el().textContent).toContain('Seuls les Pokémon qui ont combattu');
+    expect(Array.from(el().querySelectorAll('.segmented span')).map(s => s.textContent)).toContain('× 5');
+
+    fixture.componentInstance.StartGame();
+    expect(fake.connection.lastInvocation('StartGame')?.args).toEqual(['ABC123', true, 5, false, 5]);
   });
 
   it('l’hôte peut lancer sans minuteur', async () => {

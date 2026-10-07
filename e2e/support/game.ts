@@ -49,8 +49,10 @@ export async function joinGame(page: Page, name: string, starter: Starter, code:
 }
 
 export async function startGame(host: Page, withTimer: boolean) {
-  const timer = host.locator('.switch input[type=checkbox]');
-  if ((await timer.isChecked()) !== withTimer) await host.locator('.switch').click();
+  // Interrupteur du minuteur (un autre interrupteur règle le Multi Exp)
+  const timerSwitch = host.locator('.switch').filter({hasText: 'Minuteur'});
+  const timer = timerSwitch.locator('input[type=checkbox]');
+  if ((await timer.isChecked()) !== withTimer) await timerSwitch.click();
   await host.getByRole('button', {name: /Lancer la partie/}).click();
 }
 

@@ -13,8 +13,10 @@ import {BracketComponent} from './components/bracket/bracket.component';
 import {BracketModel} from '../../shared/models/bracket.model';
 import {ENVIRONMENTS, EnvironmentService} from '../../core/services/Environment/environment.service';
 import {PathChoiceComponent} from './components/path-choice/path-choice.component';
+import {LearnMoveComponent} from './components/learn-move/learn-move.component';
 import {PixelIconComponent} from '../../shared/components/pixel-icon/pixel-icon.component';
 import {EnvironmentInfo, getEnvironmentInfo, isFightEnvironment} from '../../shared/utils/environment';
+import {levelRangeLabel} from '../../shared/utils/level-range';
 
 // Nombre de combats sauvages par map avant le combat de dresseur (PlayerPathHelper.WildFightsPerMap côté serveur)
 const WILD_FIGHTS_PER_MAP = 5;
@@ -33,6 +35,7 @@ const WILD_FIGHTS_PER_MAP = 5;
     RouterLink,
     BracketComponent,
     PathChoiceComponent,
+    LearnMoveComponent,
     PixelIconComponent,
   ],
   templateUrl: './game.component.html',
@@ -152,6 +155,11 @@ export class GameComponent {
       && this.turnType !== 'Finito'
       && this.turnType !== 'Bracket'
       && this.turnType !== 'PvpFight';
+  }
+
+  // Palier de niveaux de la map courante
+  get routeLevels(): string {
+    return this.isFightMap ? levelRangeLabel(this.hubService.Player.currentPath) : '';
   }
 
   // Progression sur la map courante (miroir de PlayerPathHelper côté serveur)

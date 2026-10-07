@@ -29,6 +29,12 @@ describe('PokemonMovesComponent (capacités et actions)', () => {
     expect(buttons()[1].querySelector('.move__pp')?.textContent).toBe('PP 25');
   });
 
+  it('PP restants sur PP max quand le max est connu', () => {
+    fixture.componentRef.setInput('PokemonMoves', [{...moves[1], pp: 12, maxPp: 25}]);
+    fixture.detectChanges();
+    expect(buttons()[0].querySelector('.move__pp')?.textContent).toBe('PP 12/25');
+  });
+
   it('cliquer une capacité l’envoie', () => {
     const spy = spyOn(component.PokemonMovesChange, 'emit');
     buttons()[1].click();

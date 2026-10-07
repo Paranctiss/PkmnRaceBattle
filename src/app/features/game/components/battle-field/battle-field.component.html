@@ -71,7 +71,7 @@
 
 <!-- ===== Fenêtres ===== -->
 
-<app-game-modal *ngIf="openReplacePokemon" [title]="replaceTitle" accent="red" (closed)="CloseReplacePokemon()">
+<app-game-modal *ngIf="openReplacePokemon" [title]="replaceTitle" accent="red" [closable]="replaceClosable" (closed)="CloseReplacePokemon()">
   <p class="modal-lead">{{ replaceHint }}</p>
   <div class="party-grid">
     <button type="button"
@@ -81,30 +81,13 @@
       <app-pokemon-slot [pokemon]="pokemon" [lead]="i === 0" [dimmed]="!canEvolveWithItem(pokemon, itemToUse)" [showTypes]="true"/>
     </button>
   </div>
+  <button type="button" class="btn btn--sm btn--dark btn--block" *ngIf="waitForReplaceByWildPokemon" (click)="releaseCaughtPokemon()">
+    Relâcher {{ OppositePokemon.nameFr }}
+  </button>
 </app-game-modal>
 
 <app-game-modal *ngIf="openBag" title="Sac" accent="gold" (closed)="openBag = false">
   <app-bag [items]="hubService.Player.items" (itemSelected)="itemClicked($event)"/>
-</app-game-modal>
-
-<app-game-modal *ngIf="openLearnMove && pokemonWantToLearn.length > 0" title="Nouvelle capacité" accent="gold" size="sm" [closable]="false">
-  <p class="modal-lead">
-    <b>{{ pokemonWantToLearn[0].nameFr }}</b> veut apprendre <b>{{ movesToLearn[0][0].nameFr }}</b>,
-    mais il connaît déjà quatre capacités. Laquelle doit-il oublier ?
-  </p>
-  <div class="learn-list">
-    <button type="button"
-            *ngFor="let move of pokemonWantToLearn[0].moves"
-            class="btn btn--block menu-cursor learn-list__move"
-            [style.--btn-bg]="typeColor(move.type)"
-            [style.--btn-fg]="typeText(move.type)"
-            (click)="ReplaceMoveBy(move.id, movesToLearn[0][0].id, pokemonWantToLearn[0].id)">
-      {{ move.nameFr }}
-    </button>
-  </div>
-  <button type="button" class="btn btn--sm btn--dark btn--block" (click)="DismissLearn()">
-    Ne pas apprendre {{ movesToLearn[0][0].nameFr }}
-  </button>
 </app-game-modal>
 
 <app-game-modal *ngIf="openMap" title="Carte de la région" size="lg" (closed)="CloseMap()">

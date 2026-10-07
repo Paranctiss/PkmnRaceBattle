@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {GameComponent} from './game.component';
 import {FakeSignalRService, provideTestingDefaults} from '../../../testing/fake-signalr';
-import {makePlayer, makeTrainer, makeWildOpponent} from '../../../testing/test-data';
+import {makeMove, makePlayer, makeTrainer, makeWildOpponent} from '../../../testing/test-data';
 import {HubService} from '../../core/services/Hub/hub.service';
 import {EnvironmentService} from '../../core/services/Environment/environment.service';
 import {PathPoint} from '../../shared/models/player.model';
@@ -70,6 +70,24 @@ describe('GameComponent (écran de jeu)', () => {
     expect(env.environment()).toBe('Foret');
   });
 
+  it('nouvelle capacité à la fin du dernier combat sauvage : le choix reste ouvert pendant l’annonce du dresseur', () => {
+    const player = playerOn('Plaine', 1, 4);
+    const four = player.team[0];
+    four.moves = [makeMove({id: 1}), makeMove({id: 2}), makeMove({id: 3}), makeMove({id: 4})];
+    fake.connection.emit('GetPlayerResponse', player);
+    fake.connection.emit('responseWildFight', makeWildOpponent(), player);
+    fixture.detectChanges();
+
+    fake.connection.emit('pokemonLevelUp', 'Salamèche monte niveau 9', four, [{id: 52, nameFr: 'Flammèche', type: 'fire', pp: 25}]);
+    fake.connection.emit('responseTrainerFight', makeTrainer());
+    fixture.detectChanges();
+
+    expect(el().querySelector('app-trainer-fight')).not.toBeNull();
+    expect(el().querySelector('app-learn-move app-game-modal')?.textContent).toContain('veut apprendre Flammèche');
+    (el().querySelectorAll('app-learn-move .learn-move')[0] as HTMLButtonElement).click();
+    expect(fake.connection.lastInvocation('LearnMove')?.args).toEqual([1, 52, four.id, 'player-1']);
+  });
+
   it('combat de dresseur : écran d’introduction puis combat', () => {
     fake.connection.emit('GetPlayerResponse', playerOn('Volcan', 1, 5));
     fake.connection.emit('responseTrainerFight', makeTrainer());
@@ -127,6 +145,15 @@ describe('GameComponent (écran de jeu)', () => {
       expect(el().querySelector('.route-plate__name')?.textContent).toBe('Plaine');
       expect(el().querySelector('.route-plate__step')?.textContent).toBe('Combat sauvage 3 / 5');
       expect(el().querySelectorAll('.pip.is-done').length).toBe(2);
+    });
+
+    it('affiche le palier de niveaux de la map', () => {
+      const player = playerOn('Plaine', 1, 0);
+      player.currentPath = {...player.currentPath, minLevel: 2, maxLevel: 9};
+      fake.connection.emit('GetPlayerResponse', player);
+      fixture.detectChanges();
+      expect(el().querySelector('.route-plate__step')?.textContent).toBe('Combat sauvage 1 / 5');
+      expect(el().querySelector('.route-plate__levels')?.textContent).toBe('Niv. 2 – 9');
     });
 
     it('combat de dresseur après 5 combats sauvages', () => {

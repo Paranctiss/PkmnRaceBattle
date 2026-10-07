@@ -17,6 +17,19 @@ describe('PathChoiceComponent (embranchement)', () => {
     expect(spy).toHaveBeenCalledWith(options[1]);
   });
 
+  it('affiche le palier de niveaux de chaque route', () => {
+    TestBed.configureTestingModule({imports: [PathChoiceComponent]});
+    const fixture = TestBed.createComponent(PathChoiceComponent);
+    fixture.componentRef.setInput('Options', [
+      {x: 3, y: 1, environmentName: 'Volcan', minLevel: 12, maxLevel: 19},
+      {x: 3, y: 2, environmentName: 'Foret'},
+    ]);
+    fixture.detectChanges();
+    const levels = fixture.nativeElement.querySelectorAll('.route-card__levels');
+    expect(levels.length).toBe(1);
+    expect(levels[0].textContent).toBe('Niv. 12 – 19');
+  });
+
   it('ne peut pas être fermé sans choisir', () => {
     TestBed.configureTestingModule({imports: [PathChoiceComponent]});
     const fixture = TestBed.createComponent(PathChoiceComponent);

@@ -47,9 +47,11 @@ describe('HubService', () => {
       expect(last('GetPlayer')).toEqual(['user-1']);
     });
 
-    it('startGame -> StartGame(code, minuteur, durée)', () => {
+    it('startGame -> StartGame(code, minuteur, durée, multiExp, multiplicateur d’XP)', () => {
       service.startGame('ABC123', true, 10);
-      expect(last('StartGame')).toEqual(['ABC123', true, 10]);
+      expect(last('StartGame')).toEqual(['ABC123', true, 10, true, 1]);
+      service.startGame('ABC123', false, 5, false, 5);
+      expect(last('StartGame')).toEqual(['ABC123', false, 5, false, 5]);
     });
 
     it('getNewTurn et getWildFight -> GetNewTurn(userId)', () => {

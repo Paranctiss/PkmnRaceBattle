@@ -82,4 +82,25 @@ describe('MapComponent (carte du parcours)', () => {
     fixture.detectChanges();
     expect(el.querySelector('.place-tip')?.textContent).toContain('Vous êtes ici');
   });
+
+  it('infobulle : palier de niveaux des maps de combat', () => {
+    const points = path();
+    points[1] = {...points[1], minLevel: 9, maxLevel: 14};
+    const el = render({x: 1, y: 1, environmentName: 'Plaine'}, points);
+    el.querySelectorAll('.place')[2].dispatchEvent(new Event('mouseenter'));
+    fixture.detectChanges();
+    expect(el.querySelector('.place-tip')?.textContent).toContain('Niv. 9 – 14');
+    el.querySelectorAll('.place')[5].dispatchEvent(new Event('mouseenter'));
+    fixture.detectChanges();
+    expect(el.querySelector('.place-tip')?.textContent).not.toContain('Niv.');
+  });
+
+  it('infobulle de la position actuelle : palier à jour (tours de boucle en fin de chemin)', () => {
+    const points = path();
+    points[0] = {...points[0], minLevel: 2, maxLevel: 9};
+    const el = render({x: 1, y: 1, environmentName: 'Plaine', minLevel: 25, maxLevel: 31}, points);
+    el.querySelectorAll('.place')[1].dispatchEvent(new Event('mouseenter'));
+    fixture.detectChanges();
+    expect(el.querySelector('.place-tip')?.textContent).toContain('Niv. 25 – 31');
+  });
 });

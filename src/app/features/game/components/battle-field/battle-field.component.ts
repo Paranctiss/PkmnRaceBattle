@@ -10,7 +10,6 @@ import {NgForOf, NgIf} from '@angular/common';
 import {take, timer} from 'rxjs';
 import {TurnContextModel} from '../../../../shared/models/turn-context.model';
 import {HubService} from '../../../../core/services/Hub/hub.service';
-import {PokemonMoveBaseModel} from '../../../../shared/models/pokemon-base.model';
 import {MapComponent} from './map/map.component';
 import {GameModalComponent} from '../../../../shared/components/game-modal/game-modal.component';
 import {BagComponent} from '../bag/bag.component';
@@ -59,12 +58,11 @@ export class BattleFieldComponent implements OnDestroy {
   openBag: boolean = false;
   showLog: boolean = false;
   waitForReplaceByWildPokemon: boolean = false;
-  openLearnMove:boolean = false;
+  // Pokémon K.O. ou éjecté (Cyclone / Hurlement) : le joueur doit envoyer un autre Pokémon
+  forcedSwitch: boolean = false;
   waitingOpponent: boolean = false;
   logs:string[] = [];
   openMap: boolean = false;
-  movesToLearn:PokemonMoveBaseModel[][] = [];
-  pokemonWantToLearn:PokemonTeamModel[] = [];
 
   // Add this to keep track of the event names we've subscribed to
   private signalREventHandlers: [string, (...args: any[]) => void][] = [];
@@ -84,7 +82,7 @@ export class BattleFieldComponent implements OnDestroy {
   }
 
   get canAct(): boolean {
-    return !this.hubService.pending && !this.openLearnMove && !this.openReplacePokemon && this.PlayerPokemon.waitingMove == null;
+    return !this.hubService.pending && !this.hubService.learningMove && !this.openReplacePokemon && this.PlayerPokemon.waitingMove == null;
   }
 
   get hasCommandPanel(): boolean {
@@ -144,18 +142,12 @@ export class BattleFieldComponent implements OnDestroy {
       }else{
         this.displayMessage(message);
       }
-      if(movesToLearn.length > 0){
-        this.pokemonWantToLearn.push(pokemon);
-        this.movesToLearn.push(movesToLearn);
-        this.openLearnMove = true;
-        this.hubService.pending = true;
-      }
+      // Choix d'une capacité à oublier : LearnMoveComponent (écran de jeu), qui survit à la fin du combat
     });
 
     this.registerSignalREvent('moveLearned', player => {
       this.hubService.Player = player;
       this.PlayerPokemon = player.team[0]
-      this.DismissLearn();
     });
 
     this.registerSignalREvent('caughtPokemon', caughtPokemon => {
@@ -169,6 +161,7 @@ export class BattleFieldComponent implements OnDestroy {
 
     this.registerSignalREvent('playerPokemonDeath', message => {
       this.hubService.pending = true;
+      this.forcedSwitch = true;
       this.displayMessage(message)
       timer(MESSAGE_DELAY).pipe(take(1)).subscribe(() => {
         this.openReplacePokemon = true;
@@ -407,11 +400,17 @@ export class BattleFieldComponent implements OnDestroy {
         if(this.itemToUse.type === "special") skip = true;
         this.hubService.useMove(this.PlayerPokemon.id, "item:"+this.itemToUse.name+":"+this.itemToUse.type, this.Opponent._id, this.OppositePokemon.id, true, this.Opponent.isPlayer, index, skip)
       }else{
-        if(this.hubService.Player.team[0].id !== pokemon.id && pokemon.currHp > 0){
-          this.hubService.replacePokemon(pokemon.id, this.Opponent._id, this.Opponent.isPlayer)
-        }else{
+        // Le Pokémon au combat (ou K.O.) ne peut pas être envoyé : la fenêtre reste ouverte
+        if(pokemon.id === this.PlayerPokemon.id || pokemon.id === this.hubService.Player.team[0].id){
+          this.displayMessage(pokemon.nameFr + " est déjà au combat");
           return;
         }
+        if(pokemon.currHp <= 0){
+          this.displayMessage(pokemon.nameFr + " est K.O.");
+          return;
+        }
+        this.forcedSwitch = false;
+        this.hubService.replacePokemon(pokemon.id, this.Opponent._id, this.Opponent.isPlayer)
       }
     }else{
       this.waitForReplaceByWildPokemon = false;
@@ -421,24 +420,24 @@ export class BattleFieldComponent implements OnDestroy {
     this.hubService.pending = true;
   }
 
-  ReplaceMoveBy(oldMoveId:number, newMoveId: number, pokemonId:string) {
-    this.hubService.learnMove(oldMoveId, newMoveId, pokemonId);
-  }
-
-  DismissLearn() {
-    this.movesToLearn[0].shift()
-    if(this.movesToLearn[0].length === 0){
-      this.movesToLearn.shift()
-      this.pokemonWantToLearn.shift()
-      if(this.movesToLearn.length === 0){
-        this.openLearnMove = false;
-        this.hubService.pending = false;
-      }
-    }
-  }
-
   openBagDialog(){
     this.openBag = true;
+  }
+
+  // Équipe pleine : le Pokémon capturé n'est ajouté que si le joueur choisit qui il remplace, sinon il est relâché
+  releaseCaughtPokemon() {
+    this.waitForReplaceByWildPokemon = false;
+    this.hubService.addPokemonToTeam(this.Opponent._id, -1);
+    this.displayMessage(this.OppositePokemon.nameFr + " a été relâché");
+    this.catchValue = 0;
+    this.catchingBall = "";
+    this.CloseReplacePokemon();
+    this.hubService.pending = true;
+  }
+
+  // Fermeture impossible quand un choix est obligatoire (changement forcé, capture avec équipe pleine)
+  get replaceClosable(): boolean {
+    return !this.forcedSwitch && !this.waitForReplaceByWildPokemon;
   }
 
   CloseReplacePokemon() {

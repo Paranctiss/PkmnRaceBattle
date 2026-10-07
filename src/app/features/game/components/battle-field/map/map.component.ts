@@ -3,6 +3,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {PathPoint} from '../../../../../shared/models/player.model';
 import {PixelIconComponent} from '../../../../../shared/components/pixel-icon/pixel-icon.component';
 import {EnvironmentInfo, getEnvironmentInfo} from '../../../../../shared/utils/environment';
+import {levelRangeLabel} from '../../../../../shared/utils/level-range';
 
 type NodeState = 'visited' | 'current' | 'skipped' | 'upcoming';
 
@@ -126,6 +127,12 @@ export class MapComponent implements OnChanges, AfterViewInit {
     if (from.state === 'skipped' || to.state === 'skipped') return 'skipped';
     const reached = (n: MapNode) => n.state === 'visited' || n.state === 'current';
     return reached(from) && reached(to) ? 'travelled' : 'upcoming';
+  }
+
+  levels(point: PathPoint): string {
+    // Position actuelle : fourchette à jour (tours de boucle en fin de chemin)
+    if (point.x === this.CurrentNode?.x && point.y === this.CurrentNode?.y) return levelRangeLabel(this.CurrentNode);
+    return levelRangeLabel(point);
   }
 
   linkPath(link: MapLink): string {

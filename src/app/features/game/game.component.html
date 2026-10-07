@@ -4,6 +4,9 @@
     [Options]="pathOptions"
     (PathChosen)="ChoosePath($event)"/>
 
+  <!-- Hors des écrans de combat : reste ouvert quand le combat se termine -->
+  <app-learn-move/>
+
   <!-- ===== Barre du haut ===== -->
   <header class="topbar">
     <button type="button" class="btn btn--sm btn--dark" routerLink="/">◀ Menu</button>
@@ -13,6 +16,7 @@
       <div class="route-plate__text">
         <span class="route-plate__name">{{ routeInfo.label }}</span>
         <span class="route-plate__step">{{ routeStepLabel }}</span>
+        <span class="route-plate__levels" *ngIf="routeLevels">{{ routeLevels }}</span>
       </div>
       <ol class="pips" *ngIf="isFightMap" aria-label="Progression sur la map">
         <li *ngFor="let i of wildPips"

@@ -30,6 +30,7 @@
            [style.top.px]="hoveredNode.top + 58">
         <b>{{ hoveredNode.info.label }}</b>
         <span>{{ stateLabels[hoveredNode.state] }}</span>
+        <span *ngIf="levels(hoveredNode.point)">{{ levels(hoveredNode.point) }}</span>
       </div>
     </div>
   </div>
