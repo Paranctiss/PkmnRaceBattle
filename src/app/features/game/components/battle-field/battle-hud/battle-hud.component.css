@@ -61,3 +61,40 @@
   filter: grayscale(1);
   opacity: 0.4;
 }
+
+@media (max-height: 800px) {
+  :host {
+    width: clamp(220px, 19vw, 280px);
+  }
+
+  .hud {
+    gap: 4px;
+    padding: 8px 12px 10px;
+  }
+
+  .hud__name {
+    font-size: 19px;
+  }
+
+  .hud__level {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  :host {
+    width: clamp(150px, 44vw, 270px);
+  }
+
+  .hud {
+    padding: 6px 10px 8px;
+  }
+
+  .hud__name {
+    font-size: 16px;
+  }
+
+  .hud__level {
+    font-size: 13px;
+  }
+}

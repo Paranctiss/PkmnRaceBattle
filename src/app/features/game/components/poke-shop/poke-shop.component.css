@@ -194,3 +194,9 @@
   align-items: center;
   gap: 10px;
 }
+
+@media (max-height: 800px) {
+  .mart__shelf {
+    min-height: 0;
+  }
+}

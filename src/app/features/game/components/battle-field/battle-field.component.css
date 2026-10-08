@@ -16,8 +16,8 @@
 
 .stage {
   /* Tailles fluides selon la largeur et la hauteur de l'écran */
-  --foe-size: clamp(170px, min(17vw, 28vh), 250px);
-  --ally-size: clamp(200px, min(21vw, 32vh), 300px);
+  --foe-size: clamp(110px, min(17vw, 28vh), 250px);
+  --ally-size: clamp(130px, min(21vw, 32vh), 300px);
   /* Hauteur des pieds au-dessus du bas de la plateforme (son centre) */
   --foe-feet: 36px;
   --ally-feet: 42px;
@@ -25,7 +25,9 @@
      qui commence sous la barre du haut (≈ 84px) */
   --horizon-y: calc(46vh - 84px);
   position: relative;
-  min-height: 380px;
+  /* Pas de hauteur minimale trop grande : sur un écran bas, la scène déborderait sur la console
+     et recouvrirait les boutons (Sac…) */
+  min-height: 220px;
 }
 
 /* ----- Groupes Pokémon + encadré ----- */
@@ -172,6 +174,9 @@
    ========================================================================== */
 
 .console {
+  /* Toujours au-dessus de la scène (sprites, encadrés) : rien ne doit intercepter les clics des commandes */
+  position: relative;
+  z-index: 5;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
   gap: 14px;
@@ -298,5 +303,100 @@
 @media (max-width: 1280px) {
   .foe-trainer {
     display: none;
+  }
+}
+
+/* Écrans de portable peu hauts (1366×768, 1920×1080 à 125 %…) */
+@media (max-height: 800px) {
+  .battle {
+    gap: 10px;
+  }
+
+  .stage {
+    --foe-feet: 28px;
+    --ally-feet: 32px;
+    --horizon-y: calc(46vh - 66px);
+  }
+
+  .spot--foe .platform {
+    height: 56px;
+  }
+
+  .spot--ally .platform {
+    height: 64px;
+  }
+
+  .console {
+    gap: 10px;
+    min-height: 132px;
+  }
+
+  .dialog {
+    padding: 14px 18px 16px;
+  }
+
+  .dialog__text {
+    font-size: 19px;
+  }
+}
+
+@media (max-height: 640px) {
+  .console {
+    min-height: 116px;
+  }
+
+  .dialog__text {
+    font-size: 17px;
+  }
+}
+
+/* Écrans étroits : dialogue au-dessus des commandes */
+@media (max-width: 900px) {
+  :host {
+    height: auto;
+  }
+
+  .battle {
+    grid-template-rows: auto auto;
+  }
+
+  .console {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dialog__text {
+    font-size: 17px;
+  }
+
+  .party-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Scène de hauteur fixe, indépendante de l'horizon du décor */
+  .stage {
+    --foe-size: clamp(90px, 26vw, 170px);
+    --ally-size: clamp(100px, 30vw, 200px);
+    min-height: 0;
+    height: calc(var(--foe-size) + var(--ally-size) + 70px);
+    overflow: hidden;
+  }
+
+  .side--foe {
+    top: 0;
+    right: 0;
+    transform: none;
+  }
+
+  .side--ally {
+    bottom: 0;
+    left: 0;
+  }
+
+  .hud-slot--foe {
+    margin: 4px -24px 0 0;
+  }
+
+  .hud-slot--ally {
+    margin: 0 0 6px -24px;
   }
 }
