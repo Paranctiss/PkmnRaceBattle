@@ -69,3 +69,14 @@
 @keyframes trainer-in {
   from { opacity: 0; transform: skewY(3deg) translateX(80px); }
 }
+
+@media (max-height: 800px) {
+  .encounter {
+    gap: 16px;
+  }
+
+  .encounter__trainer {
+    width: 160px;
+    height: 160px;
+  }
+}

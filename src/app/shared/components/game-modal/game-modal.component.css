@@ -44,3 +44,31 @@
 @keyframes pop-in {
   from { opacity: 0; transform: translateY(10px) scale(0.97); }
 }
+
+@media (max-height: 700px) {
+  .backdrop {
+    padding: 28px 16px 12px;
+  }
+
+  .modal {
+    max-height: calc(100vh - 44px);
+  }
+
+  .modal__body {
+    padding: 26px 20px 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .backdrop {
+    padding: 28px 10px 10px;
+  }
+
+  .modal__body {
+    padding: 26px 14px 16px;
+  }
+
+  .modal__close {
+    right: -6px;
+  }
+}

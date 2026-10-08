@@ -188,3 +188,42 @@
   height: 30px;
   object-fit: contain;
 }
+
+@media (max-height: 800px) {
+  .commands,
+  .moves {
+    gap: 8px;
+  }
+
+  .move {
+    min-height: 52px;
+    padding: 6px 10px 7px;
+  }
+
+  .move__name {
+    font-size: 16px;
+  }
+}
+
+/* Écrans étroits : actions secondaires en ligne sous les capacités */
+@media (max-width: 600px) {
+  .commands {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .actions {
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .action {
+    justify-content: center;
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  .move-info {
+    width: min(290px, 80vw);
+  }
+}

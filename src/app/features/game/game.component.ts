@@ -111,6 +111,8 @@ export class GameComponent {
       this.raceOver = true;
       this.pathOptions = [];
       this.turnType = "Finito";
+      // Équipe soignée par le serveur pour le tournoi
+      this.hubService.getCurrentUser();
     }));
     this.destroyRef.onDestroy(this.hubService.responsePvpFight((opponent) => {
       if(this.turnType !== "") this.hubService.getCurrentUser()
@@ -121,6 +123,8 @@ export class GameComponent {
     this.destroyRef.onDestroy(this.hubService.onBracketCreated((bracket) => {
       this.turnType = "Bracket";
       this.bracket = bracket;
+      // Après un duel, le serveur a soigné les deux équipes : afficher l'équipe à jour
+      this.hubService.getCurrentUser();
     }))
     this.destroyRef.onDestroy(this.hubService.onTriggerTournament(() => {
       this.hubService.getPvpFight();
